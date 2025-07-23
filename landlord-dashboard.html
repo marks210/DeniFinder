@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Dashboard - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-gray);
+            color: var(--charcoal);
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--gold-dark);
+            color: var(--white);
+            padding: 2rem 0;
+            position: fixed;
+            width: 250px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+
+        .user-details h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-details p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            padding: 2rem 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--charcoal);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.properties {
+            background: var(--gold-light);
+            color: var(--gold-dark);
+        }
+
+        .stat-icon.views {
+            background: var(--sky-blue);
+            color: var(--white);
+        }
+
+        .stat-icon.messages {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+
+        .stat-icon.earnings {
+            background: var(--gold);
+            color: var(--charcoal);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-info p {
+            color: var(--charcoal);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        /* Property List */
+        .property-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .property-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .property-item:hover {
+            border-color: var(--gold);
+            box-shadow: 0 2px 8px rgba(255, 184, 0, 0.2);
+        }
+
+        .property-image {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--charcoal);
+            font-size: 1.5rem;
+        }
+
+        .property-details {
+            flex: 1;
+        }
+
+        .property-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .property-location {
+            font-size: 0.9rem;
+            color: var(--charcoal);
+            opacity: 0.7;
+            margin-bottom: 0.2rem;
+        }
+
+        .property-price {
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        .property-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+
+        .status-rented {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        .property-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .action-btn.edit {
+            background: var(--gold-light);
+            color: var(--gold-dark);
+        }
+
+        .action-btn.delete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Recent Messages */
+        .message-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .message-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .message-item:hover {
+            border-color: var(--sky-blue);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sky-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .message-preview {
+            font-size: 0.9rem;
+            color: var(--charcoal);
+            opacity: 0.7;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--charcoal);
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .property-item,
+            .message-item {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="logo">
+                    <img src="images/deniM.png" alt="DeniFinder Logo">
+                    <span class="logo-text">DeniFinder</span>
+                </a>
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar">L</div>
+                    <div class="user-details">
+                        <h4>Landlord</h4>
+                        <p>Premium Account</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="showSection('overview')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Overview
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('properties')">
+                    <i class="fas fa-home"></i>
+                    My Properties
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('messages')">
+                    <i class="fas fa-comments"></i>
+                    Messages
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('inquiries')">
+                    <i class="fas fa-question-circle"></i>
+                    Inquiries
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('earnings')">
+                    <i class="fas fa-dollar-sign"></i>
+                    Earnings
+                </a>
+                <a href="#" class="nav-item" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fas fa-globe"></i>
+                    Main Dashboard
+                </a>
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    Home Page
+                </a>
+                <a href="#" class="nav-item" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sign Out
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1 class="page-title" id="pageTitle">Landlord Dashboard</h1>
+                <div class="header-actions">
+                    <a href="#" class="btn-primary" onclick="addProperty()">
+                        <i class="fas fa-plus"></i>
+                        Add Property
+                    </a>
+                    <a href="messages.html" class="btn-secondary">
+                        <i class="fas fa-comments"></i>
+                        Messages
+                    </a>
+                </div>
+            </div>
+
+            <!-- Overview Section -->
+            <div id="overviewSection" class="dashboard-section">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon properties">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalProperties">0</h3>
+                            <p>Total Properties</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon views">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalViews">0</h3>
+                            <p>Total Views</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon messages">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalMessages">0</h3>
+                            <p>New Messages</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon earnings">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalEarnings">$0</h3>
+                            <p>This Month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Properties -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Properties</h2>
+                        <a href="#" class="btn-secondary" onclick="showSection('properties')">
+                            View All
+                        </a>
+                    </div>
+                    <div class="property-list" id="recentProperties">
+                        <!-- Properties will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Recent Messages -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Messages</h2>
+                        <a href="messages.html" class="btn-secondary">
+                            View All
+                        </a>
+                    </div>
+                    <div class="message-list" id="recentMessages">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Section -->
+            <div id="propertiesSection" class="dashboard-section" style="display: none;">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <a href="landlord-dashboard.html" style="color: inherit; text-decoration: none; display: flex; align-items: center;">
+                                <i class="fas fa-home"></i>
+                                <span style="margin-left: 0.5rem;">My Listings</span>
+                            </a>
+                        </h2>
+                        <a href="#" class="btn-primary" onclick="addProperty()">
+                            <i class="fas fa-plus"></i>
+                            Add New Property
+                        </a>
+                    </div>
+                    <div class="property-list" id="allProperties">
+                        <!-- All properties will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section -->
+            <div id="messagesSection" class="dashboard-section" style="display: none;">
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Messages</h2>
+                        <a href="messages.html" class="btn-primary">
+                            <i class="fas fa-comments"></i>
+                            Open Messages
+                        </a>
+                    </div>
+                    <div class="message-list" id="allMessages">
+                        <!-- All messages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections can be added here -->
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-init.js"></script>
+
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadDashboardData();
+        });
+
+        // Check if user is authenticated and is a landlord
+        function checkAuthentication() {
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            if (!currentUser) {
+                alert('Please sign in to access the dashboard');
+                window.location.href = 'signin.html';
+                return;
+            }
+
+            const user = JSON.parse(currentUser);
+            if (user.userType !== 'landlord') {
+                alert('This dashboard is for landlords only. Please upgrade your account.');
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            // Update user info in sidebar
+            document.getElementById('userInfo').innerHTML = `
+                <div class="user-avatar">${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'L'}</div>
+                <div class="user-details">
+                    <h4>${user.displayName || 'Landlord'}</h4>
+                    <p>Premium Account</p>
+                </div>
+            `;
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
+            
+            if (window.DeniFinderFirebase) {
+                // Load user's properties
+                const propertiesResult = await window.DeniFinderFirebase.propertyService.getUserProperties(currentUser.uid);
+                
+                if (propertiesResult.success) {
+                    const properties = propertiesResult.data;
+                    
+                    // Update stats
+                    document.getElementById('totalProperties').textContent = properties.length;
+                    
+                    // Load recent properties
+                    loadRecentProperties(properties.slice(0, 3));
+                    loadAllProperties(properties);
+                }
+
+                // Load recent messages
+                const messagesResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    'messages',
+                    [{ field: 'receiverId', operator: '==', value: currentUser.uid }],
+                    { field: 'timestamp', direction: 'desc' },
+                    5
+                );
+
+                if (messagesResult.success) {
+                    document.getElementById('totalMessages').textContent = messagesResult.data.length;
+                    loadRecentMessages(messagesResult.data.slice(0, 3));
+                    loadAllMessages(messagesResult.data);
+                }
+            }
+        }
+
+        // Load recent properties
+        function loadRecentProperties(properties) {
+            const container = document.getElementById('recentProperties');
+            
+            if (properties.length === 0) {
+                container.innerHTML = '<p>No properties added yet. <a href="#" onclick="addProperty()">Add your first property</a></p>';
+                return;
+            }
+
+            container.innerHTML = properties.map(property => `
+                <div class="property-item">
+                    <div class="property-image">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="property-details">
+                        <div class="property-title">${property.title || 'Property'}</div>
+                        <div class="property-location">${property.location || 'Location'}</div>
+                        <div class="property-price">$${property.price || '0'}/month</div>
+                    </div>
+                    <div class="property-status ${property.status === 'available' ? 'status-available' : 'status-rented'}">
+                        ${property.status || 'available'}
+                    </div>
+                    <div class="property-actions">
+                        <button class="action-btn edit" onclick="editProperty('${property.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteProperty('${property.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load all properties
+        function loadAllProperties(properties) {
+            const container = document.getElementById('allProperties');
+            loadRecentProperties(properties); // Reuse the same function
+        }
+
+        // Load recent messages
+        function loadRecentMessages(messages) {
+            const container = document.getElementById('recentMessages');
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<p>No messages yet.</p>';
+                return;
+            }
+
+            container.innerHTML = messages.map(message => `
+                <div class="message-item">
+                    <div class="message-avatar">${message.senderName ? message.senderName.charAt(0).toUpperCase() : 'U'}</div>
+                    <div class="message-content">
+                        <div class="message-sender">${message.senderName || 'User'}</div>
+                        <div class="message-preview">${message.content || 'Message content'}</div>
+                    </div>
+                    <div class="message-time">${formatTime(message.timestamp)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load all messages
+        function loadAllMessages(messages) {
+            const container = document.getElementById('allMessages');
+            loadRecentMessages(messages); // Reuse the same function
+        }
+
+        // Show different sections
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + 'Section').style.display = 'block';
+
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update page title
+            const titles = {
+                overview: 'Landlord Dashboard',
+                properties: 'My Properties',
+                messages: 'Messages',
+                inquiries: 'Inquiries',
+                earnings: 'Earnings',
+                settings: 'Settings'
+            };
+            document.getElementById('pageTitle').textContent = titles[sectionName] || 'Landlord Dashboard';
+        }
+
+        // Add new property
+        function addProperty() {
+            window.location.href = 'add-property.html';
+        }
+
+        // Edit property
+        function editProperty(propertyId) {
+            alert(`Edit property ${propertyId} - functionality will be implemented here`);
+        }
+
+        // Delete property
+        function deleteProperty(propertyId) {
+            if (confirm('Are you sure you want to delete this property?')) {
+                alert(`Delete property ${propertyId} - functionality will be implemented here`);
+            }
+        }
+
+        // Sign out
+        async function signOut() {
+            try {
+                if (window.DeniFinderFirebase) {
+                    await window.DeniFinderFirebase.authService.signOut();
+                }
+                localStorage.removeItem('deniFinderLoggedIn');
+                localStorage.removeItem('deniFinderCurrentUser');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Sign out error:', error);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Format timestamp
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Just now';
+            
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            return `${days}d ago`;
+        }
+    </script>
+</body>
+</html> 

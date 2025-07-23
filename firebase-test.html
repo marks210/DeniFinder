@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test - DeniFinder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase Configuration Test</h1>
+        
+        <div class="test-section">
+            <h3>1. Firebase SDK Loading</h3>
+            <div id="sdkStatus" class="status info">Checking Firebase SDK...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Firebase Configuration</h3>
+            <div id="configStatus" class="status info">Checking configuration...</div>
+            <div id="configDetails"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Firebase Services</h3>
+            <div id="servicesStatus" class="status info">Checking services...</div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Test Authentication</h3>
+            <div id="authStatus" class="status info">Ready to test authentication</div>
+            <input type="email" id="testEmail" placeholder="Test email" value="test@example.com">
+            <input type="password" id="testPassword" placeholder="Test password" value="testpassword123">
+            <button onclick="testSignup()">Test Signup</button>
+            <button onclick="testSignin()">Test Signin</button>
+            <button onclick="testSignout()">Test Signout</button>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Test Firestore</h3>
+            <div id="firestoreStatus" class="status info">Ready to test Firestore</div>
+            <button onclick="testFirestore()">Test Firestore Write</button>
+            <button onclick="testFirestoreRead()">Test Firestore Read</button>
+        </div>
+
+        <div class="test-section">
+            <h3>6. Console Logs</h3>
+            <div id="consoleLogs" style="background: #f8f9fa; padding: 10px; border-radius: 5px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHxCNlJl_Y93Hskm5ogiiYHIhfIVIS8A",
+            authDomain: "defi-finder.firebaseapp.com",
+            projectId: "defi-finder",
+            storageBucket: "defi-finder.firebasestorage.app",
+            messagingSenderId: "665116835708",
+            appId: "1:665116835708:web:11ade28588832aa3c9aef9"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(app);
+        const db = firebase.firestore(app);
+        const storage = firebase.storage(app);
+
+        // Make Firebase available globally
+        window.DeniFinderFirebase = {
+            app,
+            auth,
+            db,
+            storage,
+            authService: {
+                getCurrentUser() {
+                    return auth.currentUser;
+                },
+                async signUp(email, password, userData = {}) {
+                    try {
+                        console.log('Starting Firebase signup for:', email);
+                        console.log('User data:', userData);
+                        
+                        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                        const user = userCredential.user;
+                        
+                        console.log('User created in Firebase Auth:', user.uid);
+                        
+                        // Update profile with additional data
+                        await user.updateProfile({
+                            displayName: userData.displayName || '',
+                            photoURL: userData.photoURL || ''
+                        });
+                        
+                        console.log('Profile updated');
+                        
+                        // Send email verification
+                        await user.sendEmailVerification();
+                        
+                        console.log('Email verification sent');
+                        
+                        // Save user data to Firestore
+                        await db.collection('users').doc(user.uid).set({
+                            uid: user.uid,
+                            email: user.email,
+                            displayName: userData.displayName || '',
+                            phone: userData.phone || '',
+                            userType: userData.userType || 'tenant',
+                            emailVerified: false,
+                            accountStatus: 'pending_verification',
+                            createdAt: new Date(),
+                            lastLogin: new Date(),
+                            ...userData
+                        });
+                        
+                        console.log('User data saved to Firestore');
+                        
+                        return { success: true, user };
+                    } catch (error) {
+                        console.error('Sign up error:', error);
+                        console.error('Error code:', error.code);
+                        console.error('Error message:', error.message);
+                        return { success: false, error: error.message, code: error.code };
+                    }
+                },
+                async signIn(email, password) {
+                    try {
+                        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                        const user = userCredential.user;
+                        
+                        // Update last login
+                        await db.collection('users').doc(user.uid).update({
+                            lastLogin: new Date()
+                        });
+                        
+                        return { success: true, user };
+                    } catch (error) {
+                        console.error('Sign in error:', error);
+                        return { success: false, error: error.message, code: error.code };
+                    }
+                },
+                async signOut() {
+                    try {
+                        await auth.signOut();
+                        return { success: true };
+                    } catch (error) {
+                        console.error('Sign out error:', error);
+                        return { success: false, error: error.message };
+                    }
+                }
+            },
+            dbService: {
+                async addDocument(collectionName, data) {
+                    try {
+                        const docRef = await db.collection(collectionName).add({
+                            ...data,
+                            createdAt: new Date()
+                        });
+                        return { success: true, id: docRef.id };
+                    } catch (error) {
+                        console.error('Add document error:', error);
+                        return { success: false, error: error.message };
+                    }
+                },
+                async queryDocuments(collectionName, conditions = [], orderByClause = null, limitCount = null) {
+                    try {
+                        let q = db.collection(collectionName);
+                        
+                        // Add where conditions
+                        conditions.forEach(condition => {
+                            q = q.where(condition.field, condition.operator, condition.value);
+                        });
+                        
+                        // Add order by
+                        if (orderByClause) {
+                            q = q.orderBy(orderByClause.field, orderByClause.direction);
+                        }
+                        
+                        // Add limit
+                        if (limitCount) {
+                            q = q.limit(limitCount);
+                        }
+                        
+                        const querySnapshot = await q.get();
+                        const documents = [];
+                        
+                        querySnapshot.forEach((doc) => {
+                            documents.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        return { success: true, data: documents };
+                    } catch (error) {
+                        console.error('Query documents error:', error);
+                        return { success: false, error: error.message };
+                    }
+                }
+            }
+        };
+
+        // Override console.log to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logsDiv = document.getElementById('consoleLogs');
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.color = type === 'error' ? 'red' : 'black';
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logsDiv.appendChild(logEntry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(args.join(' '), 'error');
+        };
+
+        // Test functions
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        // Test 1: Firebase SDK Loading
+        function testSDK() {
+            if (typeof window.DeniFinderFirebase !== 'undefined') {
+                updateStatus('sdkStatus', '✅ Firebase SDK loaded successfully', 'success');
+            } else {
+                updateStatus('sdkStatus', '❌ Firebase SDK not loaded', 'error');
+            }
+        }
+
+        // Test 2: Firebase Configuration
+        function testConfig() {
+            if (window.DeniFinderFirebase && window.DeniFinderFirebase.app) {
+                updateStatus('configStatus', '✅ Firebase configuration successful', 'success');
+                document.getElementById('configDetails').innerHTML = `
+                    <strong>Project ID:</strong> defi-finder<br>
+                    <strong>Auth Domain:</strong> defi-finder.firebaseapp.com<br>
+                    <strong>Storage Bucket:</strong> defi-finder.firebasestorage.app
+                `;
+            } else {
+                updateStatus('configStatus', '❌ Firebase configuration failed', 'error');
+            }
+        }
+
+        // Test 3: Firebase Services
+        function testServices() {
+            if (window.DeniFinderFirebase) {
+                const hasAuth = !!window.DeniFinderFirebase.auth;
+                const hasDB = !!window.DeniFinderFirebase.db;
+                
+                let status = '';
+                if (hasAuth) status += '✅ Auth ';
+                if (hasDB) status += '✅ Firestore ';
+                
+                if (hasAuth && hasDB) {
+                    updateStatus('servicesStatus', status + '- All services available', 'success');
+                } else {
+                    updateStatus('servicesStatus', status + '- Some services missing', 'error');
+                }
+            } else {
+                updateStatus('servicesStatus', '❌ Services not available', 'error');
+            }
+        }
+
+        // Test 4: Authentication
+        window.testSignup = async function() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                updateStatus('authStatus', '❌ Please enter email and password', 'error');
+                return;
+            }
+
+            updateStatus('authStatus', '🔄 Testing signup...', 'info');
+            
+            try {
+                if (!window.DeniFinderFirebase) {
+                    throw new Error('Firebase not initialized');
+                }
+
+                const result = await window.DeniFinderFirebase.authService.signUp(
+                    email, 
+                    password, 
+                    { displayName: 'Test User', userType: 'tenant' }
+                );
+
+                if (result.success) {
+                    updateStatus('authStatus', `✅ Signup successful! User ID: ${result.user.uid}`, 'success');
+                } else {
+                    updateStatus('authStatus', `❌ Signup failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('authStatus', `❌ Signup error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testSignin = async function() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            updateStatus('authStatus', '🔄 Testing signin...', 'info');
+            
+            try {
+                const result = await window.DeniFinderFirebase.authService.signIn(email, password);
+                
+                if (result.success) {
+                    updateStatus('authStatus', `✅ Signin successful! User: ${result.user.email}`, 'success');
+                } else {
+                    updateStatus('authStatus', `❌ Signin failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('authStatus', `❌ Signin error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testSignout = async function() {
+            try {
+                const result = await window.DeniFinderFirebase.authService.signOut();
+                updateStatus('authStatus', '✅ Signout successful', 'success');
+            } catch (error) {
+                updateStatus('authStatus', `❌ Signout error: ${error.message}`, 'error');
+            }
+        };
+
+        // Test 5: Firestore
+        window.testFirestore = async function() {
+            updateStatus('firestoreStatus', '🔄 Testing Firestore write...', 'info');
+            
+            try {
+                const result = await window.DeniFinderFirebase.dbService.addDocument('test', {
+                    message: 'Test from DeniFinder',
+                    timestamp: new Date(),
+                    test: true
+                });
+                
+                if (result.success) {
+                    updateStatus('firestoreStatus', `✅ Firestore write successful! Document ID: ${result.id}`, 'success');
+                } else {
+                    updateStatus('firestoreStatus', `❌ Firestore write failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('firestoreStatus', `❌ Firestore error: ${error.message}`, 'error');
+            }
+        };
+
+        window.testFirestoreRead = async function() {
+            updateStatus('firestoreStatus', '🔄 Testing Firestore read...', 'info');
+            
+            try {
+                const result = await window.DeniFinderFirebase.dbService.queryDocuments('test', [], null, 5);
+                
+                if (result.success) {
+                    updateStatus('firestoreStatus', `✅ Firestore read successful! Found ${result.data.length} documents`, 'success');
+                } else {
+                    updateStatus('firestoreStatus', `❌ Firestore read failed: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('firestoreStatus', `❌ Firestore read error: ${error.message}`, 'error');
+            }
+        };
+
+        // Run tests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Firebase test page loaded');
+            
+            // Wait a bit for Firebase to load
+            setTimeout(() => {
+                testSDK();
+                testConfig();
+                testServices();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Review & Cost of Living - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-area-review">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title">Area Review & Cost of Living</h1>
+                <p class="service-subtitle">Get the real story on any neighborhood before you move. Make informed decisions with our detailed area profiles.</p>
+                
+                <div class="service-description">
+                    <p>Our reports cover everything you need to know:</p>
+                    <ul>
+                        <li><i class="fas fa-home"></i> Average Rent Prices</li>
+                        <li><i class="fas fa-shopping-cart"></i> Cost of Basic Goods</li>
+                        <li><i class="fas fa-shield-alt"></i> Safety & Security Levels</li>
+                        <li><i class="fas fa-bolt"></i> Power & Internet Reliability</li>
+                        <li><i class="fas fa-school"></i> Access to Schools, Hospitals & Markets</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Request an Area Report</h2>
+                    <p>Fill out the form below to get a cost estimate for a detailed report on the area you're interested in.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="area">Area of Interest (e.g., Area 18, Lilongwe)</label>
+                            <input type="text" id="area" name="area" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="details">Specific Questions (Optional)</label>
+                            <textarea id="details" name="details" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Get Estimate</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

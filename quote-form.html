@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get a Quote - DeniFinder Design Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #222; margin: 0; }
+        .header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; text-decoration: none; color: #FFB800; font-size: 1.5rem; font-weight: 700; }
+        .logo img { height: 32px; margin-right: 0.5rem; }
+        .nav-link { color: #222; text-decoration: none; font-weight: 500; margin-left: 2rem; }
+        .nav-link:hover { color: #FFB800; }
+        .container { max-width: 600px; margin: 2rem auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 2.5rem 2rem; }
+        .headline { font-size: 2rem; font-weight: 800; margin-bottom: 2rem; color: #FFB800; text-align: center; }
+        form { display: flex; flex-direction: column; gap: 1.2rem; }
+        label { font-weight: 600; margin-bottom: 0.3rem; }
+        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; font-family: inherit; }
+        textarea { min-height: 80px; }
+        .services-checklist { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem; }
+        .services-checklist label { font-weight: 400; display: flex; align-items: center; gap: 0.5rem; background: #f8f9fa; border-radius: 6px; padding: 0.4rem 0.8rem; cursor: pointer; }
+        .form-row { display: flex; gap: 1rem; }
+        .form-row > * { flex: 1; }
+        .file-upload { background: #f8f9fa; border-radius: 8px; padding: 1rem; text-align: center; margin-bottom: 0.5rem; }
+        .cta-btn { background: linear-gradient(90deg, #FFB800, #FFEB99); color: #222; font-weight: 700; font-size: 1.1rem; border: none; border-radius: 10px; padding: 1rem 2.5rem; cursor: pointer; box-shadow: 0 2px 8px rgba(255,184,0,0.12); transition: background 0.2s; margin-top: 1rem; }
+        .cta-btn:hover { background: linear-gradient(90deg, #FFB800, #FFD700); }
+        .quote-estimate { background: #FFEB99; color: #7A5C00; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-weight: 600; text-align: center; display: none; }
+        @media (max-width: 700px) { .container { padding: 1.2rem; } .form-row { flex-direction: column; gap: 0.5rem; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="dashboard.html" class="logo"><img src="images/deniM.png" alt="DeniFinder Logo"> DeniFinder</a>
+        <nav>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="services-dashboard.html" class="nav-link">Services</a>
+            <a href="services-pricing.html" class="nav-link">Pricing</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="headline">Get a Quote / Start a Project</div>
+        <form id="quoteForm" action="https://formspree.io/f/mkgzobza" method="POST">
+            <label for="projectType">Type of Project *</label>
+            <select id="projectType" name="projectType" required>
+                <option value="">Select...</option>
+                <option>House</option>
+                <option>Office</option>
+                <option>Apartment</option>
+                <option>Commercial Building</option>
+                <option>Other</option>
+            </select>
+            <label>Services Needed *</label>
+            <div class="services-checklist">
+                <label><input type="checkbox" name="services" value="2D Floor Plan"> 2D Floor Plan</label>
+                <label><input type="checkbox" name="services" value="3D Modeling"> 3D Modeling</label>
+                <label><input type="checkbox" name="services" value="Rendering"> Rendering</label>
+                <label><input type="checkbox" name="services" value="Walkthrough"> Walkthrough Animation</label>
+                <label><input type="checkbox" name="services" value="Full Building Design"> Full Building Design</label>
+                <label><input type="checkbox" name="services" value="Interior Design"> Interior Design</label>
+            </div>
+            <div class="form-row">
+                <div>
+                    <label for="squareFootage">Square Footage (approx.)</label>
+                    <input type="number" id="squareFootage" name="squareFootage" min="10" placeholder="e.g. 1200">
+                </div>
+                <div>
+                    <label for="timeline">Timeline Needed</label>
+                    <input type="text" id="timeline" name="timeline" placeholder="e.g. 2 months">
+                </div>
+            </div>
+            <label for="referenceFiles">Upload Reference Drawings/Images</label>
+            <div class="file-upload">
+                <input type="file" id="referenceFiles" name="referenceFiles" multiple>
+            </div>
+            <label for="contactInfo">Contact Information *</label>
+            <input type="text" id="contactInfo" name="contactInfo" required placeholder="Your name, email, or phone">
+            <button class="cta-btn" type="submit">Request Quote</button>
+        </form>
+    </div>
+</body>
+</html> 

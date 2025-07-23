@@ -1,0 +1,222 @@
+/* General Service Page Styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+}
+
+.service-page-container {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-page-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+}
+
+/* Background Images */
+.bg-property-verification {
+    background-image: url('../images/hostels.jpeg');
+}
+
+.bg-legal-assistance {
+    background-image: url('../images/project.jpg');
+}
+
+.bg-secure-payment {
+    background-image: url('../images/Hotel Booking Website Template - Seaside.jpeg');
+}
+
+.bg-tenant-check {
+    background-image: url('../images/tenant.jpeg');
+}
+
+.bg-rent-now-pay-later {
+    background-image: url('../images/hero.jpeg');
+}
+
+.bg-moving-services {
+    background-image: url('../images/Estate flyer design.jpeg');
+}
+
+.bg-furniture-rentals {
+    background-image: url('../images/hero.jpeg');
+}
+
+.bg-maintenance-repairs {
+    background-image: url('../images/hostels.jpeg');
+}
+
+.bg-internet-utilities {
+    background-image: url('../images/project.jpg');
+}
+
+/* Header */
+.service-header {
+    position: relative;
+    z-index: 2;
+    padding: 1rem 2rem;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.logo span {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.main-nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.main-nav a:hover {
+    color: #a7c957; /* A highlight color */
+}
+
+/* Main Content */
+.service-main-content {
+    position: relative;
+    z-index: 2;
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.service-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.service-title .fas {
+    margin-right: 15px;
+    color: #a7c957;
+}
+
+.service-subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+    color: #eee;
+}
+
+.service-description ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+    text-align: left;
+    display: inline-block;
+}
+
+.service-description li {
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.service-description .fas {
+    margin-right: 10px;
+    color: #a7c957;
+    width: 20px;
+}
+
+/* Form */
+.form-container {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-container p {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 1rem;
+    background-color: #a7c957;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #8aa649;
+}

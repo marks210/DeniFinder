@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .verification-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .verification-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gold-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: var(--gold);
+            font-size: 2rem;
+        }
+
+        .verification-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+        }
+
+        .verification-subtitle {
+            color: var(--charcoal);
+            opacity: 0.7;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .email-display {
+            background: var(--light-gray);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .verification-steps {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--light-gray);
+            border-radius: 10px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--charcoal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            color: var(--charcoal);
+            line-height: 1.5;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--charcoal);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        .btn-disabled {
+            background: var(--light-gray);
+            color: var(--charcoal);
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-disabled:hover {
+            transform: none;
+        }
+
+        .verification-status {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: var(--gold-light);
+            color: var(--gold-dark);
+        }
+
+        .status-verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .resend-timer {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--charcoal);
+            opacity: 0.7;
+        }
+
+        .back-to-signin {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .back-to-signin a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-to-signin a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .verification-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .verification-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-container">
+        <div class="logo-section">
+            <a href="index.html" class="logo">
+                <img src="images/deniM.png" alt="DeniFinder Logo">
+                <span class="logo-text">DeniFinder</span>
+            </a>
+        </div>
+
+        <div class="verification-icon">
+            <i class="fas fa-envelope"></i>
+        </div>
+
+        <h1 class="verification-title">Verify Your Email</h1>
+        <p class="verification-subtitle">
+            We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.
+        </p>
+
+        <div class="email-display" id="emailDisplay">
+            <!-- Email will be displayed here -->
+        </div>
+
+        <div class="verification-steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">Check your email inbox (and spam folder)</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">Click the verification link in the email</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">Return here and click "I've Verified My Email"</div>
+            </div>
+        </div>
+
+        <button class="btn-primary" id="checkVerificationBtn" onclick="checkVerification()">
+            <i class="fas fa-check"></i> I've Verified My Email
+        </button>
+
+        <button class="btn-secondary" id="resendEmailBtn" onclick="resendVerificationEmail()">
+            <i class="fas fa-paper-plane"></i> Resend Verification Email
+        </button>
+
+        <div class="verification-status status-pending" id="verificationStatus" style="display: none;">
+            <!-- Status messages will appear here -->
+        </div>
+
+        <div class="resend-timer" id="resendTimer" style="display: none;">
+            <!-- Timer will appear here -->
+        </div>
+
+        <div class="back-to-signin">
+            <a href="signin.html">Back to Sign In</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-init.js"></script>
+
+    <script>
+        let resendTimer = null;
+        let resendCountdown = 60;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user data from localStorage
+            const userData = localStorage.getItem('deniFinderUser');
+            const pendingUser = localStorage.getItem('pendingVerificationUser');
+            
+            let email = '';
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                email = user.email;
+            } else if (pendingUser) {
+                const user = JSON.parse(pendingUser);
+                email = user.email;
+            }
+
+            if (email) {
+                document.getElementById('emailDisplay').textContent = email;
+            } else {
+                // No user data found, redirect to signup
+                window.location.href = 'signup.html';
+            }
+        });
+
+        // Check if email is verified
+        async function checkVerification() {
+            const checkBtn = document.getElementById('checkVerificationBtn');
+            const statusDiv = document.getElementById('verificationStatus');
+            
+            checkBtn.disabled = true;
+            checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            
+            try {
+                if (!window.DeniFinderFirebase) {
+                    throw new Error('Firebase not initialized');
+                }
+
+                // Reload user to get latest verification status
+                const currentUser = window.DeniFinderFirebase.authService.getCurrentUser();
+                if (currentUser) {
+                    await currentUser.reload();
+                    
+                    if (currentUser.emailVerified) {
+                        // Update user status in Firestore
+                        await window.DeniFinderFirebase.dbService.updateDocument('users', currentUser.uid, {
+                            emailVerified: true,
+                            accountStatus: 'active'
+                        });
+
+                        // Get user data
+                        const userDoc = await window.DeniFinderFirebase.dbService.getDocument('users', currentUser.uid);
+                        
+                        if (userDoc.success) {
+                            // Store user data locally
+                            localStorage.setItem('deniFinderLoggedIn', 'true');
+                            localStorage.setItem('deniFinderCurrentUser', JSON.stringify(userDoc.data));
+                            
+                            // Clear pending verification data
+                            localStorage.removeItem('pendingVerificationUser');
+                            
+                            // Show success status
+                            statusDiv.className = 'verification-status status-verified';
+                            statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Email verified successfully! Redirecting...';
+                            statusDiv.style.display = 'block';
+                            
+                            // Redirect to appropriate dashboard
+                            setTimeout(() => {
+                                const userType = userDoc.data.userType || 'tenant';
+                                if (userType === 'landlord') {
+                                    window.location.href = 'landlord-dashboard.html';
+                                } else {
+                                    window.location.href = 'dashboard.html';
+                                }
+                            }, 2000);
+                        }
+                    } else {
+                        statusDiv.className = 'verification-status status-pending';
+                        statusDiv.innerHTML = '<i class="fas fa-clock"></i> Email not verified yet. Please check your inbox and click the verification link.';
+                        statusDiv.style.display = 'block';
+                    }
+                } else {
+                    throw new Error('No user logged in');
+                }
+            } catch (error) {
+                console.error('Verification check error:', error);
+                statusDiv.className = 'verification-status status-error';
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error checking verification status. Please try again.';
+                statusDiv.style.display = 'block';
+            } finally {
+                checkBtn.disabled = false;
+                checkBtn.innerHTML = '<i class="fas fa-check"></i> I\'ve Verified My Email';
+            }
+        }
+
+        // Resend verification email
+        async function resendVerificationEmail() {
+            const resendBtn = document.getElementById('resendEmailBtn');
+            const timerDiv = document.getElementById('resendTimer');
+            const statusDiv = document.getElementById('verificationStatus');
+            
+            try {
+                if (!window.DeniFinderFirebase) {
+                    throw new Error('Firebase not initialized');
+                }
+
+                const result = await window.DeniFinderFirebase.authService.sendEmailVerification();
+                
+                if (result.success) {
+                    statusDiv.className = 'verification-status status-verified';
+                    statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Verification email sent successfully!';
+                    statusDiv.style.display = 'block';
+                    
+                    // Start resend timer
+                    resendBtn.disabled = true;
+                    resendBtn.classList.add('btn-disabled');
+                    resendCountdown = 60;
+                    
+                    timerDiv.style.display = 'block';
+                    updateResendTimer();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('Resend error:', error);
+                statusDiv.className = 'verification-status status-error';
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error sending verification email. Please try again.';
+                statusDiv.style.display = 'block';
+            }
+        }
+
+        // Update resend timer
+        function updateResendTimer() {
+            const resendBtn = document.getElementById('resendEmailBtn');
+            const timerDiv = document.getElementById('resendTimer');
+            
+            if (resendCountdown > 0) {
+                timerDiv.textContent = `Resend available in ${resendCountdown} seconds`;
+                resendCountdown--;
+                setTimeout(updateResendTimer, 1000);
+            } else {
+                resendBtn.disabled = false;
+                resendBtn.classList.remove('btn-disabled');
+                timerDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 

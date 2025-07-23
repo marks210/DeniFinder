@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roommate Matching Service - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-roommate-matching">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title">Find Your Perfect Roommate</h1>
+                <p class="service-subtitle">Share housing costs with a compatible and trusted roommate. Our matching system helps you find the right fit.</p>
+                
+                <div class="service-description">
+                    <p>Create a profile and get matched based on lifestyle, habits, and preferences.</p>
+                    <ul>
+                        <li><i class="fas fa-user-check"></i> ID and phone number verification for safety.</li>
+                        <li><i class="fas fa-comments"></i> Private chat with matches.</li>
+                        <li><i class="fas fa-sliders-h"></i> Advanced filters for compatibility.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Create Your Roommate Profile</h2>
+                    <p>Fill in your details to start receiving matches. Your personal information will be kept private.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Your Age</label>
+                            <input type="number" id="age" name="age" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender Preference for Roommate</label>
+                            <select id="gender" name="gender" required>
+                                <option value="no-preference">No Preference</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="occupation">Your Occupation</label>
+                            <input type="text" id="occupation" name="occupation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="budget">Your Monthly Budget (MWK)</label>
+                            <input type="number" id="budget" name="budget" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="habits">Describe Your Habits (e.g., non-smoker, quiet, etc.)</label>
+                            <textarea id="habits" name="habits" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Find My Match</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

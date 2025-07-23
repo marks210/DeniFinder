@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Verification Service - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-property-verification">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title"><i class="fas fa-shield-alt"></i> Property Verification Service</h1>
+                <p class="service-subtitle">Rent with confidence. Our team verifies that properties exist, match their listings, and are sold by the real owner.</p>
+                
+                <div class="service-description">
+                    <p>A 'Verified by DeniFinder' badge means we've checked the property for you. Here's what we verify:</p>
+                    <ul>
+                        <li><i class="fas fa-map-marker-check"></i> The property's physical existence and location.</li>
+                        <li><i class="fas fa-camera-retro"></i> Accuracy of photos and listed amenities.</li>
+                        <li><i class="fas fa-file-contract"></i> The legitimacy of the landlord or agent.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Request Property Verification</h2>
+                    <p>Are you a landlord wanting to add a badge of trust to your listing? Or a tenant who wants us to check a property for you? Fill out the form below.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">I am a...</label>
+                            <select id="role" name="role" required>
+                                <option value="landlord">Landlord/Agent</option>
+                                <option value="tenant">Tenant</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="property-link">Link to DeniFinder Property Listing (if available)</label>
+                            <input type="url" id="property-link" name="property-link">
+                        </div>
+                        <button type="submit" class="btn-submit">Request Verification</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

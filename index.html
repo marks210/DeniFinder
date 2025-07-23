@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeniFinder - Your Trusted Way to Find Available Rooms, Hostels & Houses in Africa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .logo img {
+            height: 40px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .nav-cta {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 184, 0, 0.3);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 184, 0, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--charcoal);
+        }
+
+        .hero-text .highlight {
+            color: var(--gold);
+            position: relative;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 6px 20px rgba(255, 184, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 184, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--charcoal);
+            padding: 1rem 2rem;
+            border: 2px solid var(--charcoal);
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--charcoal);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .hero-visual {
+            position: relative;
+            height: 500px;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            animation: float 6s ease-in-out infinite;
+            max-width: 300px;
+        }
+
+        .floating-card.card-1 {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-card.card-2 {
+            top: 40%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-card.card-3 {
+            bottom: 10%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .property-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .property-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--sky-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .property-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .property-info p {
+            font-size: 0.9rem;
+            color: var(--primary-green);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            background: var(--primary-green);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: white;
+            padding: 4rem 0;
+            position: relative;
+            margin-top: -100px;
+            z-index: 3;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-field {
+            position: relative;
+        }
+
+        .search-field label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+
+        .search-field input,
+        .search-field select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-field input:focus,
+        .search-field select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+        }
+
+        .search-btn {
+            width: 100%;
+            background: var(--primary-green);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 0;
+            background: var(--light-gray);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .step-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--sky-blue));
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-green), var(--sky-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .step-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        .step-card p {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        /* Advance Assist Promo */
+        .advance-assist {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, var(--primary-green), var(--sky-blue));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .advance-assist::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="white" opacity="0.1"><polygon points="0,0 0,100 1000,100"/></svg>');
+            background-size: cover;
+        }
+
+        .advance-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .advance-text h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .advance-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .advance-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .advance-features li {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .advance-features i {
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary-green);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        .advance-visual {
+            position: relative;
+            height: 400px;
+        }
+
+        .phone-mockup {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            height: 400px;
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            width: 90%;
+            animation: slideIn 2s ease-in-out infinite;
+        }
+
+        @keyframes slideIn {
+            0%, 100% { transform: translateX(100%); opacity: 0; }
+            20%, 80% { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Popular Cities */
+        .popular-cities {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .cities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .city-card {
+            position: relative;
+            height: 200px;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: linear-gradient(135deg, var(--primary-green), var(--sky-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .city-card:hover {
+            transform: scale(1.05);
+        }
+
+        .city-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease;
+        }
+
+        .city-card:hover::before {
+            opacity: 0;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 0;
+            background: var(--light-gray);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--primary-green);
+            opacity: 0.3;
+        }
+
+        .testimonial-content {
+            margin-bottom: 1.5rem;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--sky-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .author-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .author-info p {
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gold-dark);
+            color: white;
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-green);
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--primary-green);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.1);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #444;
+            color: #ccc;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-container {
+                padding: 0 1rem;
+            }
+
+            .header-actions {
+                display: flex;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            .header-actions a {
+                font-size: 0.9rem !important;
+                padding: 0.4rem 0.8rem !important;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .advance-content {
+                grid-template-columns: 1fr;
+            }
+
+            .search-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .advance-text h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .slide-in-right {
+            animation: slideInRight 1s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+    
+    <script>
+        // Check authentication status and update navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoLink = document.getElementById('logoLink');
+            const navActions = document.getElementById('navActions');
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            
+            if (currentUser) {
+                // User is logged in
+                const user = JSON.parse(currentUser);
+                
+                // Logo goes to dashboard
+                logoLink.href = 'dashboard.html';
+                
+                // Update navigation actions for logged-in user
+                navActions.innerHTML = `
+                    <a href="dashboard.html" class="nav-cta" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="messages.html" class="btn-messages" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-comments"></i> Messages
+                    </a>
+                    <a href="#" class="btn-secondary" onclick="signOut()" style="font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                `;
+            } else {
+                // User is not logged in
+                logoLink.href = '#';
+                // Keep original navigation actions
+            }
+        });
+
+        // Sign out function
+        function signOut() {
+            localStorage.removeItem('deniFinderLoggedIn');
+            localStorage.removeItem('deniFinderCurrentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" id="logoLink">
+                <img src="images/deniM.png" alt="DeniFinder Logo">
+                <span class="logo-text">DeniFinder</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#cities">Cities</a></li>
+                <li class="nav-dropdown" tabindex="0">
+                    Core Services
+                    <ul class="nav-dropdown-menu">
+                        <li><a href="#design">House Design</a></li>
+                        <li><a href="#advance">Advance House Finding</a></li>
+                        <li><a href="#advertise">Advertise Your House</a></li>
+                        <li><a href="#sell-land">Sell Your Land</a></li>
+                        <li><a href="#find-buyer">Find a Land Buyer</a></li>
+                        <li><a href="#roommate">Roommate Matching Service</a></li>
+                        <li><a href="#virtual-tours">Virtual Tours (3D/Video)</a></li>
+                    </ul>
+                </li>
+                <li><a href="services/advanced-assist.html">Advance Assist</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div style="display: flex; gap: 1rem; align-items: center;" id="navActions">
+                <a href="#" class="nav-cta">Admin Login</a>
+                <a href="messages.html" class="btn-messages" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-comments"></i> Messages
+                </a>
+                <a href="signin.html" class="btn-secondary" style="font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none;">Log In</a>
+                <a href="signup.html" class="btn-primary" style="font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none;">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+
+
+    <!-- Animated Hero Carousel Section -->
+    <style>
+    .hero-carousel {
+      position: relative;
+      width: 100vw;
+      min-height: 520px;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: #fffbe6;
+    }
+    .hero-slide {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      transition: opacity 1s cubic-bezier(.4,1.4,.6,1);
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .hero-slide.active {
+      opacity: 1;
+      z-index: 2;
+      transition: opacity 1s cubic-bezier(.4,1.4,.6,1);
+    }
+    .hero-slide-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .hero-slide-bg img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: brightness(0.92) saturate(1.1);
+      will-change: transform;
+      animation: heroZoom 18s ease-in-out infinite alternate;
+    }
+    .hero-slide-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, rgba(34,34,34,0.82) 60%, rgba(255,184,0,0.18) 100%);
+      z-index: 2;
+      backdrop-filter: blur(2.5px);
+    }
+    .hero-slide-content {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: 3.5rem 2rem 2rem 2rem;
+      min-height: 420px;
+    }
+    .hero-slide-mainbox {
+      background: rgba(255, 184, 0, 0.92);
+      border-radius: 32px 32px 24px 24px;
+      box-shadow: 0 8px 32px 0 rgba(255,184,0,0.13), 0 0 32px 0 rgba(255,184,0,0.10);
+      padding: 2.5rem 2.5rem 2rem 2.5rem;
+      min-width: 340px;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      margin-top: -2.5rem;
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      animation: heroFadeUp 1.2s cubic-bezier(.4,1.4,.6,1) 0.2s both;
+    }
+    .hero-slide-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.2rem;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 12px #B38600;
+    }
+    .hero-slide-tagline {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 1.2rem;
+    }
+    .hero-slide-offer {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.7rem;
+    }
+    .hero-slide-price {
+      background: #B38600;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 2.1rem;
+      font-weight: 900;
+      padding: 1.1rem 1.7rem;
+      margin: 0.7rem 0;
+      box-shadow: 0 4px 32px 0 #B38600, 0 0 12px 0 #fff;
+      border: 6px solid #fff;
+      display: inline-block;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .hero-slide-or {
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+    .hero-slide-btn {
+      background: #B38600;
+      color: #fff;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0.9rem 2.2rem;
+      margin-top: 1.2rem;
+      box-shadow: 0 4px 15px rgba(255,184,0,0.13);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .hero-slide-btn:hover {
+      background: #FFB800;
+      color: #222;
+    }
+    .hero-slide-badge {
+      background: #B38600;
+      color: #fff;
+      font-weight: 700;
+      border-radius: 18px;
+      padding: 0.6rem 1.3rem;
+      font-size: 1rem;
+      margin-top: 1.2rem;
+      box-shadow: 0 2px 16px #B38600, 0 0 8px #fff;
+      align-self: flex-end;
+      transition: box-shadow 0.3s, filter 0.3s;
+    }
+    .hero-carousel-nav {
+      position: absolute;
+      left: 50%;
+      bottom: 2.5rem;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.7rem;
+      z-index: 10;
+    }
+    .hero-carousel-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #fffbe6;
+      border: 2px solid #B38600;
+      opacity: 0.7;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .hero-carousel-dot.active {
+      background: #B38600;
+      opacity: 1;
+    }
+    .hero-carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #B38600;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0.85;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .hero-carousel-arrow:hover {
+      background: #FFB800;
+      color: #222;
+      opacity: 1;
+    }
+    .hero-carousel-arrow.prev { left: 2rem; }
+    .hero-carousel-arrow.next { right: 2rem; }
+    @media (max-width: 900px) {
+      .hero-slide-content { flex-direction: column; align-items: flex-start; padding: 1.2rem; }
+      .hero-slide-mainbox { max-width: 100%; min-width: 0; padding: 1.5rem 1rem; }
+    }
+    @media (max-width: 600px) {
+      .hero-slide-title { font-size: 1.1rem; }
+      .hero-slide-mainbox { padding: 1rem 0.5rem; }
+      .hero-slide-price { font-size: 1.1rem; padding: 0.7rem 1.1rem; }
+      .hero-slide-badge { font-size: 0.9rem; padding: 0.4rem 0.7rem; }
+      .hero-carousel-arrow.prev { left: 0.5rem; }
+      .hero-carousel-arrow.next { right: 0.5rem; }
+    }
+    </style>
+    <section class="hero-carousel">
+      <div class="hero-slide active">
+        <div class="hero-slide-bg"><img src="images/hero.jpeg" alt="Buy or Rent"></div>
+        <div class="hero-slide-overlay"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-mainbox">
+            <div class="hero-slide-title">Find, Buy, or Rent Your Dream Home</div>
+            <div class="hero-slide-tagline">DeniFinder makes it easy to buy or rent verified properties across Africa.</div>
+            <div class="hero-slide-offer">GET a <span>4-bedroom duplex</span> for</div>
+            <div class="hero-slide-price">N12 Million</div>
+            <div class="hero-slide-or">or</div>
+            <div class="hero-slide-offer">GET a <span>3-bedroom terrace</span> for</div>
+            <div class="hero-slide-price">N8 Million</div>
+            <a href="#search" class="hero-slide-btn">Start Your Search</a>
+            <a href="signup.html" class="hero-slide-btn" style="background: #fff; color: #B38600; margin-top: 0.5rem;">Join DeniFinder - Sign Up Free</a>
+            <div class="hero-slide-badge">Don't miss out!</div>
+                        </div>
+                    </div>
+                            </div>
+      <div class="hero-slide">
+        <div class="hero-slide-bg"><img src="images/hostels.jpeg" alt="Student Hostels"></div>
+        <div class="hero-slide-overlay"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-mainbox">
+            <div class="hero-slide-title">Student Hostels, On & Off Campus</div>
+            <div class="hero-slide-tagline">Check availability for in-campus and off-campus hostels in your university city.</div>
+            <a href="#search" class="hero-slide-btn">Browse Hostels</a>
+            <a href="signup.html" class="hero-slide-btn" style="background: #fff; color: #B38600; margin-top: 0.5rem;">Sign Up for Student Discounts</a>
+                            </div>
+                        </div>
+                    </div>
+      <div class="hero-slide">
+        <div class="hero-slide-bg"><img src="images/project.jpg" alt="House Design"></div>
+        <div class="hero-slide-overlay"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-mainbox">
+            <div class="hero-slide-title">Get the Best House Designs</div>
+            <div class="hero-slide-tagline">Work with our top designers for your next project or renovation.</div>
+            <a href="#designers" class="hero-slide-btn">Meet Our Designers</a>
+            <a href="signup.html" class="hero-slide-btn" style="background: #fff; color: #B38600; margin-top: 0.5rem;">Get Free Design Consultation</a>
+                            </div>
+                            </div>
+                        </div>
+      <div class="hero-slide">
+        <div class="hero-slide-bg"><img src="images/tenant.jpeg" alt="Advertise"></div>
+        <div class="hero-slide-overlay"></div>
+        <div class="hero-slide-content">
+          <div class="hero-slide-mainbox">
+            <div class="hero-slide-title">Advertise on DeniFinder</div>
+            <div class="hero-slide-tagline">Post your property for as little as 500 kwacha, or become an admin for unlimited posts at 2000/month.</div>
+            <a href="#advertise" class="hero-slide-btn">Start Advertising</a>
+            <a href="signup.html" class="hero-slide-btn" style="background: #fff; color: #B38600; margin-top: 0.5rem;">Become a Landlord - Sign Up</a>
+                    </div>
+                </div>
+            </div>
+      <button class="hero-carousel-arrow prev" aria-label="Previous">&#10094;</button>
+      <button class="hero-carousel-arrow next" aria-label="Next">&#10095;</button>
+      <div class="hero-carousel-nav"></div>
+    </section>
+    <script>
+    // Hero Carousel JS
+    const slides = Array.from(document.querySelectorAll('.hero-slide'));
+    const dotsNav = document.querySelector('.hero-carousel-nav');
+    const prevBtn = document.querySelector('.hero-carousel-arrow.prev');
+    const nextBtn = document.querySelector('.hero-carousel-arrow.next');
+    let current = 0;
+    function showSlide(idx) {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === idx));
+      Array.from(dotsNav.children).forEach((dot, i) => dot.classList.toggle('active', i === idx));
+      current = idx;
+    }
+    // Dots
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'hero-carousel-dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => showSlide(i);
+      dotsNav.appendChild(dot);
+    });
+    prevBtn.onclick = () => showSlide((current - 1 + slides.length) % slides.length);
+    nextBtn.onclick = () => showSlide((current + 1) % slides.length);
+    // Auto-slide
+    let auto = setInterval(() => showSlide((current + 1) % slides.length), 7000);
+    document.querySelector('.hero-carousel').addEventListener('mouseenter', () => clearInterval(auto));
+    document.querySelector('.hero-carousel').addEventListener('mouseleave', () => { auto = setInterval(() => showSlide((current + 1) % slides.length), 7000); });
+    </script>
+
+    <!-- Search Section -->
+    <section class="search-section" id="search">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-grid">
+                    <div class="search-field">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="Enter city or area">
+                    </div>
+                    <div class="search-field">
+                        <label for="price">Price Range</label>
+                        <select id="price">
+                            <option value="">Any Price</option>
+                            <option value="0-100">$0 - $100</option>
+                            <option value="100-200">$100 - $200</option>
+                            <option value="200-500">$200 - $500</option>
+                            <option value="500+">$500+</option>
+                        </select>
+                    </div>
+                    <div class="search-field">
+                        <label for="type">Property Type</label>
+                        <select id="type">
+                            <option value="">Any Type</option>
+                            <option value="hostel">Hostel</option>
+                            <option value="house">House</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="quarter">Quarter</option>
+                        </select>
+                    </div>
+                    <div class="search-field">
+                        <label for="availability">Availability</label>
+                        <select id="availability">
+                            <option value="available">Available Only</option>
+                            <option value="all">Show All</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="search-btn">
+                    <i class="fas fa-search"></i>
+                    Search Properties
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How DeniFinder Works</h2>
+                <p>Finding your perfect home in Africa has never been easier. Here's how we make it happen in just 3 simple steps.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Search Available Spots</h3>
+                    <p>Browse through our verified listings with real-time availability status. No more disappointment from outdated posts.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>View Map & Details</h3>
+                    <p>Explore properties on our interactive map, view photos, amenities, and get all the details you need to make an informed decision.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Chat or Use Advance Assist</h3>
+                    <p>Message landlords directly through our secure platform or let our Advance Assist service find and book your perfect home.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advance Assist Promo -->
+    <section class="advance-assist" id="advance-assist">
+        <div class="container">
+            <div class="advance-content">
+                <div class="advance-text">
+                    <h2>Book Help Before You Move</h2>
+                    <p>Planning to relocate? Our Advance Assist service ensures you never miss the perfect home. Get early access to new listings and personalized support.</p>
+                    <ul class="advance-features">
+                        <li><i class="fas fa-check-circle"></i> Early access to new listings</li>
+                        <li><i class="fas fa-bell"></i> Personalized alerts for your preferences</li>
+                        <li><i class="fas fa-user-tie"></i> Dedicated support team</li>
+                        <li><i class="fas fa-calendar-alt"></i> Schedule viewings in advance</li>
+                        <li><i class="fas fa-shield-alt"></i> Verified properties only</li>
+                    </ul>
+                    <a href="#" class="btn-white">
+                        <i class="fas fa-rocket"></i>
+                        Get Advance Assist
+                    </a>
+                </div>
+                <div class="advance-visual">
+                    <div class="phone-mockup">
+                        <div class="phone-screen">
+                            <div class="notification-card">
+                                <p>New listing available in your preferred area!</p>
+                            </div>
+                            <div class="notification-card">
+                                <p>Your Advance Assist request is being processed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Unique & Reliable Extra Services Section -->
+    <section class="extra-services-section">
+      <div class="container">
+        <h2 class="section-title">Unique &amp; Reliable <span class="highlight-gold">Extra Services</span></h2>
+        <div class="extra-services-grid">
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Property Verification Service</h3>
+            <p>Send field agents to verify the authenticity of property ownership, location, and condition. <br><span class="service-note">Helps clients avoid scams.</span></p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Legal Assistance &amp; Land Title Processing</h3>
+            <p>Partner with lawyers to help clients process land papers, sales agreements, lease contracts, etc.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Secure Payment &amp; Deposit Holding</h3>
+            <p>Offer a secure platform where you temporarily hold deposits until property handover is done (escrow-like service).</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Tenant Background Checks</h3>
+            <p>Help landlords vet potential tenants for reliability (especially in areas like student hostels).</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>"Rent Now, Pay Monthly" Option</h3>
+            <p>Partner with microfinance services to allow monthly payment plans (especially for students or young workers).</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Moving &amp; Transport Services</h3>
+            <p>Help clients move their belongings easily — especially students or people changing houses.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Furniture &amp; Appliance Rentals</h3>
+            <p>Offer temporary rentals of beds, stoves, fridges for students or new tenants.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Cleaning &amp; Maintenance Services</h3>
+            <p>Deep cleaning before move-in, pest control, plumbing, or painting touch-ups.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Internet &amp; Utility Setup</h3>
+            <p>Help clients set up internet, water, and electricity quickly when they move in.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">✅</div>
+            <h3>Area Reviews &amp; Cost of Living Info</h3>
+            <p>Share reviews of neighborhoods, safety levels, transport options, nearby shops, and average prices.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Cities/Areas -->
+    <section class="popular-cities" id="cities">
+        <div class="container">
+            <div class="section-header">
+                <h2>Popular Cities & Areas</h2>
+                <p>Start your search in these featured locations. More cities coming soon!</p>
+            </div>
+            <div class="cities-grid">
+                <div class="city-card" style="background-image: url('images/Blantyre.jpeg');">
+                    Blantyres
+                </div>
+                <div class="city-card" style="background-image: url('images/Lusaka.jpeg');">
+                    Lusaka
+                </div>
+                <div class="city-card" style="background-image: url('images/Lilongwe.jpg');">
+                    Lilongwe
+                </div>
+                <div class="city-card" style="background-image: url('images/Johannesburg.jpeg');">
+                    Johannesburg
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials/Trust Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>What Our Users Say</h2>
+                <p>Trusted by renters, students, and families across Africa.</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "DeniFinder helped me find a safe and affordable hostel before I even arrived in Nairobi. The Advance Assist was a lifesaver!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">A</div>
+                        <div class="author-info">
+                            <h4>Amina K.</h4>
+                            <p>Student, Nairobi</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "I love the verified listings and the map view. No more scams or wasted trips!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">J</div>
+                        <div class="author-info">
+                            <h4>James O.</h4>
+                            <p>Relocator, Accra</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        "As a landlord, posting is easy and I only get serious, verified renters. Highly recommend!"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">L</div>
+                        <div class="author-info">
+                            <h4>Linda M.</h4>
+                            <p>Landlord, Kampala</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Sponsors Section (Animated) -->
+    <section class="top-sponsors-section animated-section" id="top-sponsors" style="background: linear-gradient(120deg, #fffbe6 60%, #f8f9fa 100%); padding: 4rem 0 3rem 0; border-top: 2px solid #FFB800; border-bottom: 2px solid #FFB800; position:relative; overflow:hidden;">
+      <!-- Animated Sparkles Background -->
+      <div class="sparkle-bg"></div>
+      <div class="container">
+        <h2 class="section-title animated-fadein" style="text-align:center; color:#B38600; font-size:2.2rem; font-weight:800; margin-bottom:2.2rem; letter-spacing:0.5px;">❤️ Powering Smart Housing With Us</h2>
+        <div class="sponsors-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:2.5rem; justify-items:center; align-items:stretch; margin-bottom:2.5rem;">
+          <!-- Platinum Sponsor -->
+          <div class="sponsor-card animated-card" style="background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(255,184,0,0.10); padding:2rem 1.2rem 1.5rem 1.2rem; display:flex; flex-direction:column; align-items:center; border:2.5px solid #FFB800; min-height:260px; position:relative;">
+            <img src="images/hotel-placeholder.png" alt="Hotel Platinum" class="sponsor-logo" style="width:80px; height:80px; object-fit:cover; border-radius:16px; margin-bottom:1rem; background:#f8f9fa;">
+            <h3 style="font-size:1.18rem; font-weight:700; color:#B38600; margin-bottom:0.7rem;">Sunrise Grand Hotel</h3>
+            <span class="sponsor-badge platinum-badge shimmer" style="background:linear-gradient(90deg,#FFB800,#FFD764); color:#7A5C00; font-weight:700; border-radius:18px; padding:0.5rem 1.2rem; font-size:1rem; margin-bottom:0.7rem; display:inline-block;">🌟 DeniPartner Platinum Sponsor</span>
+            <p style="font-size:1rem; color:#4CAF50; margin-bottom:0.5rem; text-align:center;">Proudly supporting smart housing in Africa.</p>
+            <a href="#" class="sponsor-spotlight-link" style="color:#00B4D8; font-weight:600; text-decoration:underline; margin-top:0.5rem;">View Spotlight &rarr;</a>
+          </div>
+          <!-- Gold Patron -->
+          <div class="sponsor-card animated-card" style="background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(255,184,0,0.10); padding:2rem 1.2rem 1.5rem 1.2rem; display:flex; flex-direction:column; align-items:center; border:2px solid #FFD764; min-height:260px; position:relative;">
+            <img src="images/cottage-placeholder.png" alt="Cottage Gold" class="sponsor-logo" style="width:80px; height:80px; object-fit:cover; border-radius:16px; margin-bottom:1rem; background:#f8f9fa;">
+            <h3 style="font-size:1.18rem; font-weight:700; color:#B38600; margin-bottom:0.7rem;">Lakeview Cottages</h3>
+            <span class="sponsor-badge gold-badge" style="background:linear-gradient(90deg,#FFD764,#FFEB99); color:#7A5C00; font-weight:700; border-radius:18px; padding:0.5rem 1.2rem; font-size:1rem; margin-bottom:0.7rem; display:inline-block;">Gold Patron</span>
+            <p style="font-size:1rem; color:#4CAF50; margin-bottom:0.5rem; text-align:center;">Thank you for empowering local housing solutions.</p>
+            <a href="#" class="sponsor-spotlight-link" style="color:#00B4D8; font-weight:600; text-decoration:underline; margin-top:0.5rem;">View Spotlight &rarr;</a>
+          </div>
+          <!-- Silver Supporter -->
+          <div class="sponsor-card animated-card" style="background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(255,184,0,0.10); padding:2rem 1.2rem 1.5rem 1.2rem; display:flex; flex-direction:column; align-items:center; border:2px solid #E0E0E0; min-height:260px; position:relative;">
+            <img src="images/lodge-placeholder.png" alt="Lodge Silver" class="sponsor-logo" style="width:80px; height:80px; object-fit:cover; border-radius:16px; margin-bottom:1rem; background:#f8f9fa;">
+            <h3 style="font-size:1.18rem; font-weight:700; color:#B38600; margin-bottom:0.7rem;">Safari Lodge</h3>
+            <span class="sponsor-badge silver-badge" style="background:linear-gradient(90deg,#E0E0E0,#FFEB99); color:#7A5C00; font-weight:700; border-radius:18px; padding:0.5rem 1.2rem; font-size:1rem; margin-bottom:0.7rem; display:inline-block;">Silver Supporter</span>
+            <p style="font-size:1rem; color:#4CAF50; margin-bottom:0.5rem; text-align:center;">Helping us build a trusted community.</p>
+            <a href="#" class="sponsor-spotlight-link" style="color:#00B4D8; font-weight:600; text-decoration:underline; margin-top:0.5rem;">View Spotlight &rarr;</a>
+          </div>
+        </div>
+        <div class="sponsor-benefits animated-fadein" style="text-align:center; margin-top:2.5rem;">
+          <h3 style="color:#B38600; font-size:1.3rem; font-weight:700; margin-bottom:0.7rem;">Sponsorship Tiers & Benefits</h3>
+          <ul style="display:inline-block; text-align:left; margin:0 auto 1.5rem auto; padding:0; font-size:1.05rem; color:#222;">
+            <li><b>Platinum Partner:</b> Free featured placement, extra visibility, event partnership shoutouts, Advance Assist priority listing</li>
+            <li><b>Gold Patron:</b> Extra visibility, event partnership shoutouts</li>
+            <li><b>Silver Supporter:</b> Event partnership shoutouts</li>
+          </ul>
+          <div class="sponsor-pitch" style="margin-top:1.5rem; font-size:1.15rem; color:#4CAF50; font-weight:600; max-width:600px; margin-left:auto; margin-right:auto;">
+            "Your property deserves more than just a booking page. With DeniFinder, you get visibility, trust, and priority access to real, local customers who are actively searching. This is not just another site — it's your digital showroom."
+          </div>
+        </div>
+      </div>
+      <style>
+        /* Sparkle background animation */
+        .sparkle-bg {
+          pointer-events: none;
+          position: absolute;
+          top: 0; left: 0; width: 100%; height: 100%;
+          z-index: 0;
+          overflow: hidden;
+        }
+        .sparkle {
+          position: absolute;
+          width: 18px; height: 18px;
+          background: radial-gradient(circle, #FFD764 60%, #FFB800 100%, transparent 100%);
+          border-radius: 50%;
+          opacity: 0.7;
+          animation: sparkleMove 8s linear infinite;
+        }
+        @keyframes sparkleMove {
+          0% { transform: translateY(0) scale(1); opacity: 0.7; }
+          50% { transform: translateY(-40px) scale(1.2); opacity: 1; }
+          100% { transform: translateY(0) scale(1); opacity: 0.7; }
+        }
+        /* Card entrance animation */
+        .animated-card {
+          opacity: 0;
+          transform: translateY(40px) scale(0.98);
+          transition: opacity 0.7s cubic-bezier(.4,1.4,.6,1), transform 0.7s cubic-bezier(.4,1.4,.6,1);
+        }
+        .animated-card.visible {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+        /* Fade-in for section title and benefits */
+        .animated-fadein {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: opacity 0.8s cubic-bezier(.4,1.4,.6,1), transform 0.8s cubic-bezier(.4,1.4,.6,1);
+        }
+        .animated-fadein.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        /* Shimmer effect for Platinum badge */
+        .shimmer {
+          background: linear-gradient(90deg, #FFB800 25%, #FFD764 50%, #FFB800 75%);
+          background-size: 200% 100%;
+          animation: shimmerMove 2.5s linear infinite;
+        }
+        @keyframes shimmerMove {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+        /* Card hover effects */
+        .sponsor-card {
+          transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .sponsor-card:hover {
+          box-shadow: 0 8px 32px rgba(255,184,0,0.18), 0 0 32px 0 #FFD764;
+          transform: translateY(-8px) scale(1.03);
+        }
+        .sponsor-card:hover .sponsor-badge {
+          filter: brightness(1.1) drop-shadow(0 0 8px #FFD764);
+        }
+        /* Responsive */
+        @media (max-width: 700px) {
+          .sponsors-grid { gap: 1.1rem; }
+          .sponsor-card { padding: 1.2rem 0.7rem 1rem 0.7rem; min-height: 180px; }
+        }
+      </style>
+      <script>
+        // Sparkle background generator
+        function createSparkles() {
+          const sparkleBg = document.querySelector('.sparkle-bg');
+          if (!sparkleBg) return;
+          sparkleBg.innerHTML = '';
+          for (let i = 0; i < 18; i++) {
+            const s = document.createElement('div');
+            s.className = 'sparkle';
+            s.style.left = Math.random() * 98 + '%';
+            s.style.top = Math.random() * 98 + '%';
+            s.style.animationDelay = (Math.random() * 8) + 's';
+            s.style.opacity = 0.5 + Math.random() * 0.5;
+            s.style.width = s.style.height = (12 + Math.random() * 16) + 'px';
+            sparkleBg.appendChild(s);
+          }
+        }
+        createSparkles();
+        window.addEventListener('resize', createSparkles);
+        // Animate cards and fade-ins on scroll
+        function animateSponsorSection() {
+          const section = document.getElementById('top-sponsors');
+          if (!section) return;
+          const cards = section.querySelectorAll('.animated-card');
+          const fadeins = section.querySelectorAll('.animated-fadein');
+          const rect = section.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 100) {
+            cards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), 200 + i * 180));
+            fadeins.forEach(f => f.classList.add('visible'));
+          }
+        }
+        window.addEventListener('scroll', animateSponsorSection);
+        window.addEventListener('DOMContentLoaded', animateSponsorSection);
+      </script>
+    </section>
+
+    <!-- Sponsors Logo Wall & Call to Support (Animated) -->
+    <section class="sponsor-logos-section animated-section" id="sponsor-logos" style="background: #fffbe6; padding: 3rem 0 2.5rem 0; border-bottom: 2px solid #FFB800; position:relative; overflow:hidden;">
+      <div class="container">
+        <h2 class="animated-fadein" style="text-align:center; color:#B38600; font-size:2rem; font-weight:700; margin-bottom:2rem;">Our Proud Sponsors</h2>
+        <div class="logo-wall" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:2rem; justify-items:center; align-items:center; margin-bottom:2.5rem;">
+          <img src="images/hotel-placeholder.png" alt="Hotel Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
+          <img src="images/cottage-placeholder.png" alt="Cottage Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
+          <img src="images/lodge-placeholder.png" alt="Lodge Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
+          <img src="images/customer-care.png" alt="Customer Care Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
+          <img src="images/design.png" alt="Design Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
+        </div>
+        <div style="text-align:center; margin-top:1.5rem;">
+          <h3 class="animated-fadein" style="color:#4CAF50; font-size:1.2rem; font-weight:600; margin-bottom:0.7rem;">Want to see your company here?</h3>
+          <p class="animated-fadein" style="color:#222; font-size:1.05rem; margin-bottom:1.2rem;">Join our mission to power smart housing in Africa. Become a sponsor and get your brand in front of thousands of active property seekers.</p>
+          <a href="mailto:info@denifinder.com?subject=Sponsor%20DeniFinder" class="btn-primary animated-cta" style="background:#FFB800; color:#222; font-weight:700; border-radius:30px; padding:1rem 2.2rem; font-size:1.1rem; text-decoration:none; box-shadow:0 4px 15px rgba(255,184,0,0.13);">Become a Sponsor</a>
+        </div>
+      </div>
+      <style>
+        /* Logo wall animation */
+        .logo-anim {
+          opacity: 0;
+          transform: scale(0.7) rotate(-10deg);
+          transition: opacity 0.7s cubic-bezier(.4,1.4,.6,1), transform 0.7s cubic-bezier(.4,1.4,.6,1);
+        }
+        .logo-anim.visible {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+        }
+        .logo-anim:hover {
+          box-shadow: 0 8px 32px rgba(255,184,0,0.18), 0 0 32px 0 #FFD764;
+          transform: scale(1.08) rotate(2deg);
+        }
+        /* Animated CTA button */
+        .animated-cta {
+          animation: ctaPulse 1.8s infinite alternate;
+        }
+        @keyframes ctaPulse {
+          0% { box-shadow: 0 4px 15px rgba(255,184,0,0.13); transform: scale(1); }
+          100% { box-shadow: 0 8px 32px rgba(255,184,0,0.22); transform: scale(1.04); }
+        }
+      </style>
+      <script>
+        // Animate logo wall on scroll
+        function animateLogoWall() {
+          const section = document.getElementById('sponsor-logos');
+          if (!section) return;
+          const logos = section.querySelectorAll('.logo-anim');
+          const fadeins = section.querySelectorAll('.animated-fadein');
+          const rect = section.getBoundingClientRect();
+          if (rect.top < window.innerHeight - 100) {
+            logos.forEach((l, i) => setTimeout(() => l.classList.add('visible'), 200 + i * 120));
+            fadeins.forEach(f => f.classList.add('visible'));
+          }
+        }
+        window.addEventListener('scroll', animateLogoWall);
+        window.addEventListener('DOMContentLoaded', animateLogoWall);
+      </script>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>DeniFinder</h3>
+                    <p>Your trusted way to find available rooms, hostels & houses in Africa. No scams. No stress. Just a smarter way to settle.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#cities">Cities</a></li>
+                        <li><a href="#advance-assist">Advance Assist</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#" style="color: var(--gold);">Admin Login</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li>Email: <a href="mailto:info@denifinder.com">info@denifinder.com</a></li>
+                        <li>Phone: <a href="tel:+254700000000">+254 700 000 000</a></li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2024 DeniFinder. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- DeniFinder Modern Section Styles -->
+    <style>
+    :root {
+      --gold-light: #FFEB99;
+      --gold: #FFB800;
+      --gold-dark: #7A5C00;
+      --charcoal: #222222;
+      --white: #FFFFFF;
+      --primary-green: #4CAF50;
+      --sky-blue: #00B4D8;
+      --light-gray: #F8F9FA;
+    }
+    /* Header/Navbar Styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: var(--gold-dark);
+      z-index: 1000;
+      padding: 0.5rem 0;
+      box-shadow: 0 2px 12px rgba(34,34,34,0.08);
+      height: 80px;
+      display: flex;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--gold);
+      text-decoration: none;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px var(--gold-light);
+      display: flex;
+      align-items: center;
+      height: 64px;
+      margin-right: 1.5rem;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 1.2rem;
+      align-items: center;
+      height: 64px;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .nav-links a, .nav-links .nav-dropdown {
+      text-decoration: none;
+      color: var(--white);
+      font-weight: 500;
+      transition: color 0.3s, background 0.3s;
+      border-radius: 8px;
+      padding: 0.3rem 0.9rem;
+      display: flex;
+      align-items: center;
+      height: 40px;
+      position: relative;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .nav-links a:hover, .nav-links a.active, .nav-links .nav-dropdown:hover {
+      color: var(--gold);
+      background: rgba(255,184,0,0.12);
+    }
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 110%;
+      left: 0;
+      min-width: 260px;
+      background: var(--gold-dark);
+      border-radius: 18px;
+      box-shadow: 0 12px 32px rgba(34,34,34,0.18);
+      z-index: 1001;
+      padding: 1rem 0;
+      font-size: 1rem;
+      font-weight: 500;
+      animation: fadeIn 0.25s;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown:focus-within .nav-dropdown-menu {
+      display: block;
+    }
+    .nav-dropdown-menu a {
+      color: var(--white);
+      padding: 0.9rem 1.7rem;
+      display: block;
+      border-radius: 8px;
+      background: none;
+      transition: background 0.2s, color 0.2s;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+    .nav-dropdown-menu a:last-child {
+      margin-bottom: 0;
+    }
+    .nav-dropdown-menu a:hover {
+      background: var(--gold);
+      color: var(--charcoal);
+    }
+    .nav-cta, .btn-primary, .btn-secondary {
+      font-weight: 700;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(255,184,0,0.13);
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      height: 40px;
+      font-size: 0.98rem;
+      margin-left: 0.7rem;
+      padding: 0.5rem 1.1rem;
+    }
+    .nav-cta, .btn-primary {
+      background: var(--gold);
+      color: var(--charcoal);
+      border: none;
+      padding: 0.5rem 1.1rem;
+    }
+    .nav-cta:hover, .btn-primary:hover {
+      background: var(--gold-dark);
+      color: var(--white);
+    }
+    .btn-secondary {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      border: 2px solid var(--gold-dark);
+      padding: 0.5rem 1.1rem;
+    }
+    .btn-secondary:hover {
+      background: var(--gold-dark);
+      color: var(--gold-light);
+    }
+    /* Hero Carousel Margin Fix */
+    .hero-carousel {
+      margin-bottom: 3.5rem;
+      padding-top: 90px;
+    }
+    .search-section {
+      margin-top: 2.5rem;
+    }
+    /* Section backgrounds and separation */
+    .search-section, .how-it-works, .popular-cities {
+      position: relative;
+      background: url('images/hero.jpeg') center/cover no-repeat;
+      color: var(--white);
+      border-radius: 0;
+      box-shadow: none;
+      margin-bottom: 0;
+      padding: 3.5rem 0 2.5rem 0;
+      z-index: 1;
+    }
+    .search-section::before, .how-it-works::before, .popular-cities::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(120deg, rgba(34,34,34,0.82) 60%, rgba(255,184,0,0.18) 100%);
+      z-index: 1;
+    }
+    .search-section > .container, .how-it-works > .container, .popular-cities > .container {
+      position: relative;
+      z-index: 2;
+    }
+    .advance-assist {
+      background: linear-gradient(120deg, var(--gold-dark) 60%, var(--gold) 100%);
+      color: #fff;
+      border-radius: 0;
+      box-shadow: none;
+      margin-bottom: 0;
+      padding: 3.5rem 0 2.5rem 0;
+    }
+    .testimonials {
+      background: url('images/hero.jpeg') center/cover no-repeat;
+      position: relative;
+      color: #fff;
+      border-radius: 0;
+      box-shadow: none;
+      margin-bottom: 0;
+      padding: 5rem 0 4rem 0;
+    }
+    .testimonials::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(120deg, rgba(34,34,34,0.85) 60%, rgba(255,184,0,0.18) 100%);
+      z-index: 1;
+    }
+    .testimonials > .container, .testimonials-grid {
+      position: relative;
+      z-index: 2;
+    }
+    .footer {
+      background: var(--gold-dark);
+      color: #fff;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 4rem 0 2rem;
+    }
+    /* Cards and content blocks */
+    .search-container, .testimonials-grid, .cities-grid, .step-card, .testimonial-card, .city-card {
+      background: rgba(255,255,255,0.92);
+      border-radius: 18px;
+      box-shadow: 0 2px 12px rgba(34,34,34,0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .step-icon {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--primary-green);
+      box-shadow: 0 2px 8px rgba(255,184,0,0.13);
+    }
+    .status-badge {
+      background: var(--gold-dark);
+      color: var(--gold-light);
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 0.3rem 1rem;
+    }
+    .btn-primary {
+      background: var(--gold-dark);
+      color: var(--gold-light);
+      border-radius: 30px;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(255,184,0,0.13);
+      transition: background 0.2s;
+    }
+    .btn-primary:hover {
+      background: var(--gold);
+      color: var(--charcoal);
+    }
+    .btn-secondary {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      border: 2px solid var(--gold-dark);
+      border-radius: 30px;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover {
+      background: var(--gold-dark);
+      color: var(--gold-light);
+    }
+    .footer-section h3 {
+      color: var(--gold-light);
+    }
+    .footer-section ul li a {
+      color: #fff;
+      transition: color 0.2s;
+    }
+    .footer-section ul li a:hover {
+      color: var(--gold-light);
+    }
+    .social-links a {
+      background: var(--gold);
+      color: var(--charcoal);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(255,184,0,0.13);
+      transition: background 0.2s;
+    }
+    .social-links a:hover {
+      background: var(--gold-dark);
+      color: var(--gold-light);
+    }
+    .footer-bottom {
+      color: #fffbe6;
+      border-top: 1px solid #fffbe6;
+      padding-top: 2rem;
+    }
+    .section-header h2, .section-header p {
+      color: var(--gold-light);
+      text-shadow: 0 2px 8px rgba(34,34,34,0.18);
+    }
+    .testimonial-content {
+      font-size: 1.1rem;
+      color: var(--gold-light);
+      font-style: italic;
+    }
+    .testimonial-author h4 {
+      color: var(--gold);
+    }
+    .testimonial-author p {
+      color: var(--gold-light);
+    }
+    .extra-services-section {
+      position: relative;
+      background: linear-gradient(120deg, rgba(255, 215, 100, 0.70) 0%, rgba(255, 255, 255, 0.90) 100%), url('images/project.jpg') center/cover no-repeat;
+      padding: 64px 0 48px 0;
+      box-shadow: 0 8px 32px rgba(122,92,0,0.07);
+      z-index: 1;
+    }
+    /* Optional: overlay for extra readability */
+    .extra-services-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 215, 100, 0.60);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .extra-services-section .container, .extra-services-section .section-title, .extra-services-section .extra-services-grid, .extra-services-section .service-card {
+      position: relative;
+      z-index: 1;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--charcoal);
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.5px;
+    }
+    .section-title .highlight-gold {
+      color: var(--gold);
+    }
+    .extra-services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 2rem;
+    }
+    .service-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(122,92,0,0.10);
+      padding: 2rem 1.2rem 1.5rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transition: transform 0.18s, box-shadow 0.18s;
+      border: 1.5px solid var(--gold-light);
+      min-height: 240px;
+    }
+    .service-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 8px 32px rgba(122,92,0,0.16);
+      border-color: var(--gold);
+    }
+    .service-icon {
+      font-size: 2.1rem;
+      color: var(--gold-dark);
+      margin-bottom: 1.1rem;
+      background: var(--gold-light);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(255,184,0,0.10);
+    }
+    .service-card h3 {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--charcoal);
+      margin-bottom: 0.7rem;
+    }
+    .service-card p {
+      font-size: 1rem;
+      color: var(--charcoal);
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+    .service-note {
+      color: var(--primary-green); /* Changed from --green to --primary-green */
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+    @media (max-width: 700px) {
+      .extra-services-section {
+        padding: 40px 0 24px 0;
+      }
+      .section-title {
+        font-size: 1.5rem;
+      }
+      .extra-services-grid {
+        gap: 1.1rem;
+      }
+      .service-card {
+        padding: 1.2rem 0.7rem 1rem 0.7rem;
+        min-height: 180px;
+      }
+      .service-icon {
+        font-size: 1.3rem;
+        width: 36px;
+        height: 36px;
+      }
+    }
+    </style>
+</body>
+</html>
+                    

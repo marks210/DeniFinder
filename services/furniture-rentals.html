@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furniture & Appliance Rentals - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-furniture-rentals">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title"><i class="fas fa-couch"></i> Furniture & Appliance Rentals</h1>
+                <p class="service-subtitle">Furnish your space without the commitment. Ideal for students, corporate guests, and new movers.</p>
+                
+                <div class="service-description">
+                    <p>Rent high-quality items for short or long-term stays:</p>
+                    <ul>
+                        <li><i class="fas fa-bed"></i> Beds, sofas, tables, and chairs.</li>
+                        <li><i class="fas fa-tv"></i> Fridges, TVs, cookers, and microwaves.</li>
+                        <li><i class="fas fa-box"></i> Convenient packages for a fully-furnished home.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Browse Catalogue & Get a Quote</h2>
+                    <p>Tell us what you need, and we'll send you our catalogue and pricing options.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rental-duration">Desired Rental Duration</label>
+                            <select id="rental-duration" name="rental-duration" required>
+                                <option value="1-3-months">1-3 Months</option>
+                                <option value="3-6-months">3-6 Months</option>
+                                <option value="6-12-months">6-12 Months</option>
+                                <option value="12+ months">12+ Months</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="items-needed">What items are you interested in?</label>
+                            <textarea id="items-needed" name="items-needed" rows="4" placeholder="e.g., Double bed, small fridge, 2-seater sofa"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Request Catalogue</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Where to Stay | DeniFinder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root {
+      --gold: #FFB800;
+      --gold-light: #FFEB99;
+      --gold-dark: #7A5C00;
+      --charcoal: #222;
+      --white: #fff;
+      --light-gray: #f8f9fa;
+      --primary-green: #4CAF50;
+      --shadow: rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--light-gray);
+      color: var(--charcoal);
+      margin: 0;
+      padding: 0;
+    }
+    /* Header/Nav */
+    .header {
+      background: var(--white);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo img {
+      height: 32px;
+      width: auto;
+      border-radius: 8px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--charcoal);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover {
+      color: var(--gold);
+    }
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(rgba(34,34,34,0.7), rgba(34,34,34,0.7)), url('images/hero.jpeg') center/cover no-repeat;
+      padding: 4rem 2rem 3rem 2rem;
+      text-align: center;
+      color: var(--white);
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+      animation: fadeInDown 1s ease-out;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    /* Section Titles */
+    .section-title {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 3rem 0 2rem 0;
+      color: var(--charcoal);
+      letter-spacing: 0.5px;
+    }
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 1.2rem 1rem;
+      margin: -2.5rem auto 2.5rem auto;
+      max-width: 1100px;
+      position: relative;
+      z-index: 2;
+    }
+    .filters-bar select, .filters-bar input {
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--gold-light);
+      font-size: 1rem;
+      background: var(--light-gray);
+      color: var(--charcoal);
+      outline: none;
+      min-width: 140px;
+      font-weight: 500;
+    }
+    .filters-bar label {
+      font-weight: 700;
+      color: var(--gold-dark);
+      margin-right: 0.5rem;
+    }
+    .filters-bar button {
+      background: var(--gold);
+      color: var(--charcoal);
+      font-weight: 700;
+      border-radius: 30px;
+      padding: 0.8rem 1.7rem;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: background 0.2s, color 0.2s;
+    }
+    .filters-bar button:hover {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+    /* Top Picks Slider */
+    .top-picks-section {
+      margin: 3rem 0 2.5rem 0;
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 4px 24px var(--shadow);
+      padding: 2.5rem 0 2rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .top-picks-section h2 {
+      text-align: center;
+      color: var(--gold-dark);
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+    .top-picks-slider {
+      display: flex;
+      gap: 2rem;
+      overflow-x: auto;
+      padding: 1rem 0 1rem 1rem;
+      scroll-snap-type: x mandatory;
+    }
+    .top-pick-card {
+      min-width: 280px;
+      max-width: 320px;
+      background: var(--gold-light);
+      border-radius: 15px;
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      scroll-snap-align: start;
+      transition: box-shadow 0.3s, transform 0.3s;
+      animation: fadeInUp 1s cubic-bezier(.4,1.4,.6,1);
+    }
+    .top-pick-card:hover {
+      box-shadow: 0 8px 32px var(--shadow), 0 0 32px 0 var(--gold-light);
+      transform: translateY(-8px) scale(1.03);
+      background: var(--gold);
+      color: var(--white);
+    }
+    .top-pick-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .top-pick-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-dark);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .top-pick-card .property-type {
+      margin-bottom: 0.5rem;
+    }
+    .top-pick-card .property-badges {
+      margin-bottom: 0.5rem;
+    }
+    .top-pick-card .btn-details {
+      margin-top: auto;
+      background: var(--gold-dark);
+      color: var(--white);
+      font-weight: 700;
+      border-radius: 30px;
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      text-decoration: none;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: background 0.2s, color 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .top-pick-card .btn-details:hover {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+    /* Discovery Grid */
+    .discovery-section {
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 4px 24px var(--shadow);
+      padding: 2.5rem 0 2rem 0;
+      margin-bottom: 3rem;
+    }
+    .discovery-section h2 {
+      text-align: center;
+      color: var(--gold-dark);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 2rem;
+      letter-spacing: 0.5px;
+    }
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-bottom: 1rem;
+    }
+    .property-card {
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 320px;
+      position: relative;
+      transition: box-shadow 0.3s, transform 0.3s;
+      animation: fadeInUp 1s cubic-bezier(.4,1.4,.6,1);
+    }
+    .property-card:hover {
+      box-shadow: 0 8px 32px var(--shadow), 0 0 32px 0 var(--gold);
+      transform: translateY(-8px) scale(1.03);
+      background: var(--gold-light);
+      color: var(--charcoal);
+    }
+    .property-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .property-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-dark);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+    .property-type {
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+    .property-price {
+      color: var(--primary-green);
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .property-badges {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+      justify-content: center;
+    }
+    .badge {
+      background: var(--gold);
+      color: var(--white);
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.9rem;
+      display: inline-block;
+    }
+    .badge.platinum { background: var(--gold-dark); color: var(--gold-light); }
+    .badge.pick { background: var(--gold-light); color: var(--gold-dark); }
+    .badge.aa { background: var(--primary-green); color: var(--white); }
+    .property-rating {
+      color: var(--gold-dark);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .property-card .btn-details {
+      margin-top: auto;
+      background: var(--gold-dark);
+      color: var(--white);
+      font-weight: 700;
+      border-radius: 30px;
+      padding: 0.6rem 1.5rem;
+      font-size: 1rem;
+      text-decoration: none;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: background 0.2s, color 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .property-card .btn-details:hover {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+    /* Map Section */
+    .map-section {
+      margin: 3rem 0 2.5rem 0;
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 4px 24px var(--shadow);
+      padding: 2.5rem 0 2rem 0;
+      text-align: center;
+      color: var(--charcoal);
+      position: relative;
+    }
+    .map-section h2 {
+      color: var(--gold-dark);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 2px 8px var(--gold-light);
+    }
+    #map {
+      width: 100%;
+      height: 350px;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--shadow);
+      margin-bottom: 1rem;
+      z-index: 1;
+    }
+    /* Deals & Promotions */
+    .deals-section {
+      margin: 3rem 0 2.5rem 0;
+      background: var(--white);
+      border-radius: 15px;
+      box-shadow: 0 4px 24px var(--shadow);
+      padding: 2.5rem 0 2rem 0;
+      color: var(--charcoal);
+      position: relative;
+    }
+    .deals-section h2 {
+      text-align: center;
+      color: var(--primary-green);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 8px var(--gold-light);
+    }
+    .deals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .deal-card {
+      background: var(--gold-light);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-height: 180px;
+      position: relative;
+      transition: box-shadow 0.3s, transform 0.3s;
+      animation: fadeInUp 1s cubic-bezier(.4,1.4,.6,1);
+    }
+    .deal-card:hover {
+      box-shadow: 0 8px 32px var(--shadow), 0 0 32px 0 var(--gold);
+      transform: translateY(-8px) scale(1.03);
+      background: var(--gold);
+      color: var(--white);
+    }
+    .deal-card .deal-badge {
+      font-size: 1.2rem;
+      margin-bottom: 0.7rem;
+    }
+    .deal-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold-dark);
+      margin-bottom: 0.5rem;
+    }
+    .deal-card p {
+      color: var(--charcoal);
+      font-size: 1rem;
+      margin-bottom: 0.7rem;
+    }
+    .deal-card a {
+      color: var(--primary-green);
+      font-weight: 600;
+      text-decoration: underline;
+      margin-top: auto;
+    }
+    /* Sponsors Strip */
+    .sponsors-strip {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 1.2rem 0.5rem;
+      margin: 2.5rem 0 2rem 0;
+      flex-wrap: wrap;
+      color: var(--gold-dark);
+    }
+    .sponsor-logo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: var(--white);
+      margin-right: 0.7rem;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .sponsor-thank {
+      color: var(--gold-dark);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-right: 1.5rem;
+      text-shadow: 0 2px 8px var(--gold-light);
+    }
+    /* Become a Partner CTA */
+    .partner-cta-section {
+      background: var(--gold);
+      border-radius: 15px;
+      box-shadow: 0 4px 24px var(--shadow);
+      padding: 2.5rem 0 2rem 0;
+      text-align: center;
+      margin: 3rem 0 2rem 0;
+      color: var(--white);
+    }
+    .partner-cta-section h2 {
+      color: var(--white);
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 2px 8px var(--gold-dark);
+    }
+    .partner-cta-section p {
+      color: var(--white);
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      text-shadow: 0 2px 8px var(--gold-light);
+    }
+    .partner-cta-section .cta-btn {
+      background: var(--white);
+      color: var(--gold-dark);
+      font-weight: 700;
+      border-radius: 30px;
+      padding: 1rem 2.2rem;
+      font-size: 1.1rem;
+      text-decoration: none;
+      box-shadow: 0 4px 15px var(--shadow);
+      margin: 0 0.7rem;
+      display: inline-block;
+      transition: background 0.2s, color 0.2s;
+    }
+    .partner-cta-section .cta-btn:hover {
+      background: var(--primary-green);
+      color: var(--white);
+    }
+    @media (max-width: 700px) {
+      .discovery-grid, .deals-grid {
+        gap: 1.1rem;
+      }
+      .property-card, .deal-card, .top-pick-card {
+        padding: 1rem 0.5rem;
+        min-height: 180px;
+      }
+      .top-picks-slider {
+        gap: 1rem;
+      }
+      .sponsors-strip {
+        gap: 1rem;
+        padding: 0.7rem 0.2rem;
+      }
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+    }
+  </style>
+  <style>
+  .property-modal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 9999; display: flex; align-items: center; justify-content: center;
+    background: rgba(34,34,34,0.18); transition: background 0.3s;
+  }
+  .property-modal .modal-backdrop {
+    position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(34,34,34,0.25); z-index: 1;
+  }
+  .property-modal .modal-content {
+    position: relative; z-index: 2; background: #fff; border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    max-width: 420px; width: 95vw; padding: 2rem 1.5rem 1.5rem 1.5rem;
+    animation: modalIn 0.4s cubic-bezier(.4,1.4,.6,1);
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(40px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .property-modal .modal-close {
+    position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.3rem; color: var(--gold-dark); cursor: pointer;
+  }
+  .property-modal .modal-body img {
+    width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem;
+  }
+  .property-modal .modal-body h2 {
+    font-size: 1.3rem; font-weight: 700; color: var(--gold-dark); margin-bottom: 0.3rem;
+  }
+  .property-modal .modal-body .property-type {
+    background: var(--gold-light); color: var(--gold-dark); font-weight: 600; border-radius: 10px; padding: 0.2rem 0.7rem; font-size: 0.95rem; margin-bottom: 0.5rem; display: inline-block;
+  }
+  .property-modal .modal-body .property-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .property-modal .modal-body .badge { background: var(--gold); color: var(--white); font-weight: 700; border-radius: 10px; padding: 0.2rem 0.7rem; font-size: 0.9rem; display: inline-block; }
+  .property-modal .modal-body .badge.platinum { background: var(--gold-dark); color: var(--gold-light); }
+  .property-modal .modal-body .badge.pick { background: var(--gold-light); color: var(--gold-dark); }
+  .property-modal .modal-body .badge.aa { background: var(--primary-green); color: var(--white); }
+  .property-modal .modal-body .property-price { color: var(--primary-green); font-weight: 600; font-size: 1.1rem; margin-bottom: 0.3rem; }
+  .property-modal .modal-body .property-rating { color: var(--gold-dark); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .property-modal .modal-body .property-desc { color: var(--charcoal); font-size: 1rem; margin-bottom: 1rem; }
+  .property-modal .modal-body .contact-info { margin-bottom: 1.2rem; }
+  .property-modal .modal-body .contact-info a { color: var(--primary-green); font-weight: 600; text-decoration: none; margin-right: 1.2rem; }
+  .property-modal .modal-body .modal-actions { display: flex; gap: 1rem; margin-bottom: 1rem; }
+  .property-modal .modal-body .modal-btn { background: var(--gold); color: var(--charcoal); font-weight: 700; border-radius: 30px; padding: 0.7rem 1.5rem; font-size: 1rem; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .property-modal .modal-body .modal-btn:hover { background: var(--primary-green); color: var(--white); }
+  .property-modal .modal-body .booking-form { margin-top: 1rem; background: var(--gold-light); border-radius: 10px; padding: 1rem; }
+  .property-modal .modal-body .booking-form label { display: block; margin-bottom: 0.3rem; font-weight: 600; color: var(--gold-dark); }
+  .property-modal .modal-body .booking-form input, .property-modal .modal-body .booking-form textarea { width: 100%; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--gold-light); margin-bottom: 0.7rem; font-size: 1rem; }
+  .property-modal .modal-body .booking-form button { background: var(--primary-green); color: var(--white); font-weight: 700; border-radius: 20px; padding: 0.6rem 1.2rem; border: none; cursor: pointer; }
+  .property-modal .modal-body .booking-form button:hover { background: var(--gold-dark); }
+  .property-modal .modal-body .booking-success { color: var(--primary-green); font-weight: 700; margin-top: 1rem; text-align: center; }
+  .property-modal .modal-body .see-on-map-success { color: var(--primary-green); font-weight: 600; margin-top: 0.5rem; text-align: center; }
+  .property-modal .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="nav-container">
+      <a href="index.html" class="logo"><img src="images/deniM.png" alt="DeniFinder Logo">DeniFinder</a>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#top-picks">Top Picks</a>
+        <a href="#map">Map</a>
+        <a href="#deals">Deals</a>
+        <a href="#partners">Partners</a>
+      </nav>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="container">
+      <h1>Where to Stay</h1>
+      <p>Discover the best hotels, lodges, resorts, and cottages for your next stay. Curated for renters, students, families, and travelers seeking comfort and convenience.</p>
+    </div>
+  </div>
+  <div class="container">
+    <!-- Filters Bar -->
+    <form class="filters-bar" id="filtersBar">
+      <label for="filterLocation">Location</label>
+      <select id="filterLocation">
+        <option value="">All</option>
+        <option value="city">City Center</option>
+        <option value="campus">Near Campus</option>
+        <option value="lakeside">Lakeside</option>
+      </select>
+      <label for="filterType">Type</label>
+      <select id="filterType">
+        <option value="">All</option>
+        <option value="hotel">Hotel</option>
+        <option value="lodge">Lodge</option>
+        <option value="cottage">Cottage</option>
+        <option value="resort">Resort</option>
+      </select>
+      <label for="filterPrice">Max Price</label>
+      <input type="number" id="filterPrice" placeholder="$100+" min="0">
+      <label for="filterFeature">Feature</label>
+      <select id="filterFeature">
+        <option value="">Any</option>
+        <option value="pool">Pool</option>
+        <option value="wifi">Free Wi-Fi</option>
+        <option value="parking">Parking</option>
+      </select>
+      <button type="button" onclick="applyFilters()">Filter</button>
+    </form>
+    <!-- Top Picks Slider -->
+    <section class="top-picks-section" id="top-picks">
+      <h2 class="section-title">🏆 Top Recommendations</h2>
+      <div class="top-picks-slider" id="topPicksSlider">
+        <div class="top-pick-card animate-on-scroll">
+          <img src="images/hotel-placeholder.png" alt="Hotel">
+          <h3>Sunrise Grand Hotel</h3>
+          <span class="property-type">Hotel</span>
+          <div class="property-badges">
+            <span class="badge pick">🌟 DeniFinder Pick</span>
+            <span class="badge platinum">👑 Platinum Sponsor</span>
+          </div>
+          <span class="property-price">From $60/night</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+        <div class="top-pick-card animate-on-scroll">
+          <img src="images/lodge-placeholder.png" alt="Lodge">
+          <h3>Safari Lodge</h3>
+          <span class="property-type">Lodge</span>
+          <div class="property-badges">
+            <span class="badge aa">💎 Advance Assist Partner</span>
+          </div>
+          <span class="property-price">From $45/night</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+        <div class="top-pick-card animate-on-scroll">
+          <img src="images/cottage-placeholder.png" alt="Cottage">
+          <h3>Lakeview Cottages</h3>
+          <span class="property-type">Cottage</span>
+          <div class="property-badges">
+            <span class="badge platinum">👑 Platinum Sponsor</span>
+          </div>
+          <span class="property-price">From $35/night</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+      </div>
+    </section>
+    <!-- Discovery Grid -->
+    <section class="discovery-section">
+      <h2 class="section-title">🏞️ Curated Discovery Grid</h2>
+      <div class="discovery-grid" id="discoveryGrid">
+        <div class="property-card animate-on-scroll" data-type="hotel" data-location="city" data-price="60" data-feature="wifi">
+          <img src="images/hotel-placeholder.png" alt="Hotel">
+          <h3>Sunrise Grand Hotel</h3>
+          <span class="property-type">Hotel</span>
+          <div class="property-badges">
+            <span class="badge pick">🌟 DeniFinder Pick</span>
+            <span class="badge platinum">👑 Platinum Sponsor</span>
+          </div>
+          <span class="property-price">From $60/night</span>
+          <span class="property-rating">4.8 ★</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+        <div class="property-card animate-on-scroll" data-type="lodge" data-location="lakeside" data-price="45" data-feature="pool">
+          <img src="images/lodge-placeholder.png" alt="Lodge">
+          <h3>Safari Lodge</h3>
+          <span class="property-type">Lodge</span>
+          <div class="property-badges">
+            <span class="badge aa">💎 Advance Assist Partner</span>
+          </div>
+          <span class="property-price">From $45/night</span>
+          <span class="property-rating">4.6 ★</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+        <div class="property-card animate-on-scroll" data-type="cottage" data-location="campus" data-price="35" data-feature="parking">
+          <img src="images/cottage-placeholder.png" alt="Cottage">
+          <h3>Lakeview Cottages</h3>
+          <span class="property-type">Cottage</span>
+          <div class="property-badges">
+            <span class="badge platinum">👑 Platinum Sponsor</span>
+          </div>
+          <span class="property-price">From $35/night</span>
+          <span class="property-rating">4.7 ★</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+        <div class="property-card animate-on-scroll" data-type="resort" data-location="city" data-price="80" data-feature="pool">
+          <img src="images/project.jpg" alt="Resort">
+          <h3>Emerald Resort</h3>
+          <span class="property-type">Resort</span>
+          <div class="property-badges">
+            <span class="badge pick">🌟 DeniFinder Pick</span>
+          </div>
+          <span class="property-price">From $80/night</span>
+          <span class="property-rating">4.9 ★</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+        <div class="property-card animate-on-scroll" data-type="hotel" data-location="campus" data-price="50" data-feature="wifi">
+          <img src="images/hostels.jpeg" alt="Hotel">
+          <h3>Campus Comfort Hotel</h3>
+          <span class="property-type">Hotel</span>
+          <div class="property-badges">
+            <span class="badge aa">💎 Advance Assist Partner</span>
+          </div>
+          <span class="property-price">From $50/night</span>
+          <span class="property-rating">4.5 ★</span>
+          <a href="#" class="btn-details">View Details</a>
+        </div>
+      </div>
+    </section>
+    <!-- Map Section (Epic) -->
+    <section class="map-section" id="map">
+      <h2 class="section-title">📌 Interactive Map View</h2>
+      <div id="map" style="margin-bottom:0;"></div>
+    </section>
+    <!-- Deals & Promotions -->
+    <section class="deals-section" id="deals">
+      <h2 class="section-title">🎉 Special Deals & Promotions</h2>
+      <div class="deals-grid">
+        <div class="deal-card animate-on-scroll">
+          <div class="deal-badge">🏷️</div>
+          <h3>Stay 2 nights, get 1 free</h3>
+          <p>Enjoy a free night at Sunrise Grand Hotel when you book for 2 nights.</p>
+          <a href="#">See Deal</a>
+        </div>
+        <div class="deal-card animate-on-scroll">
+          <div class="deal-badge">🎓</div>
+          <h3>Graduation Week Discounts</h3>
+          <p>Special rates for students and families at Safari Lodge during graduation week.</p>
+          <a href="#">See Deal</a>
+        </div>
+        <div class="deal-card animate-on-scroll">
+          <div class="deal-badge">👨‍👩‍👧</div>
+          <h3>Family Stay Bundles</h3>
+          <p>Book a family suite at Lakeview Cottages and save 20%.</p>
+          <a href="#">See Deal</a>
+        </div>
+        <div class="deal-card animate-on-scroll">
+          <div class="deal-badge">💼</div>
+          <h3>Business Traveler Packages</h3>
+          <p>Emerald Resort offers exclusive packages for business travelers.</p>
+          <a href="#">See Deal</a>
+        </div>
+      </div>
+    </section>
+    <!-- Sponsors Strip -->
+    <div class="sponsors-strip" id="partners">
+      <img src="images/hotel-placeholder.png" alt="Hotel Sponsor" class="sponsor-logo">
+      <span class="sponsor-thank">🏅 Proud Supporter – <b>Sunrise Grand Hotel</b> Empowering student housing & smart relocation.</span>
+      <img src="images/lodge-placeholder.png" alt="Lodge Sponsor" class="sponsor-logo">
+      <span class="sponsor-thank">🏅 Proud Supporter – <b>Safari Lodge</b> Empowering student housing & smart relocation.</span>
+      <img src="images/cottage-placeholder.png" alt="Cottage Sponsor" class="sponsor-logo">
+      <span class="sponsor-thank">🏅 Proud Supporter – <b>Lakeview Cottages</b> Empowering student housing & smart relocation.</span>
+    </div>
+    <!-- Become a Partner CTA -->
+    <section class="partner-cta-section">
+      <h2>Become a Hospitality Partner</h2>
+      <p>Own a Lodge, Hotel, or Cottage? Reach more local travelers, renters, and students with DeniFinder. Verified. Trusted. Smart.</p>
+      <a href="#" class="cta-btn">List Your Property</a>
+      <a href="partenership kit/DeniFinder Partnership Kit.pdf" class="cta-btn" style="background:var(--primary-green);color:var(--white);" download>Download Our Partnership Kit</a>
+    </section>
+  </div>
+  <div id="propertyModal" class="property-modal" style="display:none;">
+    <div class="modal-backdrop" onclick="closePropertyModal()"></div>
+    <div class="modal-content">
+      <button class="modal-close" onclick="closePropertyModal()"><i class="fas fa-times"></i></button>
+      <div class="modal-body" id="modalBody">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Simple filter logic for demo
+    function applyFilters() {
+      const loc = document.getElementById('filterLocation').value;
+      const type = document.getElementById('filterType').value;
+      const price = parseFloat(document.getElementById('filterPrice').value);
+      const feature = document.getElementById('filterFeature').value;
+      document.querySelectorAll('.property-card').forEach(card => {
+        let show = true;
+        if (loc && card.dataset.location !== loc) show = false;
+        if (type && card.dataset.type !== type) show = false;
+        if (!isNaN(price) && parseFloat(card.dataset.price) > price) show = false;
+        if (feature && card.dataset.feature !== feature) show = false;
+        card.classList.toggle('hidden', !show);
+      });
+    }
+    // Epic interactive map integration (like map.html)
+    const mapProperties = [
+      {
+        id: '1',
+        title: 'Sunrise Grand Hotel',
+        location: 'City Center',
+        price: 60,
+        type: 'hotel',
+        status: 'available',
+        coordinates: [-13.9626, 33.7741],
+        description: 'Luxury hotel in the heart of the city',
+        contact: '+265 999 123 456'
+      },
+      {
+        id: '2',
+        title: 'Safari Lodge',
+        location: 'Lakeside',
+        price: 45,
+        type: 'lodge',
+        status: 'available',
+        coordinates: [-13.9500, 33.7800],
+        description: 'Lodge with lakeside views and pool',
+        contact: '+265 888 234 567'
+      },
+      {
+        id: '3',
+        title: 'Lakeview Cottages',
+        location: 'Near Campus',
+        price: 35,
+        type: 'cottage',
+        status: 'available',
+        coordinates: [-13.9700, 33.7600],
+        description: 'Cozy cottages close to campus',
+        contact: '+265 777 345 678'
+      },
+      {
+        id: '4',
+        title: 'Emerald Resort',
+        location: 'City Center',
+        price: 80,
+        type: 'resort',
+        status: 'available',
+        coordinates: [-13.9400, 33.7900],
+        description: 'Resort with premium amenities',
+        contact: '+265 666 456 789'
+      },
+      {
+        id: '5',
+        title: 'Campus Comfort Hotel',
+        location: 'Near Campus',
+        price: 50,
+        type: 'hotel',
+        status: 'available',
+        coordinates: [-13.9550, 33.7650],
+        description: 'Affordable hotel for students',
+        contact: '+265 888 555 111'
+      }
+    ];
+    let map, mapMarkers = [];
+    function initEpicMap() {
+      map = L.map('map').setView([-13.9626, 33.7741], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      addEpicMarkers();
+    }
+    function addEpicMarkers() {
+      mapMarkers.forEach(marker => map.removeLayer(marker));
+      mapMarkers = [];
+      mapProperties.forEach(property => {
+        if (property.coordinates) {
+          const icon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background: ${property.status === 'available' ? '#FFB800' : '#666'};width: 22px;height: 22px;border-radius: 50%;border: 3px solid white;box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11]
+          });
+          const marker = L.marker(property.coordinates, { icon }).addTo(map);
+          marker.bindPopup(`
+            <div style="text-align:center;min-width:200px;">
+              <div style="font-weight:700;color:#B38600;font-size:1.1rem;">${property.title}</div>
+              <div style="color:#4CAF50;font-weight:600;">$${property.price}/night</div>
+              <div style="color:#222;">${property.location}</div>
+              <div style="margin:0.5rem 0;">${property.description}</div>
+              <a href="tel:${property.contact}" style="background:#FFB800;color:#222;padding:0.5rem 1rem;border-radius:6px;font-weight:600;text-decoration:none;display:inline-block;margin-top:0.5rem;">Call</a>
+            </div>
+          `);
+          mapMarkers.push(marker);
+        }
+      });
+    }
+    window.addEventListener('DOMContentLoaded', initEpicMap);
+    // Animate on scroll
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+    document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      observer.observe(el);
+    });
+  </script>
+  <script>
+// Modal logic
+const propertyData = [
+  {
+    id: '1',
+    title: 'Sunrise Grand Hotel',
+    type: 'Hotel',
+    price: 60,
+    rating: 4.8,
+    badges: ['pick', 'platinum'],
+    img: 'images/hotel-placeholder.png',
+    desc: 'Luxury hotel in the heart of the city',
+    contact: '+265 999 123 456',
+    email: 'info@sunrisegrand.com',
+    feature: 'wifi',
+    location: 'City Center',
+    coordinates: [-13.9626, 33.7741]
+  },
+  {
+    id: '2',
+    title: 'Safari Lodge',
+    type: 'Lodge',
+    price: 45,
+    rating: 4.6,
+    badges: ['aa'],
+    img: 'images/lodge-placeholder.png',
+    desc: 'Lodge with lakeside views and pool',
+    contact: '+265 888 234 567',
+    email: 'info@safarilodge.com',
+    feature: 'pool',
+    location: 'Lakeside',
+    coordinates: [-13.9500, 33.7800]
+  },
+  {
+    id: '3',
+    title: 'Lakeview Cottages',
+    type: 'Cottage',
+    price: 35,
+    rating: 4.7,
+    badges: ['platinum'],
+    img: 'images/cottage-placeholder.png',
+    desc: 'Cozy cottages close to campus',
+    contact: '+265 777 345 678',
+    email: 'info@lakeviewcottages.com',
+    feature: 'parking',
+    location: 'Near Campus',
+    coordinates: [-13.9700, 33.7600]
+  },
+  {
+    id: '4',
+    title: 'Emerald Resort',
+    type: 'Resort',
+    price: 80,
+    rating: 4.9,
+    badges: ['pick'],
+    img: 'images/project.jpg',
+    desc: 'Resort with premium amenities',
+    contact: '+265 666 456 789',
+    email: 'info@emeraldresort.com',
+    feature: 'pool',
+    location: 'City Center',
+    coordinates: [-13.9400, 33.7900]
+  },
+  {
+    id: '5',
+    title: 'Campus Comfort Hotel',
+    type: 'Hotel',
+    price: 50,
+    rating: 4.5,
+    badges: ['aa'],
+    img: 'images/hostels.jpeg',
+    desc: 'Affordable hotel for students',
+    contact: '+265 888 555 111',
+    email: 'info@campuscomfort.com',
+    feature: 'wifi',
+    location: 'Near Campus',
+    coordinates: [-13.9550, 33.7650]
+  }
+];
+function openPropertyModal(id) {
+  const prop = propertyData.find(p => p.id === id);
+  if (!prop) return;
+  const badgesHtml = [
+    prop.badges.includes('pick') ? '<span class="badge pick">🌟 DeniFinder Pick</span>' : '',
+    prop.badges.includes('platinum') ? '<span class="badge platinum">👑 Platinum Sponsor</span>' : '',
+    prop.badges.includes('aa') ? '<span class="badge aa">💎 Advance Assist Partner</span>' : ''
+  ].join(' ');
+  document.getElementById('modalBody').innerHTML = `
+    <img src="${prop.img}" alt="${prop.title}">
+    <h2>${prop.title}</h2>
+    <span class="property-type">${prop.type}</span>
+    <div class="property-badges">${badgesHtml}</div>
+    <div class="property-price">From $${prop.price}/night</div>
+    <div class="property-rating">${prop.rating} ★</div>
+    <div class="property-desc">${prop.desc}</div>
+    <div class="contact-info">
+      <a href="tel:${prop.contact}"><i class="fas fa-phone"></i> ${prop.contact}</a>
+      <a href="mailto:${prop.email}"><i class="fas fa-envelope"></i> Email</a>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="showBookingForm('${prop.id}')">Book Now</button>
+      <button class="modal-btn" onclick="seeOnMap('${prop.id}')">See on Map</button>
+    </div>
+    <div id="bookingFormContainer"></div>
+    <div id="seeOnMapMsg"></div>
+  `;
+  document.getElementById('propertyModal').style.display = 'flex';
+}
+function closePropertyModal() {
+  document.getElementById('propertyModal').style.display = 'none';
+}
+function showBookingForm(id) {
+  const prop = propertyData.find(p => p.id === id);
+  if (!prop) return;
+  document.getElementById('bookingFormContainer').innerHTML = `
+    <form class="booking-form" onsubmit="submitBooking(event, '${prop.id}')">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" required>
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" required>
+      <label for="dates">Dates (e.g. 12-15 June)</label>
+      <input type="text" id="dates" name="dates" required>
+      <label for="message">Message (optional)</label>
+      <textarea id="message" name="message" rows="2"></textarea>
+      <button type="submit">Send Booking Request</button>
+    </form>
+  `;
+}
+function submitBooking(e, id) {
+  e.preventDefault();
+  document.getElementById('bookingFormContainer').innerHTML = '<div class="booking-success">Booking request sent! We will contact you soon.</div>';
+}
+function seeOnMap(id) {
+  const prop = propertyData.find(p => p.id === id);
+  if (!prop) return;
+  if (window.map && prop.coordinates) {
+    window.map.setView(prop.coordinates, 16);
+    // Find marker and open popup
+    if (window.mapMarkers) {
+      window.mapMarkers.forEach(marker => {
+        if (marker.getLatLng().lat === prop.coordinates[0] && marker.getLatLng().lng === prop.coordinates[1]) {
+          marker.openPopup();
+        }
+      });
+    }
+    document.getElementById('seeOnMapMsg').innerHTML = '<div class="see-on-map-success">Centered on map below!</div>';
+    setTimeout(()=>{document.getElementById('seeOnMapMsg').innerHTML='';}, 2000);
+    closePropertyModal();
+  }
+}
+// Attach modal openers to all View Details buttons
+window.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.btn-details').forEach((btn, i) => {
+    btn.onclick = function(e) {
+      e.preventDefault();
+      openPropertyModal((i+1).toString());
+    };
+  });
+});
+</script>
+</body>
+</html> 

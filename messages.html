@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --gray-light: #F8F9FA;
+            --gray: #666666;
+            --gray-dark: #333333;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-light);
+            color: var(--charcoal);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .logo img {
+            height: 30px;
+            width: auto;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 184, 0, 0.3);
+        }
+
+        /* Main Container */
+        .messages-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 350px;
+            background: var(--white);
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .new-message-btn {
+            background: var(--gold);
+            color: var(--charcoal);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .new-message-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 184, 0, 0.3);
+        }
+
+        .conversation-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .conversation-item:hover {
+            background: var(--gray-light);
+        }
+
+        .conversation-item.active {
+            background: var(--gold-light);
+            border-left: 4px solid var(--gold);
+        }
+
+        .conversation-item.unread {
+            background: rgba(255, 184, 0, 0.1);
+        }
+
+        .conversation-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .conversation-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .conversation-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            color: var(--charcoal);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .conversation-property {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-preview {
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background: var(--gold);
+            color: var(--charcoal);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Main Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .chat-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-user-details {
+            h3 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+            p {
+            color: var(--gray);
+            font-size: 0.9rem;
+                &.online {
+                    color: var(--success);
+                    font-weight: 500;
+                }
+            }
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-action-btn {
+            background: none;
+            border: 1px solid #e0e0e0;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-action-btn:hover {
+            background: var(--gray-light);
+        }
+
+        /* Messages Container */
+        .messages-container-inner {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages-list {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message-item {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .message-item.own-message {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 1rem;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .own-message .message-content {
+            background: var(--gold);
+            color: var(--charcoal);
+            border-bottom-right-radius: 5px;
+        }
+
+        .other-message .message-content {
+            background: var(--gray-light);
+            color: var(--charcoal);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-text {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+        }
+
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .message-status.sent {
+            color: var(--gray);
+        }
+
+        .message-status.read {
+            color: var(--success);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 1rem;
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Message Input */
+        .message-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            background: var(--white);
+        }
+
+        .message-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            background: var(--gray-light);
+            border-radius: 25px;
+            padding: 0.75rem 1rem;
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            resize: none;
+            max-height: 100px;
+            min-height: 20px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .message-input::placeholder {
+            color: var(--gray);
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .message-action-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--gray);
+        }
+
+        .message-action-btn:hover {
+            background: rgba(0,0,0,0.1);
+            color: var(--charcoal);
+        }
+
+        .send-btn {
+            background: var(--gold);
+            color: var(--charcoal);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--gold);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--charcoal);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                z-index: 10;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .chat-area {
+                width: 100%;
+            }
+
+            .conversation-item {
+                padding: 0.75rem 1rem;
+            }
+
+            .conversation-avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--gray);
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            padding: 1rem 1.5rem;
+            color: var(--gray);
+            font-style: italic;
+            display: none;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        /* File Upload */
+        .file-upload {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: var(--gray-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-preview img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .file-preview .file-info {
+            flex: 1;
+        }
+
+        .file-preview .file-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .file-preview .file-size {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .file-preview .remove-file {
+            background: var(--danger);
+            color: var(--white);
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Property Picker Modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal.hidden {
+            display: none;
+        }
+        .modal:not(.hidden) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 12px;
+        }
+        .property-picker-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .property-picker-item:hover {
+            background-color: #f1f1f1;
+        }
+        .property-picker-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+        .property-picker-info h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .property-picker-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .property-picker-item .btn-primary {
+            margin-left: auto;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="images/deniM.png" alt="DeniFinder Logo">
+            <span>DeniFinder</span>
+        </div>
+        
+        <div class="header-actions">
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="messages-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Messages</h2>
+                <button class="new-message-btn" onclick="messagingSystem.showNewMessageModal()">
+                    <i class="fas fa-plus"></i> New Message
+                </button>
+                <button class="new-message-btn" style="background: #00B4D8; color: #fff; margin-left: 0.5rem;" onclick="window.location.href='find-users.html'">
+                    <i class="fas fa-user-friends"></i> Find Users
+                </button>
+            </div>
+            
+            <div class="conversation-list" id="conversationList">
+                <!-- Conversations will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <!-- Chat Header -->
+            <div class="chat-header" id="chatHeader">
+                <div class="chat-user-info">
+                    <div class="chat-user-avatar">
+                        <img src="images/deniM.png" alt="User Avatar" id="chatUserAvatar">
+                    </div>
+                    <div class="chat-user-details">
+                        <h3 id="chatUserName">Select a conversation</h3>
+                        <p id="chatUserStatus" class="online">Online</p>
+                    </div>
+                </div>
+                
+                <div class="chat-actions">
+                    <button class="chat-action-btn" onclick="messagingSystem.viewProperty()">
+                        <i class="fas fa-home"></i>
+                    </button>
+                    <button class="chat-action-btn" onclick="messagingSystem.showUserProfile()">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="chat-action-btn" onclick="messagingSystem.showChatOptions()">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages Container -->
+            <div class="messages-container-inner">
+                <!-- Messages List -->
+                <div class="messages-list" id="messagesList">
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <h3>No conversation selected</h3>
+                        <p>Choose a conversation from the sidebar to start messaging</p>
+                    </div>
+                </div>
+
+                <!-- Typing Indicator -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <i class="fas fa-circle"></i> Someone is typing...
+                </div>
+
+                <!-- Message Input -->
+                <div class="message-input-container">
+                    <div class="message-input-wrapper">
+                        <textarea 
+                            class="message-input" 
+                            id="messageInput" 
+                            placeholder="Type your message..."
+                            rows="1"
+                        ></textarea>
+                        
+                        <div class="message-actions">
+                            <input type="file" class="file-upload" id="fileUpload" accept="image/*,.pdf,.doc,.docx">
+                            <button class="message-action-btn" onclick="document.getElementById('fileUpload').click()">
+                                <i class="fas fa-paperclip"></i>
+                            </button>
+                            <button class="message-action-btn" onclick="messagingSystem.toggleEmojiPicker()">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <button class="message-action-btn" onclick="messagingSystem.showPropertyPicker()">
+                                <i class="fas fa-home"></i>
+                            </button>
+                            <button class="send-btn" id="sendBtn" onclick="messagingSystem.sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- File Preview -->
+                    <div class="file-preview" id="filePreview" style="display: none;">
+                        <img src="" alt="File Preview" id="filePreviewImg">
+                        <div class="file-info">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                        <button class="remove-file" onclick="messagingSystem.removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Picker Modal -->
+    <div class="modal hidden" id="propertyPickerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Share a Property</h3>
+                <button onclick="messagingSystem.closePropertyPicker()" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body" id="propertyPickerList">
+                <!-- Properties will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-init.js"></script>
+
+    <!-- Scripts -->
+    <script src="js/messaging.js"></script>
+    <script>
+        // Initialize messaging system with Firebase
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if user is authenticated
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            if (!currentUser) {
+                alert('Please sign in to access messages');
+                window.location.href = 'signin.html';
+                return;
+            }
+
+            // Initialize Firebase messaging
+            if (window.DeniFinderFirebase) {
+                // Set up real-time messaging listeners
+                const user = JSON.parse(currentUser);
+                
+                // Listen for new messages
+                window.DeniFinderFirebase.dbService.onCollectionSnapshot(
+                    'messages',
+                    (messages) => {
+                        // Filter messages for current user
+                        const userMessages = messages.filter(msg => 
+                            msg.senderId === user.uid || msg.receiverId === user.uid
+                        );
+                        messagingSystem.updateMessages(userMessages);
+                    },
+                    [
+                        { field: 'senderId', operator: '==', value: user.uid },
+                        { field: 'receiverId', operator: '==', value: user.uid }
+                    ]
+                );
+            }
+
+            messagingSystem.init();
+            
+            // Auto-resize textarea
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', () => {
+                messageInput.style.height = 'auto';
+                messageInput.style.height = Math.min(messageInput.scrollHeight, 100) + 'px';
+            });
+
+            // File upload handling
+            const fileUpload = document.getElementById('fileUpload');
+            fileUpload.addEventListener('change', (e) => {
+                messagingSystem.handleFileUpload(e.target.files[0]);
+            });
+
+            // Mobile sidebar toggle
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const toggleBtn = document.createElement('button');
+                toggleBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                toggleBtn.className = 'back-btn';
+                toggleBtn.onclick = () => sidebar.classList.toggle('active');
+                
+                document.querySelector('.header-actions').prepend(toggleBtn);
+            }
+        });
+    </script>
+</body>
+</html> 

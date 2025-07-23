@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advertise Your Property - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-advertise-property">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title">Advertise Your House or Land</h1>
+                <p class="service-subtitle">A premium service for verified agents and landlords to list properties.</p>
+                
+                <div class="service-description">
+                    <p>Our platform connects you with serious buyers and tenants. All listings are reviewed for quality and authenticity.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Reach thousands of potential clients.</li>
+                        <li><i class="fas fa-shield-alt"></i> Benefit from our 'Verified by DeniFinder' badge.</li>
+                        <li><i class="fas fa-tachometer-alt"></i> Fast and easy submission process.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Submit Property for Listing</h2>
+                    <p>This service is for verified agents only. Fill out the form to have your property listed.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="agent-name">Agent Name</label>
+                            <input type="text" id="agent-name" name="agent-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="agent-email">Agent Email</label>
+                            <input type="email" id="agent-email" name="agent-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="property-type">Property Type</label>
+                            <select id="property-type" name="property-type" required>
+                                <option value="house-for-rent">House for Rent</option>
+                                <option value="house-for-sale">House for Sale</option>
+                                <option value="land-for-sale">Land for Sale</option>
+                                <option value="hostel">Hostel/Room</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="property-location">Location (e.g., Area 47, Lilongwe)</label>
+                            <input type="text" id="property-location" name="property-location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Price (MWK)</label>
+                            <input type="number" id="price" name="price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Brief Description</label>
+                            <textarea id="description" name="description" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="photos">Property Photos (Up to 5)</label>
+                            <input type="file" id="photos" name="photos" multiple accept="image/*">
+                        </div>
+                        <button type="submit" class="btn-submit">Submit for Review</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

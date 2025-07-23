@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Assistance - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-legal-assistance">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title"><i class="fas fa-gavel"></i> Legal Assistance & Title Processing</h1>
+                <p class="service-subtitle">Avoid fake land deals and illegal rentals. We connect you with licensed legal experts for all your property needs.</p>
+                
+                <div class="service-description">
+                    <p>Our network of professionals can help with:</p>
+                    <ul>
+                        <li><i class="fas fa-file-signature"></i> Reviewing and drafting lease or rental contracts.</li>
+                        <li><i class="fas fa-search-location"></i> Conducting land title searches to verify ownership.</li>
+                        <li><i class="fas fa-exchange-alt"></i> Processing title transfers and other legal documents.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Request Legal Assistance</h2>
+                    <p>Tell us what you need, and we'll provide a quote for our flat-rate packages or connect you with an expert.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="service-needed">Service Needed</label>
+                            <select id="service-needed" name="service-needed" required>
+                                <option value="contract-review">Contract Review</option>
+                                <option value="title-search">Land Title Search</option>
+                                <option value="title-transfer">Title Transfer Processing</option>
+                                <option value="other">Other Legal Advice</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="details">Briefly describe your situation</label>
+                            <textarea id="details" name="details" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Get a Quote</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

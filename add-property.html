@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Property - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-gray);
+            color: var(--charcoal);
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--charcoal);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--charcoal);
+            opacity: 0.7;
+        }
+
+        /* Form Container */
+        .form-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Section */
+        .form-section {
+            padding: 2rem;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-subtitle {
+            color: var(--charcoal);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--white);
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        /* Checkbox Group */
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+
+        .checkbox-item label {
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* Image Upload */
+        .image-upload {
+            border: 2px dashed var(--light-gray);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .image-upload:hover {
+            border-color: var(--gold);
+        }
+
+        .image-upload i {
+            font-size: 2rem;
+            color: var(--charcoal);
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .image-upload p {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .image-upload span {
+            font-size: 0.8rem;
+            color: var(--charcoal);
+            opacity: 0.7;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .image-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: var(--light-gray);
+            padding: 1.5rem;
+        }
+
+        .map-header {
+            margin-bottom: 1rem;
+        }
+
+        .map-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .map-subtitle {
+            font-size: 0.9rem;
+            color: var(--charcoal);
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+
+        #propertyMap {
+            height: 300px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        /* Location Search */
+        .location-search {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .search-btn {
+            background: var(--gold);
+            color: var(--charcoal);
+            border: none;
+            border-radius: 6px;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+        }
+
+        /* Popular Areas */
+        .popular-areas {
+            margin-bottom: 1rem;
+        }
+
+        .popular-areas h4 {
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            color: var(--charcoal);
+        }
+
+        .area-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .area-btn {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .area-btn:hover {
+            background: var(--gold-light);
+            border-color: var(--gold);
+        }
+
+        .area-btn.active {
+            background: var(--gold);
+            color: var(--charcoal);
+            border-color: var(--gold);
+        }
+
+        /* Location Status */
+        .location-status {
+            margin-bottom: 1rem;
+        }
+
+        .status-message {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem;
+            background: var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--charcoal);
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-message i {
+            color: var(--gold);
+        }
+
+        .map-instructions {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .map-instructions h4 {
+            margin-bottom: 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .map-instructions ul {
+            margin-left: 1rem;
+            color: var(--charcoal);
+            opacity: 0.8;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding: 2rem;
+            background: var(--light-gray);
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--charcoal);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-cancel:hover {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        .btn-save {
+            background: var(--primary-green);
+            color: var(--white);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-save:disabled {
+            background: var(--light-gray);
+            color: var(--charcoal);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .location-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--white);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/deniM.png" alt="DeniFinder Logo">
+                DeniFinder
+            </a>
+            <nav class="nav-links">
+                <a href="landlord-dashboard.html">Dashboard</a>
+                <a href="map.html">Map</a>
+                <a href="messages.html">Messages</a>
+                <a href="signin.html">Sign In</a>
+                <a href="signup.html" class="btn-primary">Sign Up</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">Add New Property</h1>
+            <p class="page-subtitle">List your property and reach potential tenants</p>
+        </div>
+
+        <form id="addPropertyForm" class="form-container">
+            <!-- Form Section -->
+            <div class="form-section">
+                <div class="form-header">
+                    <h2 class="form-title">Property Details</h2>
+                    <p class="form-subtitle">Fill in the details of your property</p>
+                </div>
+
+                <!-- Basic Information -->
+                <div class="form-group">
+                    <label class="form-label">Property Title *</label>
+                    <input type="text" class="form-input" id="propertyTitle" required placeholder="e.g., Modern 2-Bedroom Apartment">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Property Type *</label>
+                        <select class="form-select" id="propertyType" required>
+                            <option value="">Select Type</option>
+                            <option value="house">House</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="hostel">Hostel</option>
+                            <option value="room">Room</option>
+                            <option value="studio">Studio</option>
+                            <option value="quarter">Quarter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status *</label>
+                        <select class="form-select" id="propertyStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="available">Available</option>
+                            <option value="rented">Rented</option>
+                            <option value="reserved">Reserved</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Monthly Rent (MK) *</label>
+                        <input type="number" class="form-input" id="propertyPrice" required placeholder="e.g., 150000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bedrooms</label>
+                        <select class="form-select" id="propertyBedrooms">
+                            <option value="">Select</option>
+                            <option value="1">1 Bedroom</option>
+                            <option value="2">2 Bedrooms</option>
+                            <option value="3">3 Bedrooms</option>
+                            <option value="4">4+ Bedrooms</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Location/Address *</label>
+                    <input type="text" class="form-input" id="propertyLocation" required placeholder="e.g., Area 18, Lilongwe">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="propertyDescription" placeholder="Describe your property, amenities, and what makes it special..."></textarea>
+                </div>
+
+                <!-- Amenities -->
+                <div class="form-group">
+                    <label class="form-label">Amenities</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wifi" value="wifi">
+                            <label for="wifi">WiFi</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="parking" value="parking">
+                            <label for="parking">Parking</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="security" value="security">
+                            <label for="security">Security</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="water" value="water">
+                            <label for="water">Water</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="electricity" value="electricity">
+                            <label for="electricity">Electricity</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="garden" value="garden">
+                            <label for="garden">Garden</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="kitchen" value="kitchen">
+                            <label for="kitchen">Kitchen</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bathroom" value="bathroom">
+                            <label for="bathroom">Private Bathroom</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone *</label>
+                        <input type="tel" class="form-input" id="contactPhone" required placeholder="e.g., +265 999 123 456">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Email</label>
+                        <input type="email" class="form-input" id="contactEmail" placeholder="e.g., landlord@email.com">
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div class="form-group">
+                    <label class="form-label">Property Images</label>
+                    <div class="image-upload" onclick="document.getElementById('propertyImages').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload images</p>
+                        <span>PNG, JPG up to 5MB each</span>
+                    </div>
+                    <input type="file" id="propertyImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <!-- Available From -->
+                <div class="form-group" id="availableFromGroup" style="display:none;">
+                    <label class="form-label">Available From</label>
+                    <input type="date" class="form-input" id="availableFrom">
+                </div>
+            </div>
+
+            <!-- Map Section -->
+            <div class="map-section">
+                <div class="map-header">
+                    <h3 class="map-title">Set Property Location</h3>
+                    <p class="map-subtitle">Click on the map to set your property location</p>
+                </div>
+
+                <div id="propertyMap"></div>
+                <!-- Location Lock Button -->
+                <div style="margin: 1rem 0; text-align: center;">
+                    <button type="button" id="lockLocationBtn" class="btn-primary">Lock Location</button>
+                    <span id="locationLockedMsg" style="display:none; color:green; font-weight:600; margin-left:1rem;"><i class="fas fa-check-circle"></i> Location locked!</span>
+                </div>
+
+                <!-- Location Search -->
+                <div class="location-search">
+                    <input type="text" class="search-input" id="locationSearch" placeholder="Search for area, city, or landmark...">
+                    <button type="button" class="search-btn" onclick="searchLocation()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                <!-- Popular Areas -->
+                <div class="popular-areas">
+                    <h4>Popular Areas in Malawi:</h4>
+                    <div class="area-buttons">
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Lilongwe', [-13.9833, 33.7833])">Lilongwe</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Blantyre', [-15.7861, 35.0058])">Blantyre</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Mzuzu', [-11.4581, 34.0151])">Mzuzu</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Zomba', [-15.3869, 35.3192])">Zomba</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Area 18, Lilongwe', [-13.9626, 33.7741])">Area 18</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Area 47, Lilongwe', [-13.9500, 33.7800])">Area 47</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Ndirande, Blantyre', [-15.8000, 35.0000])">Ndirande</button>
+                        <button type="button" class="area-btn" onclick="setPopularLocation('Chichiri, Blantyre', [-15.7900, 35.0100])">Chichiri</button>
+                    </div>
+                </div>
+
+                <div class="location-status">
+                    <div id="locationStatus" class="status-message">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Click on the map to set your property location</span>
+                    </div>
+                </div>
+
+                <div class="map-instructions">
+                    <h4>How to set location:</h4>
+                    <ul>
+                        <li><strong>Option 1:</strong> Click anywhere on the map to place a marker</li>
+                        <li><strong>Option 2:</strong> Search for your area in the search box above</li>
+                        <li><strong>Option 3:</strong> Click one of the popular areas above</li>
+                        <li>Drag the marker to adjust the exact location if needed</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="landlord-dashboard.html" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-save" id="saveButton">
+                    <span id="saveText">Save Property</span>
+                    <span id="saveSpinner" class="spinner" style="display: none;"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHxCNlJl_Y93Hskm5ogiiYHIhfIVIS8A",
+            authDomain: "defi-finder.firebaseapp.com",
+            projectId: "defi-finder",
+            storageBucket: "defi-finder.firebasestorage.app",
+            messagingSenderId: "665116835708",
+            appId: "1:665116835708:web:11ade28588832aa3c9aef9"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+        const storage = firebase.storage(app);
+
+        // Map variables
+        let propertyMap;
+        let propertyMarker;
+        let uploadedImages = [];
+        let locationLocked = false;
+
+        // Initialize map
+        function initMap() {
+            // Centered at Lilongwe, Malawi
+            propertyMap = L.map('propertyMap').setView([-13.9626, 33.7741], 13);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(propertyMap);
+
+            // Add click event to map
+            propertyMap.on('click', function(e) {
+                setPropertyLocation(e.latlng.lat, e.latlng.lng, 'Custom location');
+            });
+        }
+
+        // Set property location
+        function setPropertyLocation(lat, lng, locationName = '') {
+            // Remove existing marker
+            if (propertyMarker) {
+                propertyMap.removeLayer(propertyMarker);
+            }
+
+            // Add new marker
+            propertyMarker = L.marker([lat, lng], {
+                draggable: true
+            }).addTo(propertyMap);
+
+            // Center map on marker
+            propertyMap.setView([lat, lng], 15);
+
+            // Update location status
+            updateLocationStatus('success', `Location set: ${locationName || 'Custom location'}`);
+
+            // Add drag event
+            propertyMarker.on('dragend', function(e) {
+                const position = e.target.getLatLng();
+                updateLocationStatus('success', 'Location updated by dragging marker');
+            });
+
+            // Store coordinates for form submission
+            window.selectedCoordinates = [lat, lng];
+        }
+
+        // Update location status message
+        function updateLocationStatus(type, message) {
+            const statusElement = document.getElementById('locationStatus');
+            statusElement.className = `status-message ${type}`;
+            statusElement.innerHTML = `
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${message}</span>
+            `;
+        }
+
+        // Search location using OpenStreetMap Nominatim
+        async function searchLocation() {
+            const searchQuery = document.getElementById('locationSearch').value.trim();
+            if (!searchQuery) {
+                updateLocationStatus('error', 'Please enter a location to search');
+                return;
+            }
+
+            updateLocationStatus('', 'Searching for location...');
+
+            try {
+                // Add "Malawi" to search query for better results
+                const searchTerm = searchQuery.includes('Malawi') ? searchQuery : `${searchQuery}, Malawi`;
+                
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}&limit=1`);
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    const result = data[0];
+                    const lat = parseFloat(result.lat);
+                    const lng = parseFloat(result.lon);
+                    
+                    setPropertyLocation(lat, lng, result.display_name);
+                    
+                    // Update location input
+                    document.getElementById('propertyLocation').value = searchQuery;
+                } else {
+                    updateLocationStatus('error', 'Location not found. Try a different search term.');
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                updateLocationStatus('error', 'Search failed. Please try again.');
+            }
+        }
+
+        // Set popular location
+        function setPopularLocation(locationName, coordinates) {
+            setPropertyLocation(coordinates[0], coordinates[1], locationName);
+            
+            // Update location input
+            document.getElementById('propertyLocation').value = locationName;
+            
+            // Update search input
+            document.getElementById('locationSearch').value = locationName;
+        }
+
+        // Handle Enter key in search input
+        document.getElementById('locationSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchLocation();
+            }
+        });
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('imagePreview');
+            
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageItem = document.createElement('div');
+                        imageItem.className = 'image-item';
+                        imageItem.innerHTML = `
+                            <img src="${e.target.result}" alt="Property Image">
+                            <button type="button" class="image-remove" onclick="removeImage(this)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        `;
+                        preview.appendChild(imageItem);
+                        
+                        // Store image data
+                        uploadedImages.push({
+                            file: file,
+                            url: e.target.result
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Remove image
+        function removeImage(button) {
+            const imageItem = button.parentElement;
+            const index = Array.from(imageItem.parentElement.children).indexOf(imageItem);
+            uploadedImages.splice(index, 1);
+            imageItem.remove();
+        }
+
+        // Get selected amenities
+        function getSelectedAmenities() {
+            const amenities = [];
+            document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked').forEach(checkbox => {
+                amenities.push(checkbox.value);
+            });
+            return amenities;
+        }
+
+        // Upload images to Firebase Storage
+        async function uploadImages(propertyId) {
+            const imageUrls = [];
+            
+            for (let i = 0; i < uploadedImages.length; i++) {
+                const image = uploadedImages[i];
+                const imageRef = storage.ref(`properties/${propertyId}/image_${i}.jpg`);
+                
+                try {
+                    const snapshot = await imageRef.put(image.file);
+                    const downloadURL = await snapshot.ref.getDownloadURL();
+                    imageUrls.push(downloadURL);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                }
+            }
+            
+            return imageUrls;
+        }
+
+        // Save property
+        async function saveProperty(propertyData) {
+            try {
+                // Check if user is authenticated
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    throw new Error('Please sign in to add a property');
+                }
+
+                const user = JSON.parse(currentUser);
+                
+                // Add user ID to property data
+                propertyData.ownerId = user.uid;
+                propertyData.ownerName = user.displayName || user.email;
+                propertyData.createdAt = new Date();
+                propertyData.updatedAt = new Date();
+
+                // Save to Firestore
+                const docRef = await db.collection('properties').add(propertyData);
+                
+                // Upload images if any
+                if (uploadedImages.length > 0) {
+                    const imageUrls = await uploadImages(docRef.id);
+                    await db.collection('properties').doc(docRef.id).update({
+                        images: imageUrls
+                    });
+                }
+
+                return { success: true, propertyId: docRef.id };
+            } catch (error) {
+                console.error('Error saving property:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // Form submission
+        document.getElementById('addPropertyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const propertyData = {
+                title: document.getElementById('propertyTitle').value,
+                type: document.getElementById('propertyType').value,
+                status: document.getElementById('propertyStatus').value,
+                price: parseInt(document.getElementById('propertyPrice').value),
+                bedrooms: document.getElementById('propertyBedrooms').value || null,
+                location: document.getElementById('propertyLocation').value,
+                description: document.getElementById('propertyDescription').value,
+                amenities: getSelectedAmenities(),
+                contactPhone: document.getElementById('contactPhone').value,
+                contactEmail: document.getElementById('contactEmail').value
+            };
+
+            // Validate required fields
+            if (!window.selectedCoordinates) {
+                alert('Please set the property location on the map before saving.');
+                updateLocationStatus('error', 'Please set a location on the map');
+                return;
+            }
+
+            propertyData.coordinates = window.selectedCoordinates;
+
+            // Show loading state
+            const saveButton = document.getElementById('saveButton');
+            const saveText = document.getElementById('saveText');
+            const saveSpinner = document.getElementById('saveSpinner');
+            
+            saveButton.disabled = true;
+            saveText.textContent = 'Saving...';
+            saveSpinner.style.display = 'inline-block';
+
+            try {
+                const result = await saveProperty(propertyData);
+                
+                if (result.success) {
+                    alert('Property saved successfully!');
+                    window.location.href = 'landlord-dashboard.html';
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            } finally {
+                // Reset button state
+                saveButton.disabled = false;
+                saveText.textContent = 'Save Property';
+                saveSpinner.style.display = 'none';
+            }
+        });
+
+        // Lock/Unlock Location logic
+        const lockLocationBtn = document.getElementById('lockLocationBtn');
+        const locationLockedMsg = document.getElementById('locationLockedMsg');
+        lockLocationBtn.addEventListener('click', function() {
+            if (!locationLocked) {
+                // Lock: disable map clicks and marker dragging
+                locationLocked = true;
+                if (propertyMarker) propertyMarker.dragging.disable();
+                propertyMap.off('click');
+                lockLocationBtn.textContent = 'Unlock Location';
+                locationLockedMsg.style.display = 'inline';
+            } else {
+                // Unlock: enable map clicks and marker dragging
+                locationLocked = false;
+                if (propertyMarker) propertyMarker.dragging.enable();
+                propertyMap.on('click', function(e) {
+                    setPropertyLocation(e.latlng.lat, e.latlng.lng, 'Custom location');
+                });
+                lockLocationBtn.textContent = 'Lock Location';
+                locationLockedMsg.style.display = 'none';
+            }
+        });
+
+        // Show/hide Available From field based on status
+        const propertyStatus = document.getElementById('propertyStatus');
+        const availableFromGroup = document.getElementById('availableFromGroup');
+        propertyStatus.addEventListener('change', function() {
+            if (this.value !== 'available') {
+                availableFromGroup.style.display = 'block';
+            } else {
+                availableFromGroup.style.display = 'none';
+            }
+        });
+
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+        });
+    </script>
+</body>
+</html> 

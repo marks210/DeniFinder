@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced House Finder - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #222; margin: 0; }
+        .bg-hero {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            background: url('images/hero.jpeg') center/cover no-repeat;
+            opacity: 0.13;
+            animation: bgFade 8s ease-in-out infinite alternate;
+        }
+        @keyframes bgFade {
+            0% { opacity: 0.13; filter: blur(0px); }
+            100% { opacity: 0.22; filter: blur(2px); }
+        }
+        .header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; position: relative; z-index: 2; }
+        .logo { display: flex; align-items: center; text-decoration: none; color: #FFB800; font-size: 1.5rem; font-weight: 700; }
+        .logo img { height: 32px; margin-right: 0.5rem; }
+        .container { max-width: 600px; margin: 2rem auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 2.5rem 2rem; position: relative; z-index: 2; }
+        .headline { font-size: 2rem; font-weight: 800; margin-bottom: 2rem; color: #FFB800; text-align: center; }
+        form { display: flex; flex-direction: column; gap: 1.2rem; }
+        label { font-weight: 600; margin-bottom: 0.3rem; }
+        input, select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; font-family: inherit; }
+        textarea { min-height: 80px; }
+        .form-row { display: flex; gap: 1rem; }
+        .form-row > * { flex: 1; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .checkbox-label { display: flex; align-items: center; gap: 0.5rem; background: #f8f9fa; border-radius: 6px; padding: 0.4rem 0.8rem; cursor: pointer; font-weight: 400; }
+        .cta-btn { background: linear-gradient(90deg, #FFB800, #FFEB99); color: #222; font-weight: 700; font-size: 1.1rem; border: none; border-radius: 10px; padding: 1rem 2.5rem; cursor: pointer; box-shadow: 0 2px 8px rgba(255,184,0,0.12); transition: background 0.2s; margin-top: 1rem; }
+        .cta-btn:hover { background: linear-gradient(90deg, #FFB800, #FFD700); }
+        .estimate-box { background: #FFEB99; color: #7A5C00; border-radius: 8px; padding: 1rem; margin: 1rem 0; font-weight: 600; text-align: center; display: none; }
+        .phone-row { display: flex; align-items: center; gap: 0.7rem; }
+        .phone-row input { flex: 1; }
+        .icon-link { color: #25D366; font-size: 1.3rem; margin-left: 0.2rem; transition: color 0.2s; }
+        .icon-link.call { color: #0072c6; }
+        .icon-link:hover { color: #FFB800; }
+        @media (max-width: 700px) { .container { padding: 1.2rem; } .form-row { flex-direction: column; gap: 0.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="bg-hero"></div>
+    <header class="header">
+        <a href="dashboard.html" class="logo"><img src="images/deniM.png" alt="DeniFinder Logo"> DeniFinder</a>
+    </header>
+    <div class="container">
+        <div class="headline">Advanced House Finder Request</div>
+        <form id="finderForm" action="https://formspree.io/f/mkgzobza" method="POST">
+            <label for="location">Preferred Location *</label>
+            <select id="location" name="location" required>
+                <option value="">Select a city/area...</option>
+                <option>Lilongwe</option>
+                <option>Blantyre</option>
+                <option>Mzuzu</option>
+                <option>Zomba</option>
+                <option>Chilinde</option>
+                <option>Area 47</option>
+                <option>Area 18</option>
+                <option>Other</option>
+            </select>
+            <label for="distance">Distance from workplace/school (optional)</label>
+            <input type="text" id="distance" name="distance" placeholder="e.g. 5km from ABC University">
+            <label for="moveIn">Move-in Date *</label>
+            <input type="date" id="moveIn" name="moveIn" required>
+            <label for="flexible">Flexible timeframe?</label>
+            <select id="flexible" name="flexible">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+            <div class="form-row">
+                <div>
+                    <label for="budgetMin">Budget Min (MWK)</label>
+                    <input type="number" id="budgetMin" name="budgetMin" min="0" placeholder="e.g. 100000">
+                </div>
+                <div>
+                    <label for="budgetMax">Budget Max (MWK)</label>
+                    <input type="number" id="budgetMax" name="budgetMax" min="0" placeholder="e.g. 200000">
+                </div>
+            </div>
+            <label for="priority">What matters most?</label>
+            <select id="priority" name="priority">
+                <option value="Value">Value</option>
+                <option value="Comfort">Comfort</option>
+                <option value="Location">Location</option>
+                <option value="Other">Other</option>
+            </select>
+            <label for="type">House Type *</label>
+            <select id="type" name="type" required>
+                <option value="">Select...</option>
+                <option>House</option>
+                <option>Apartment</option>
+                <option>Shared space (hostel)</option>
+                <option>Self-contained</option>
+            </select>
+            <div class="form-row">
+                <div>
+                    <label for="bedrooms">Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" min="1" max="10">
+                </div>
+                <div>
+                    <label for="bathrooms">Bathrooms</label>
+                    <input type="number" id="bathrooms" name="bathrooms" min="1" max="10">
+                </div>
+            </div>
+            <label for="size">Size/Other Room Needs (optional)</label>
+            <input type="text" id="size" name="size" placeholder="e.g. Spacious living room">
+            <label>Furnishing</label>
+            <select id="furnishing" name="furnishing">
+                <option>Furnished</option>
+                <option>Unfurnished</option>
+                <option>Semi-furnished</option>
+            </select>
+            <label>Special Preferences (optional)</label>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Parking"> Parking</label>
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Pet-friendly"> Pet-friendly</label>
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Quiet area"> Quiet area</label>
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Security guard"> Security guard</label>
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Garden/balcony"> Garden/balcony</label>
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Near transport/road"> Near transport/road</label>
+                <label class="checkbox-label"><input type="checkbox" name="preferences" value="Swimming pool"> Swimming pool</label>
+            </div>
+            <label for="message">Message (optional)</label>
+            <textarea id="message" name="message" placeholder="Tell us anything else that matters to you..."></textarea>
+            <label for="name">Your Name *</label>
+            <input type="text" id="name" name="name" required>
+            <label for="whatsapp">WhatsApp Number or Phone *</label>
+            <div class="phone-row">
+                <input type="text" id="whatsapp" name="whatsapp" required>
+                <a class="icon-link" id="waLink" href="https://chat.whatsapp.com/BdfmfzS4UQXKRZBX4DkTPr" target="_blank" title="Join WhatsApp Group"><i class="fab fa-whatsapp"></i></a>
+                <a class="icon-link call" id="callLink" href="tel:+265984898167" target="_blank" title="Call +265984898167"><i class="fas fa-phone"></i></a>
+            </div>
+            <div style="background:#FFEB99;color:#7A5C00;padding:0.7rem 1rem;border-radius:8px;margin-bottom:1rem;font-weight:600;text-align:center;">
+                <i class="fas fa-info-circle"></i> If you choose to contact us via <a href="https://chat.whatsapp.com/BdfmfzS4UQXKRZBX4DkTPr" target="_blank" style="color:#25D366;font-weight:700;text-decoration:underline;">WhatsApp group</a> or call <a href="tel:+265984898167" style="color:#0072c6;font-weight:700;text-decoration:underline;">+265984898167</a>, you do <b>not</b> need to submit this form.
+            </div>
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
+            <label for="contactTime">When to contact you?</label>
+            <input type="text" id="contactTime" name="contactTime" placeholder="e.g. Evenings, weekends">
+            <label for="urgency">Urgency Level</label>
+            <select id="urgency" name="urgency">
+                <option>Normal</option>
+                <option>Urgent</option>
+                <option>Flexible</option>
+            </select>
+            <button class="cta-btn" type="submit">Submit Request</button>
+            <div class="estimate-box" id="estimateBox"></div>
+        </form>
+    </div>
+    <script>
+    // Estimate calculation on submit
+    document.getElementById('finderForm').addEventListener('submit', function(e) {
+        // Estimate logic: base + per room + preferences
+        let base = 5000;
+        const bedrooms = parseInt(document.getElementById('bedrooms').value) || 1;
+        const bathrooms = parseInt(document.getElementById('bathrooms').value) || 1;
+        const prefs = Array.from(document.querySelectorAll('input[name="preferences"]:checked')).map(cb => cb.value);
+        let estimate = base + bedrooms * 2000 + bathrooms * 1000 + prefs.length * 500;
+        if (prefs.includes('Swimming pool')) estimate += 3000;
+        document.getElementById('estimateBox').textContent = `Estimated Match Fee: MWK ${estimate.toLocaleString()}`;
+        document.getElementById('estimateBox').style.display = 'block';
+    });
+    </script>
+</body>
+</html> 
