@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeniFinder - Payment Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/payment.css">
+</head>
+<body>
+    <header class="payment-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="images/deniM.png" alt="DeniFinder Logo">
+                    <span class="logo-text">DeniFinder</span>
+                </div>
+                <span class="payment-badge">Secure Payment</span>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="back-home-btn" style="color: var(--white); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem; margin-right: 1rem;">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="dashboard.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="payment-main">
+        <div class="payment-container" id="payment-container">
+
+            <!-- Step 1: Select Method -->
+            <div class="payment-step active" data-step="1">
+                <div class="step-header">
+                    <h2><span class="step-indicator">Step 1</span>Choose Payment Method</h2>
+                    <p>Select your preferred way to pay.</p>
+                </div>
+                <div class="payment-methods">
+                    <div class="method-options">
+                        <div class="method-category">
+                            <h4>Mobile Money</h4>
+                            <div class="method-grid">
+                                <div class="method-option" data-method="airtel">
+                                    <img src="https://via.placeholder.com/40" alt="Airtel Money" class="method-logo">
+                                    <div class="method-info"><h5>Airtel Money</h5></div>
+                                    <div class="method-check"><i class="fas fa-check-circle"></i></div>
+                                </div>
+                                <div class="method-option" data-method="tnm">
+                                    <img src="https://via.placeholder.com/40" alt="TNM Mpamba" class="method-logo">
+                                    <div class="method-info"><h5>TNM Mpamba</h5></div>
+                                    <div class="method-check"><i class="fas fa-check-circle"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="method-category">
+                            <h4>Bank Transfer</h4>
+                            <div class="method-grid">
+                                <div class="method-option" data-method="bank">
+                                    <img src="https://via.placeholder.com/40" alt="Bank" class="method-logo">
+                                    <div class="method-info"><h5>Bank Transfer</h5></div>
+                                    <div class="method-check"><i class="fas fa-check-circle"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="method-details-container" class="method-details-container" style="display: none;"></div>
+                <div class="payment-actions">
+                    <button class="btn-primary" id="nextBtnStep1" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Payment Details -->
+            <div class="payment-step" data-step="2">
+                <div class="step-header">
+                    <h2><span class="step-indicator">Step 2</span>Complete Your Payment</h2>
+                    <p>Follow the instructions below for your selected method.</p>
+                </div>
+                <div id="payment-details-content"></div>
+                <div class="username-section">
+                    <h3><i class="fas fa-user"></i> Enter Your Username</h3>
+                    <p>This is crucial for verifying your payment. Please enter it exactly as it appears on DeniFinder.</p>
+                    <input type="text" id="usernameInput" placeholder="Your DeniFinder Username">
+                </div>
+                <div class="payment-actions">
+                    <button class="btn-secondary" id="backBtnStep2">Back</button>
+                    <button class="btn-primary" id="nextBtnStep2" disabled>I Have Paid</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Verification -->
+            <div class="payment-step" data-step="3">
+                <div class="step-header">
+                    <h2><span class="step-indicator">Step 3</span>Payment Verification</h2>
+                    <p>We are now verifying your payment. This may take a few minutes.</p>
+                </div>
+                <div class="verification-status">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h4>Verifying Payment...</h4>
+                    <p>Reference: <strong id="final-reference"></strong></p>
+                </div>
+                <div class="verification-result"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/payment.js"></script>
+</body>
+</html> 

@@ -1,0 +1,2248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --gray: #6C757D;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-gray);
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--gold);
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .blog-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: 2px solid var(--charcoal);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        /* Blog Grid */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .blog-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 184, 0, 0.1);
+            position: relative;
+        }
+
+        .blog-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-dark));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 184, 0, 0.2);
+        }
+
+        .blog-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 200px;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 3rem;
+        }
+
+        .blog-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .blog-excerpt {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .blog-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--charcoal);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .blog-actions-card {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0.8rem;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 184, 0, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--light-gray);
+            color: var(--charcoal);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .action-btn.liked {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .action-btn.liked i {
+            animation: heartBeat 0.6s ease-in-out;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .comment-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .comment-submit {
+            background: var(--gold);
+            color: var(--charcoal);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .comment-submit:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comment {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--light-gray);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .comment:hover {
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--charcoal);
+            font-weight: 600;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .comment-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .comment-text {
+            color: var(--charcoal);
+            line-height: 1.5;
+        }
+
+        /* Post Actions Overlay */
+        .post-actions-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .blog-card:hover .post-actions-overlay {
+            opacity: 1;
+        }
+
+        .edit-post-btn, .delete-post-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--white);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-post-btn:hover {
+            background: var(--gold);
+            color: var(--charcoal);
+            transform: scale(1.1);
+        }
+
+        .delete-post-btn:hover {
+            background: #e74c3c;
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        /* Author Badge */
+        .author-badge {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Repost Button Styles */
+        .action-btn.reposted {
+            color: var(--primary-green);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .action-btn.reposted i {
+            animation: repostSpin 0.6s ease-in-out;
+        }
+
+        @keyframes repostSpin {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); }
+        }
+
+        /* Slide Out Animation */
+        @keyframes slideOut {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--gray);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-state i {
+            font-size: 2rem;
+            color: var(--gold);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="dashboard.html" class="logo">
+                <img src="images/deniM.png" alt="DeniFinder Logo">
+                <span>DeniFinder</span>
+            </a>
+            <nav class="nav-links">
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="map.html" class="nav-link">Map</a>
+                <a href="messages.html" class="nav-link">Messages</a>
+                <a href="#" class="nav-link" onclick="signOut()">Sign Out</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">DeniFinder Blog</h1>
+            <p class="page-subtitle">Discover insights, tips, and stories about student housing in Kenya</p>
+            <div class="blog-actions">
+                <button class="btn-primary" onclick="openCreatePostModal()">
+                    <i class="fas fa-plus"></i>
+                    Create New Post
+                </button>
+                <button class="btn-secondary" onclick="refreshPosts()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh Posts
+                </button>
+                <button class="btn-secondary" onclick="testBlogLoading()">
+                    <i class="fas fa-bug"></i>
+                    Test Loading
+                </button>
+            </div>
+        </div>
+
+        <!-- Blog Grid -->
+        <div id="blogGrid" class="blog-grid">
+            <!-- Posts will be loaded here -->
+        </div>
+
+        <!-- Post Detail Modal -->
+        <div id="postDetailModal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 700px; width: 95%;">
+                <div class="modal-header">
+                    <h3 id="modalPostTitle"></h3>
+                    <button class="close-btn" onclick="closePostDetailModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalPostBody">
+                    <!-- Post content, image, author, date, and comments will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Post Modal -->
+    <div id="createPostModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Blog Post</h3>
+                <button class="close-btn" onclick="closeCreatePostModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createPostForm">
+                    <div class="form-group">
+                        <label for="postTitle">Title</label>
+                        <input type="text" id="postTitle" name="title" required placeholder="Enter post title">
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">Content</label>
+                        <textarea id="postContent" name="content" required placeholder="Write your post content here..." rows="8"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="postImage">Featured Image (Optional)</label>
+                        <input type="file" id="postImage" name="image" accept="image/*">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeCreatePostModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Publish Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-init.js"></script>
+
+    <script>
+        // Check authentication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthentication();
+            loadBlogPosts();
+        });
+
+        // Check if user is authenticated
+        function checkAuthentication() {
+            const isLoggedIn = localStorage.getItem('deniFinderLoggedIn');
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            
+            if (!isLoggedIn || !currentUser) {
+                alert('Please sign in to access the blog');
+                window.location.href = 'signin.html';
+                return;
+            }
+        }
+
+        // Load blog posts
+        async function loadBlogPosts() {
+            const blogGrid = document.getElementById('blogGrid');
+            
+            // Show loading state
+            blogGrid.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading posts...</p>
+                </div>
+            `;
+            
+            try {
+                let posts = [];
+                
+                // Try to load from Firebase
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    console.log('Loading posts from Firebase...');
+                    
+                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'blog_posts',
+                        [],
+                        { field: 'timestamp', direction: 'desc' },
+                        50
+                    );
+                    
+                    if (result.success) {
+                        posts = result.data;
+                        console.log('Posts loaded:', posts.length);
+                    } else {
+                        console.warn('Failed to load from Firebase, using sample data');
+                        posts = getSamplePosts();
+                    }
+                } else {
+                    console.log('Firebase not available, using sample data');
+                    posts = getSamplePosts();
+                }
+                
+                // Render posts
+                if (posts.length === 0) {
+                    blogGrid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-newspaper"></i>
+                            <h3>No posts yet</h3>
+                            <p>Be the first to create a blog post!</p>
+                            <button class="btn-primary" onclick="openCreatePostModal()">
+                                <i class="fas fa-plus"></i>
+                                Create First Post
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    blogGrid.innerHTML = posts.map(post => createBlogCard(post)).join('');
+                    // addBlogCardClickHandlers(); // Remove this line
+                }
+                
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                blogGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading posts</h3>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Create blog card HTML
+        function createBlogCard(post) {
+            const authorName = post.authorName || post.author || 'Anonymous';
+            const timestamp = post.timestamp || post.date || new Date();
+            const likes = post.likes || 0;
+            const comments = post.comments || [];
+            const reposts = post.reposts || 0;
+            const excerpt = post.excerpt || (post.content ? post.content.substring(0, 150) + '...' : '');
+            
+            // Convert Firestore timestamp to Date if needed
+            const postDate = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            
+            // Check if current user is the author
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            const user = currentUser ? JSON.parse(currentUser) : null;
+            const isAuthor = user && (user.uid === post.authorId || user.email === post.authorEmail);
+            
+            return `
+                <div class="blog-card" data-post-id="${post.id || ''}">
+                    <div class="blog-image" style="cursor:pointer;" onclick="openPostDetailModal('${post.id || ''}')">
+                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Featured Image">` : '<i class="fas fa-newspaper"></i>'}
+                        ${isAuthor ? `
+                            <div class="post-actions-overlay">
+                                <button class="edit-post-btn" onclick="editPost('${post.id || ''}')" title="Edit Post">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="delete-post-btn" onclick="deletePost('${post.id || ''}')" title="Delete Post">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="blog-content">
+                        <h3 class="blog-title" style="cursor:pointer;" onclick="openPostDetailModal('${post.id || ''}')">${post.title}</h3>
+                        <p class="blog-excerpt">${excerpt}</p>
+                        <div class="blog-meta">
+                            <div class="blog-author">
+                                <div class="author-avatar">${authorName.charAt(0).toUpperCase()}</div>
+                                <span>${authorName}</span>
+                                ${isAuthor ? '<span class="author-badge">Author</span>' : ''}
+                            </div>
+                            <span>${postDate.toLocaleDateString()}</span>
+                        </div>
+                        <div class="blog-actions-card">
+                            <button class="action-btn like-btn" onclick="handleLike(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-heart"></i>
+                                <span class="like-count">${likes}</span> <span class="action-label">Likes</span>
+                            </button>
+                            <button class="action-btn comment-btn" onclick="handleComment(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-comment"></i>
+                                <span class="comment-count">${comments.length}</span> <span class="action-label">Comments</span>
+                            </button>
+                            <button class="action-btn repost-btn" onclick="handleRepost(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-retweet"></i>
+                                <span class="repost-count">${reposts}</span>
+                            </button>
+                            <button class="action-btn share-btn" onclick="handleShare(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section hidden">
+                            <div class="comment-form">
+                                <textarea placeholder="Write a comment..." class="comment-input"></textarea>
+                                <button class="comment-submit" onclick="submitComment(this)" data-post-id="${post.id || ''}">Post Comment</button>
+                            </div>
+                            <div class="comments-list">
+                                <!-- Comments will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get sample posts for fallback
+        function getSamplePosts() {
+            return [
+                {
+                    id: 'sample1',
+                    title: 'Top 5 Tips for Finding Student Housing',
+                    content: 'Essential advice for students looking for affordable accommodation in Nairobi. Learn about the best areas, budgeting tips, and how to avoid common pitfalls when searching for student housing.',
+                    authorName: 'DeniFinder Team',
+                    timestamp: new Date('2024-01-15'),
+                    likes: 24,
+                    comments: [],
+                    imageUrl: null
+                },
+                {
+                    id: 'sample2',
+                    title: 'Understanding Rental Agreements in Kenya',
+                    content: 'Everything you need to know about rental contracts and your rights as a tenant in Kenya. Important legal information for both landlords and tenants to understand their responsibilities.',
+                    authorName: 'Legal Expert',
+                    timestamp: new Date('2024-01-12'),
+                    likes: 31,
+                    comments: [],
+                    imageUrl: null
+                }
+            ];
+        }
+
+        // Handle like button
+        async function handleLike(button) {
+            const postId = button.dataset.postId;
+            const icon = button.querySelector('i');
+            const likeCount = button.querySelector('.like-count');
+            const currentCount = parseInt(likeCount.textContent);
+            
+            try {
+                // Get current user
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    alert('Please sign in to like posts');
+                    return;
+                }
+                
+                const user = JSON.parse(currentUser);
+                
+                if (button.classList.contains('liked')) {
+                    // Unlike post
+                    await unlikePost(postId, user.uid);
+                    button.classList.remove('liked');
+                    icon.classList.remove('liked');
+                    likeCount.textContent = currentCount - 1;
+                } else {
+                    // Like post
+                    await likePost(postId, user.uid, user.displayName || user.firstName || 'Anonymous');
+                    button.classList.add('liked');
+                    icon.classList.add('liked');
+                    likeCount.textContent = currentCount + 1;
+                }
+            } catch (error) {
+                console.error('Error handling like:', error);
+                alert('Failed to update like. Please try again.');
+            }
+        }
+
+        // Like a post
+        async function likePost(postId, userId, userName) {
+            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+                console.log('Firebase not available, like saved locally');
+                return;
+            }
+            
+            try {
+                // Add like to post
+                const likeData = {
+                    postId: postId,
+                    userId: userId,
+                    userName: userName,
+                    timestamp: new Date()
+                };
+                
+                // Add to likes collection
+                await window.DeniFinderFirebase.dbService.addDocument('post_likes', likeData);
+                
+                // Update post like count
+                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                if (postRef.success) {
+                    const currentLikes = postRef.data.likes || 0;
+                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                        likes: currentLikes + 1
+                    });
+                }
+                
+                console.log('Post liked successfully');
+            } catch (error) {
+                console.error('Error liking post:', error);
+                throw error;
+            }
+        }
+
+        // Unlike a post
+        async function unlikePost(postId, userId) {
+            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+                console.log('Firebase not available, unlike saved locally');
+                return;
+            }
+            
+            try {
+                // Remove like from likes collection
+                const likesResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    'post_likes',
+                    [
+                        { field: 'postId', operator: '==', value: postId },
+                        { field: 'userId', operator: '==', value: userId }
+                    ]
+                );
+                
+                if (likesResult.success && likesResult.data.length > 0) {
+                    await window.DeniFinderFirebase.dbService.deleteDocument('post_likes', likesResult.data[0].id);
+                }
+                
+                // Update post like count
+                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                if (postRef.success) {
+                    const currentLikes = Math.max(0, (postRef.data.likes || 0) - 1);
+                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                        likes: currentLikes
+                    });
+                }
+                
+                console.log('Post unliked successfully');
+            } catch (error) {
+                console.error('Error unliking post:', error);
+                throw error;
+            }
+        }
+
+        // Update handleComment to load and toggle comments section in the main blog card
+        function handleComment(button) {
+            const postId = button.dataset.postId;
+            const postCard = button.closest('.blog-card');
+            const commentsSection = postCard.querySelector('.comments-section');
+            if (commentsSection) {
+                commentsSection.classList.toggle('hidden');
+                if (!commentsSection.classList.contains('hidden')) {
+                    // Load comments when section is opened
+                    loadCardComments(postId, commentsSection);
+                }
+            }
+        }
+        // New: load comments for main blog card
+        async function loadCardComments(postId, commentsSection) {
+            const commentsList = commentsSection.querySelector('.comments-list');
+            commentsList.innerHTML = `<div class='loading-state'><i class='fas fa-spinner'></i> Loading comments...</div>`;
+            let comments = [];
+            try {
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'post_comments',
+                        [{ field: 'postId', operator: '==', value: postId }],
+                        { field: 'timestamp', direction: 'asc' },
+                        50
+                    );
+                    if (result.success) comments = result.data;
+                } else {
+                    comments = getSampleComments();
+                }
+            } catch (error) {
+                commentsList.innerHTML = '<p>Error loading comments</p>';
+                return;
+            }
+            // Render comments
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
+            } else {
+                commentsList.innerHTML = comments.map(comment => `
+                    <div class='comment'>
+                        <div class='comment-avatar'>${comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}</div>
+                        <div class='comment-content'>
+                            <div class='comment-header'>
+                                <span class='comment-author'>${comment.authorName || 'User'}</span>
+                                <span class='comment-date'>${formatTime(comment.timestamp)}</span>
+                            </div>
+                            <p class='comment-text'>${comment.content}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Display comments
+        function displayComments(comments, container) {
+            if (comments.length === 0) {
+                container.innerHTML = '<p>No comments yet. Be the first to comment!</p>';
+                return;
+            }
+            
+            container.innerHTML = comments.map(comment => `
+                <div class="comment">
+                    <div class="comment-avatar">${comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">${comment.authorName || 'User'}</span>
+                            <span class="comment-date">${formatTime(comment.timestamp)}</span>
+                        </div>
+                        <p class="comment-text">${comment.content}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get sample comments
+        function getSampleComments() {
+            return [
+                {
+                    id: 'comment1',
+                    postId: 'sample1',
+                    content: 'Great tips! This really helped me find my accommodation.',
+                    authorName: 'Student User',
+                    timestamp: new Date('2024-01-16')
+                },
+                {
+                    id: 'comment2',
+                    postId: 'sample1',
+                    content: 'Thanks for sharing this valuable information.',
+                    authorName: 'Another User',
+                    timestamp: new Date('2024-01-17')
+                }
+            ];
+        }
+
+        // Submit comment
+        async function submitComment(button) {
+            const postId = button.dataset.postId;
+            const postCard = button.closest('.blog-card');
+            const commentInput = postCard.querySelector('.comment-input');
+            const commentText = commentInput.value.trim();
+            
+            if (!commentText) {
+                alert('Please enter a comment');
+                return;
+            }
+            
+            try {
+                // Get current user
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    alert('Please sign in to comment');
+                    return;
+                }
+                
+                const user = JSON.parse(currentUser);
+                
+                // Create comment data
+                const commentData = {
+                    postId: postId,
+                    content: commentText,
+                    authorId: user.uid,
+                    authorName: user.displayName || user.firstName || 'Anonymous',
+                    authorEmail: user.email,
+                    timestamp: new Date()
+                };
+                
+                // Save comment
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    await window.DeniFinderFirebase.dbService.addDocument('post_comments', commentData);
+                    
+                    // Update post comment count
+                    const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                    if (postRef.success) {
+                        const currentComments = postRef.data.comments || [];
+                        currentComments.push(commentData);
+                        await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                            comments: currentComments
+                        });
+                    }
+                }
+                
+                // Clear input
+                commentInput.value = '';
+                
+                // Reload comments
+                const commentsSection = postCard.querySelector('.comments-section');
+                await loadComments(postId, commentsSection);
+                
+                // Update comment count in button
+                const commentBtn = postCard.querySelector('.comment-btn');
+                const commentCount = commentBtn.querySelector('.comment-count');
+                const currentCount = parseInt(commentCount.textContent);
+                commentCount.textContent = currentCount + 1;
+                
+                console.log('Comment submitted successfully');
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                alert('Failed to submit comment. Please try again.');
+            }
+        }
+
+        // Handle repost button
+        async function handleRepost(button) {
+            const postId = button.dataset.postId;
+            const repostCount = button.querySelector('.repost-count');
+            const currentCount = parseInt(repostCount.textContent);
+            
+            try {
+                // Get current user
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    alert('Please sign in to repost');
+                    return;
+                }
+                
+                const user = JSON.parse(currentUser);
+                
+                // Check if user already reposted
+                const hasReposted = await checkIfReposted(postId, user.uid);
+                
+                if (hasReposted) {
+                    // Remove repost
+                    await removeRepost(postId, user.uid);
+                    repostCount.textContent = currentCount - 1;
+                    button.classList.remove('reposted');
+                } else {
+                    // Add repost
+                    await addRepost(postId, user.uid, user.displayName || user.firstName || 'Anonymous');
+                    repostCount.textContent = currentCount + 1;
+                    button.classList.add('reposted');
+                }
+            } catch (error) {
+                console.error('Error handling repost:', error);
+                alert('Failed to update repost. Please try again.');
+            }
+        }
+
+        // Check if user has reposted
+        async function checkIfReposted(postId, userId) {
+            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+                return false;
+            }
+            
+            try {
+                const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    'post_reposts',
+                    [
+                        { field: 'postId', operator: '==', value: postId },
+                        { field: 'userId', operator: '==', value: userId }
+                    ]
+                );
+                
+                return result.success && result.data.length > 0;
+            } catch (error) {
+                console.error('Error checking repost status:', error);
+                return false;
+            }
+        }
+
+        // Add repost
+        async function addRepost(postId, userId, userName) {
+            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+                console.log('Firebase not available, repost saved locally');
+                return;
+            }
+            
+            try {
+                // Add repost to collection
+                const repostData = {
+                    postId: postId,
+                    userId: userId,
+                    userName: userName,
+                    timestamp: new Date()
+                };
+                
+                await window.DeniFinderFirebase.dbService.addDocument('post_reposts', repostData);
+                
+                // Update post repost count
+                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                if (postRef.success) {
+                    const currentReposts = postRef.data.reposts || 0;
+                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                        reposts: currentReposts + 1
+                    });
+                }
+                
+                console.log('Post reposted successfully');
+            } catch (error) {
+                console.error('Error reposting:', error);
+                throw error;
+            }
+        }
+
+        // Remove repost
+        async function removeRepost(postId, userId) {
+            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+                console.log('Firebase not available, repost removal saved locally');
+                return;
+            }
+            
+            try {
+                // Remove repost from collection
+                const repostsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    'post_reposts',
+                    [
+                        { field: 'postId', operator: '==', value: postId },
+                        { field: 'userId', operator: '==', value: userId }
+                    ]
+                );
+                
+                if (repostsResult.success && repostsResult.data.length > 0) {
+                    await window.DeniFinderFirebase.dbService.deleteDocument('post_reposts', repostsResult.data[0].id);
+                }
+                
+                // Update post repost count
+                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                if (postRef.success) {
+                    const currentReposts = Math.max(0, (postRef.data.reposts || 0) - 1);
+                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                        reposts: currentReposts
+                    });
+                }
+                
+                console.log('Repost removed successfully');
+            } catch (error) {
+                console.error('Error removing repost:', error);
+                throw error;
+            }
+        }
+
+        // Open create post modal
+        function openCreatePostModal() {
+            document.getElementById('createPostModal').style.display = 'flex';
+        }
+
+        // Close create post modal
+        function closeCreatePostModal() {
+            document.getElementById('createPostModal').style.display = 'none';
+            document.getElementById('createPostForm').reset();
+        }
+
+        // Handle form submission
+        document.getElementById('createPostForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const postData = {
+                title: formData.get('title'),
+                content: formData.get('content'),
+                image: null
+            };
+            
+            // Handle image upload if provided
+            const imageFile = formData.get('image');
+            if (imageFile && imageFile.size > 0) {
+                try {
+                    if (window.DeniFinderFirebase && window.DeniFinderFirebase.storageService) {
+                        const uploadResult = await window.DeniFinderFirebase.storageService.uploadFile(
+                            'blog-images',
+                            imageFile
+                        );
+                        if (uploadResult.success) {
+                            postData.image = uploadResult.url;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Image upload failed:', error);
+                }
+            }
+            
+            // Publish post
+            await publishPost(postData);
+            
+            // Close modal and refresh posts
+            closeCreatePostModal();
+            loadBlogPosts();
+        });
+
+        // Publish post
+        async function publishPost(postData) {
+            try {
+                console.log('Publishing post:', postData);
+                
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    alert('Please sign in to publish posts');
+                    return;
+                }
+                
+                const user = JSON.parse(currentUser);
+                
+                const firebasePostData = {
+                    title: postData.title,
+                    content: postData.content,
+                    excerpt: postData.content.substring(0, 150) + '...',
+                    imageUrl: postData.image || null,
+                    authorId: user.uid,
+                    authorName: user.displayName || user.firstName || 'Anonymous',
+                    authorEmail: user.email,
+                    timestamp: new Date(),
+                    likes: 0,
+                    comments: [],
+                    reposts: 0,
+                    status: 'published',
+                    views: 0
+                };
+                
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    const result = await window.DeniFinderFirebase.dbService.addDocument('blog_posts', firebasePostData);
+                    
+                    if (result.success) {
+                        alert('Post published successfully!');
+                    } else {
+                        throw new Error(result.error || 'Failed to save post');
+                    }
+                } else {
+                    alert('Post published (saved locally)!');
+                }
+                
+            } catch (error) {
+                console.error('Error publishing post:', error);
+                alert('Failed to publish post: ' + error.message);
+            }
+        }
+
+        // Refresh posts
+        function refreshPosts() {
+            loadBlogPosts();
+        }
+
+        // Test blog loading
+        async function testBlogLoading() {
+            console.log('🧪 Testing blog loading...');
+            
+            const container = document.getElementById('blogGrid');
+            console.log('Blog grid found:', !!container);
+            
+            if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                try {
+                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'blog_posts',
+                        [],
+                        { field: 'timestamp', direction: 'desc' },
+                        5
+                    );
+                    
+                    console.log('📊 Query result:', result);
+                    
+                    if (result.success) {
+                        console.log('📝 Found posts:', result.data.length);
+                        result.data.forEach((post, index) => {
+                            console.log(`Post ${index + 1}:`, {
+                                id: post.id,
+                                title: post.title,
+                                authorName: post.authorName,
+                                timestamp: post.timestamp
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error('❌ Query error:', error);
+                }
+            }
+        }
+
+        // Delete post
+        async function deletePost(postId) {
+            if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                // Get current user
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    alert('Please sign in to delete posts');
+                    return;
+                }
+                
+                const user = JSON.parse(currentUser);
+                
+                // Verify user is the author
+                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                if (!postRef.success) {
+                    alert('Post not found');
+                    return;
+                }
+                
+                const post = postRef.data;
+                if (post.authorId !== user.uid && post.authorEmail !== user.email) {
+                    alert('You can only delete your own posts');
+                    return;
+                }
+                
+                // Delete post from Firebase
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    await window.DeniFinderFirebase.dbService.deleteDocument('blog_posts', postId);
+                    
+                    // Delete associated likes
+                    const likesResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'post_likes',
+                        [{ field: 'postId', operator: '==', value: postId }]
+                    );
+                    
+                    if (likesResult.success) {
+                        for (const like of likesResult.data) {
+                            await window.DeniFinderFirebase.dbService.deleteDocument('post_likes', like.id);
+                        }
+                    }
+                    
+                    // Delete associated comments
+                    const commentsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'post_comments',
+                        [{ field: 'postId', operator: '==', value: postId }]
+                    );
+                    
+                    if (commentsResult.success) {
+                        for (const comment of commentsResult.data) {
+                            await window.DeniFinderFirebase.dbService.deleteDocument('post_comments', comment.id);
+                        }
+                    }
+                    
+                    // Delete associated reposts
+                    const repostsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'post_reposts',
+                        [{ field: 'postId', operator: '==', value: postId }]
+                    );
+                    
+                    if (repostsResult.success) {
+                        for (const repost of repostsResult.data) {
+                            await window.DeniFinderFirebase.dbService.deleteDocument('post_reposts', repost.id);
+                        }
+                    }
+                }
+                
+                // Remove post from UI
+                const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+                if (postCard) {
+                    postCard.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => {
+                        postCard.remove();
+                    }, 300);
+                }
+                
+                console.log('Post deleted successfully');
+                alert('Post deleted successfully');
+                
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                alert('Failed to delete post. Please try again.');
+            }
+        }
+
+        // Edit post
+        function editPost(postId) {
+            // For now, redirect to dashboard with edit mode
+            // This can be enhanced with a dedicated edit modal
+            alert(`Edit functionality for post ${postId} will be implemented. For now, you can edit from the dashboard.`);
+            window.location.href = 'dashboard.html';
+        }
+
+        // Handle share button
+        function handleShare(button) {
+            console.log('Share button clicked!');
+            const postId = button.dataset.postId;
+            const postCard = button.closest('.blog-card');
+            const postTitle = postCard.querySelector('.blog-title').textContent;
+            const postExcerpt = postCard.querySelector('.blog-excerpt').textContent;
+            const authorName = postCard.querySelector('.blog-author span').textContent;
+            
+            console.log('Share data:', { postId, postTitle, postExcerpt, authorName });
+            
+            try {
+                showShareModal(postId, postTitle, postExcerpt, authorName);
+            } catch (error) {
+                console.error('Error showing share modal:', error);
+                // Fallback: simple copy to clipboard
+                const shareUrl = `${window.location.origin}/blog.html?post=${postId}`;
+                const shareText = `${postTitle}\n\n${postExcerpt}\n\nBy ${authorName}\n\nRead more: ${shareUrl}`;
+                copyToClipboard(shareText);
+            }
+        }
+
+        // Show share modal
+        function showShareModal(postId, title, excerpt, author) {
+            console.log('Creating share modal...');
+            const shareUrl = `${window.location.origin}/blog.html?post=${postId}`;
+            const shareText = `${title}\n\n${excerpt}\n\nBy ${author}\n\nRead more: ${shareUrl}`;
+            
+            const modal = document.createElement('div');
+            modal.className = 'share-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-share-alt"></i> Share Post</h3>
+                        <button class="close-btn" onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="share-preview">
+                            <h4>${title}</h4>
+                            <p>${excerpt}</p>
+                            <small>By ${author}</small>
+                        </div>
+                        
+                        <div class="share-options">
+                            <button class="share-option" onclick="copyToClipboard('${shareText.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-copy"></i>
+                                <span>Copy Link</span>
+                            </button>
+                            
+                            <button class="share-option" onclick="shareToWhatsApp('${shareText.replace(/'/g, "\\'")}')">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                            </button>
+                            
+                            <button class="share-option" onclick="shareToFacebook('${shareUrl}', '${title.replace(/'/g, "\\'")}')">
+                                <i class="fab fa-facebook"></i>
+                                <span>Facebook</span>
+                            </button>
+                            
+                            <button class="share-option" onclick="shareToTwitter('${shareText.replace(/'/g, "\\'")}')">
+                                <i class="fab fa-twitter"></i>
+                                <span>Twitter</span>
+                            </button>
+                            
+                            <button class="share-option" onclick="shareToEmail('${title.replace(/'/g, "\\'")}', '${shareText.replace(/'/g, "\\'")}')">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email</span>
+                            </button>
+                            
+                            <button class="share-option" onclick="shareToTelegram('${shareText.replace(/'/g, "\\'")}')">
+                                <i class="fab fa-telegram"></i>
+                                <span>Telegram</span>
+                            </button>
+                        </div>
+                        
+                        <div class="share-url-section">
+                            <label>Direct Link:</label>
+                            <div class="url-copy">
+                                <input type="text" value="${shareUrl}" readonly id="shareUrl">
+                                <button onclick="copyUrl()">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            console.log('Share modal added to DOM');
+            
+            // Add share modal styles if not already added
+            if (!document.querySelector('#share-modal-styles')) {
+                addShareModalStyles();
+                console.log('Share modal styles added');
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showShareNotification('Post copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showShareNotification('Post copied to clipboard!');
+            });
+        }
+
+        // Copy URL
+        function copyUrl() {
+            const urlInput = document.getElementById('shareUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            showShareNotification('URL copied to clipboard!');
+        }
+
+        // Share to WhatsApp
+        function shareToWhatsApp(text) {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(whatsappUrl, '_blank');
+            showShareNotification('Opening WhatsApp...');
+        }
+
+        // Share to Facebook
+        function shareToFacebook(url, title) {
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
+            window.open(facebookUrl, '_blank');
+            showShareNotification('Opening Facebook...');
+        }
+
+        // Share to Twitter
+        function shareToTwitter(text) {
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+            window.open(twitterUrl, '_blank');
+            showShareNotification('Opening Twitter...');
+        }
+
+        // Share to Email
+        function shareToEmail(subject, body) {
+            const emailUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(emailUrl);
+            showShareNotification('Opening email client...');
+        }
+
+        // Share to Telegram
+        function shareToTelegram(text) {
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.origin)}&text=${encodeURIComponent(text)}`;
+            window.open(telegramUrl, '_blank');
+            showShareNotification('Opening Telegram...');
+        }
+
+        // Show share notification
+        function showShareNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'share-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Add share modal styles
+        function addShareModalStyles() {
+            const styles = `
+                .share-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    animation: fadeIn 0.3s;
+                }
+
+                .share-modal .modal-content {
+                    background: var(--white);
+                    border-radius: 20px;
+                    max-width: 500px;
+                    width: 90%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                }
+
+                .share-modal .modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1.5rem;
+                    border-bottom: 1px solid var(--light-gray);
+                }
+
+                .share-modal .modal-header h3 {
+                    color: var(--charcoal);
+                    font-size: 1.3rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .share-modal .modal-body {
+                    padding: 1.5rem;
+                }
+
+                .share-preview {
+                    background: var(--light-gray);
+                    padding: 1rem;
+                    border-radius: 12px;
+                    margin-bottom: 1.5rem;
+                }
+
+                .share-preview h4 {
+                    color: var(--charcoal);
+                    margin-bottom: 0.5rem;
+                }
+
+                .share-preview p {
+                    color: var(--gray);
+                    margin-bottom: 0.5rem;
+                }
+
+                .share-preview small {
+                    color: var(--gray);
+                    font-style: italic;
+                }
+
+                .share-options {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                    gap: 1rem;
+                    margin-bottom: 1.5rem;
+                }
+
+                .share-option {
+                    background: var(--white);
+                    border: 2px solid var(--light-gray);
+                    border-radius: 12px;
+                    padding: 1rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 600;
+                }
+
+                .share-option:hover {
+                    border-color: var(--gold);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 15px rgba(255, 184, 0, 0.2);
+                }
+
+                .share-option i {
+                    font-size: 1.5rem;
+                }
+
+                .share-option:nth-child(1) i { color: var(--charcoal); }
+                .share-option:nth-child(2) i { color: #25D366; }
+                .share-option:nth-child(3) i { color: #1877F2; }
+                .share-option:nth-child(4) i { color: #1DA1F2; }
+                .share-option:nth-child(5) i { color: var(--gold); }
+                .share-option:nth-child(6) i { color: #0088cc; }
+
+                .share-url-section {
+                    border-top: 1px solid var(--light-gray);
+                    padding-top: 1rem;
+                }
+
+                .share-url-section label {
+                    display: block;
+                    margin-bottom: 0.5rem;
+                    font-weight: 600;
+                    color: var(--charcoal);
+                }
+
+                .url-copy {
+                    display: flex;
+                    gap: 0.5rem;
+                }
+
+                .url-copy input {
+                    flex: 1;
+                    padding: 0.8rem;
+                    border: 2px solid var(--light-gray);
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                }
+
+                .url-copy button {
+                    background: var(--gold);
+                    color: var(--charcoal);
+                    border: none;
+                    padding: 0.8rem 1rem;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+
+                .url-copy button:hover {
+                    background: var(--gold-dark);
+                    color: var(--white);
+                }
+
+                .share-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--gold);
+                    color: var(--charcoal);
+                    padding: 1rem 1.5rem;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    z-index: 10001;
+                    animation: slideInRight 0.3s ease;
+                }
+
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+            `;
+            
+            const styleSheet = document.createElement('style');
+            styleSheet.id = 'share-modal-styles';
+            styleSheet.textContent = styles;
+            document.head.appendChild(styleSheet);
+        }
+
+        // Sign out
+        async function signOut() {
+            try {
+                if (window.DeniFinderFirebase) {
+                    await window.DeniFinderFirebase.authService.signOut();
+                }
+                localStorage.removeItem('deniFinderLoggedIn');
+                localStorage.removeItem('deniFinderCurrentUser');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Sign out error:', error);
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Add click handler to blog cards after rendering
+        // function addBlogCardClickHandlers() {
+        //     const cards = document.querySelectorAll('.blog-card');
+        //     cards.forEach(card => {
+        //         card.addEventListener('click', function(e) {
+        //             // Prevent click on action buttons from opening modal
+        //             if (e.target.closest('.action-btn') || e.target.closest('.post-actions-overlay')) return;
+        //             const postId = card.getAttribute('data-post-id');
+        //             openPostDetailModal(postId);
+        //         });
+        //     });
+        // }
+
+        // Open post detail modal
+        async function openPostDetailModal(postId) {
+            // Find post data (from loaded posts or sample)
+            let post = null;
+            if (window.loadedBlogPosts) {
+                post = window.loadedBlogPosts.find(p => p.id === postId);
+            }
+            if (!post) {
+                // Try to find in DOM (fallback)
+                const card = document.querySelector(`.blog-card[data-post-id="${postId}"]`);
+                if (card) {
+                    post = {
+                        id: postId,
+                        title: card.querySelector('.blog-title').textContent,
+                        excerpt: card.querySelector('.blog-excerpt').textContent,
+                        authorName: card.querySelector('.blog-author span').textContent,
+                        imageUrl: card.querySelector('.blog-image img') ? card.querySelector('.blog-image img').src : null,
+                        content: card.querySelector('.blog-excerpt').textContent,
+                        timestamp: new Date()
+                    };
+                }
+            }
+            if (!post) return;
+            // Fill modal
+            document.getElementById('modalPostTitle').textContent = post.title;
+            let html = '';
+            if (post.imageUrl) {
+                html += `<div style="width:100%;max-height:300px;overflow:hidden;margin-bottom:1rem;"><img src="${post.imageUrl}" alt="Post Image" style="width:100%;object-fit:cover;"></div>`;
+            }
+            html += `<div style="margin-bottom:1rem;">
+                <span style="font-weight:600;">By ${post.authorName || 'Anonymous'}</span>
+                <span style="color:#888;margin-left:1rem;">${(post.timestamp && post.timestamp.toDate ? post.timestamp.toDate() : new Date(post.timestamp)).toLocaleDateString()}</span>
+            </div>`;
+            html += `<div style="margin-bottom:2rem;">${post.content || post.excerpt}</div>`;
+            html += `<div id="modalCommentsSection"></div>`;
+            document.getElementById('modalPostBody').innerHTML = html;
+            // Show modal
+            document.getElementById('postDetailModal').style.display = 'flex';
+            // Load comments
+            await loadModalComments(post.id);
+        }
+
+        function closePostDetailModal() {
+            document.getElementById('postDetailModal').style.display = 'none';
+        }
+
+        // Load comments for modal
+        async function loadModalComments(postId) {
+            const commentsSection = document.getElementById('modalCommentsSection');
+            commentsSection.innerHTML = `<div class="loading-state"><i class="fas fa-spinner"></i> Loading comments...</div>`;
+            let comments = [];
+            try {
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'post_comments',
+                        [{ field: 'postId', operator: '==', value: postId }],
+                        { field: 'timestamp', direction: 'asc' },
+                        50
+                    );
+                    if (result.success) comments = result.data;
+                } else {
+                    comments = getSampleComments();
+                }
+            } catch (error) {
+                commentsSection.innerHTML = '<p>Error loading comments</p>';
+                return;
+            }
+            // Render comments
+            let html = `<div class="comments-section" style="margin-top:1.5rem;">
+                <div class="comment-form" style="margin-bottom:1.5rem;display:flex;gap:0.5rem;align-items:flex-start;">
+                    <textarea id="modalCommentInput" class="comment-input" placeholder="Write a comment..."></textarea>
+                    <button class="comment-submit" onclick="submitModalComment('${postId}')">Post Comment</button>
+                    <button class="message-author-btn" onclick="messageAuthor('${postId}','${window.loadedBlogPosts.find(p=>p.id===postId)?.authorId||''}')">Message Author</button>
+                </div>
+                <div class="comments-list">`;
+            if (comments.length === 0) {
+                html += '<p>No comments yet. Be the first to comment!</p>';
+            } else {
+                html += comments.map(comment => `
+                    <div class="comment">
+                        <div class="comment-avatar">${comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}</div>
+                        <div class="comment-content">
+                            <div class="comment-header">
+                                <span class="comment-author">${comment.authorName || 'User'}</span>
+                                <span class="comment-date">${formatTime(comment.timestamp)}</span>
+                            </div>
+                            <p class="comment-text">${comment.content}</p>
+                            <button class="reply-btn" onclick="showReplyForm('${comment.id || ''}'">Reply</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            html += '</div></div>';
+            commentsSection.innerHTML = html;
+        }
+
+        // Submit comment from modal
+        async function submitModalComment(postId) {
+            const input = document.getElementById('modalCommentInput');
+            const commentText = input.value.trim();
+            if (!commentText) {
+                alert('Please enter a comment');
+                return;
+            }
+            try {
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (!currentUser) {
+                    alert('Please sign in to comment');
+                    return;
+                }
+                const user = JSON.parse(currentUser);
+                const commentData = {
+                    postId: postId,
+                    content: commentText,
+                    authorId: user.uid,
+                    authorName: user.displayName || user.firstName || 'Anonymous',
+                    authorEmail: user.email,
+                    timestamp: new Date()
+                };
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    await window.DeniFinderFirebase.dbService.addDocument('post_comments', commentData);
+                }
+                input.value = '';
+                await loadModalComments(postId);
+                // Update comment count in main blog card
+                const card = document.querySelector(`.blog-card[data-post-id='${postId}']`);
+                if (card) {
+                    const commentBtn = card.querySelector('.comment-btn');
+                    const commentCount = commentBtn.querySelector('.comment-count');
+                    if (commentCount) {
+                        let count = parseInt(commentCount.textContent);
+                        if (isNaN(count)) count = 0;
+                        commentCount.textContent = count + 1;
+                    }
+                    // If comments section is open, reload it
+                    const commentsSection = card.querySelector('.comments-section');
+                    if (commentsSection && !commentsSection.classList.contains('hidden')) {
+                        await loadCardComments(postId, commentsSection);
+                    }
+                }
+            } catch (error) {
+                alert('Failed to submit comment. Please try again.');
+            }
+        }
+
+        // Patch: Store loaded posts globally for modal access
+        window.loadedBlogPosts = [];
+        const _origLoadBlogPosts = loadBlogPosts;
+        loadBlogPosts = async function() {
+            const blogGrid = document.getElementById('blogGrid');
+            blogGrid.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading posts...</p>
+                </div>
+            `;
+            try {
+                let posts = [];
+                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                        'blog_posts',
+                        [],
+                        { field: 'timestamp', direction: 'desc' },
+                        50
+                    );
+                    if (result.success) {
+                        posts = result.data;
+                    } else {
+                        posts = getSamplePosts();
+                    }
+                } else {
+                    posts = getSamplePosts();
+                }
+                window.loadedBlogPosts = posts;
+                if (posts.length === 0) {
+                    blogGrid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-newspaper"></i>
+                            <h3>No posts yet</h3>
+                            <p>Be the first to create a blog post!</p>
+                            <button class="btn-primary" onclick="openCreatePostModal()">
+                                <i class="fas fa-plus"></i>
+                                Create First Post
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    blogGrid.innerHTML = posts.map(post => createBlogCard(post)).join('');
+                    // addBlogCardClickHandlers(); // Remove this line
+                }
+            } catch (error) {
+                blogGrid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error loading posts</h3>
+                        <p>Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function messageAuthor(postId, authorId) {
+            // Get current user
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            if (!currentUser) {
+                alert('Please sign in to message the author');
+                window.location.href = 'signin.html';
+                return;
+            }
+            const user = JSON.parse(currentUser);
+            if (!authorId || user.uid === authorId) {
+                alert('You cannot message yourself.');
+                return;
+            }
+            // Find post title for context
+            let postTitle = '';
+            const card = document.querySelector(`.blog-card[data-post-id='${postId}']`);
+            if (card) {
+                const titleEl = card.querySelector('.blog-title');
+                if (titleEl) postTitle = titleEl.textContent;
+            }
+            // Use Firestore utility to find or create conversation
+            (async () => {
+                try {
+                    const convo = await window.DeniFinderFirebase.messagingUtils.findOrCreateConversation(
+                        user.uid,
+                        authorId,
+                        { initialMessage: `Hi, I’m interested in your post: ${postTitle}`, propertyId: postId }
+                    );
+                    // Optionally send initial message if new
+                    if (convo.lastMessage === '') {
+                        await window.DeniFinderFirebase.messagingUtils.sendMessage(
+                            convo.id,
+                            user.uid,
+                            authorId,
+                            `Hi, I’m interested in your post: ${postTitle}`
+                        );
+                    }
+                    // Redirect to messages.html with conversationId
+                    window.location.href = `messages.html?conversationId=${convo.id}`;
+                } catch (err) {
+                    alert('Failed to start conversation. Please try again.');
+                }
+            })();
+        }
+    </script>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .modal-header h3 {
+            color: var(--charcoal);
+            font-size: 1.3rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: var(--light-gray);
+            color: var(--charcoal);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--charcoal);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .action-label {
+            font-size: 0.9em;
+            color: var(--gray);
+            margin-left: 0.2em;
+        }
+        .reply-btn {
+            background: none;
+            border: none;
+            color: var(--primary-green);
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 0.5em;
+            padding: 0 0.5em;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .reply-btn:hover {
+            background: var(--light-gray);
+            color: var(--charcoal);
+        }
+        .message-author-btn {
+            background: var(--sky-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 0.2rem;
+            font-size: 0.95em;
+        }
+        .message-author-btn:hover {
+            background: var(--gold);
+            color: var(--charcoal);
+        }
+    </style>
+</body>
+</html> 

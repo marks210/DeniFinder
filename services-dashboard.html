@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Design Services - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #FFB800;
+            --charcoal: #222222;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--light-gray);
+            color: var(--charcoal);
+            margin: 0;
+        }
+
+        .header {
+            background: transparent;
+            padding: 1rem 2rem;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 32px;
+            margin-right: 0.5rem;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 2rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .hero-section {
+            position: relative;
+            background: url('images/design.png') no-repeat center center/cover;
+            color: var(--white);
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .headline {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--gold);
+        }
+
+        .sub-headline {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: -2rem auto 2rem;
+            background: var(--white);
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            color: var(--charcoal);
+        }
+
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-item {
+            background: var(--light-gray);
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .service-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+        }
+
+        .service-item i {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .service-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-section {
+            margin: 3rem 0;
+        }
+
+        .portfolio-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .portfolio-item {
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .portfolio-item:hover {
+            transform: scale(1.05);
+        }
+
+        .portfolio-item img, .portfolio-item video {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .portfolio-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: var(--white);
+            padding: 2rem 1rem 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: opacity 0.3s;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            padding: 4rem 2rem;
+            background: url('images/project.jpg') no-repeat center center/cover;
+            border-radius: 12px;
+            position: relative;
+            color: var(--white);
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.65);
+            border-radius: 12px;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-btn {
+            background: var(--gold);
+            color: var(--charcoal);
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2.5rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: #ffc94d;
+            transform: scale(1.05);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .cta-btn:hover { background: linear-gradient(90deg, #FFB800, #FFD700); }
+        @media (max-width: 900px) { .services-list, .portfolio-gallery { flex-direction: column; align-items: center; } .container { padding: 1.2rem; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo">
+            <img src="images/deniM.png" alt="DeniFinder Logo">
+            <span>DeniFinder</span>
+        </a>
+        <nav class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="headline">House Design & Construction</h1>
+            <p class="sub-headline">From architectural blueprints to the final build, we bring your dream home to life with precision, creativity, and care.</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2 class="section-title">Our Core Design Services</h2>
+        <div class="services-list">
+            <div class="service-item reveal"><i class="fas fa-ruler-combined"></i><div class="service-title">2D Floor Plans</div><div>Professional layouts with dimensions</div></div>
+            <div class="service-item reveal"><i class="fas fa-cube"></i><div class="service-title">3D Architectural Modeling</div><div>Realistic 3D models of your project</div></div>
+            <div class="service-item reveal"><i class="fas fa-paint-roller"></i><div class="service-title">Interior & Exterior Rendering</div><div>Stunning visuals for inside & out</div></div>
+            <div class="service-item reveal"><i class="fas fa-film"></i><div class="service-title">Walkthrough Animations</div><div>Animated tours and fly-throughs</div></div>
+            <div class="service-item reveal"><i class="fas fa-drafting-compass"></i><div class="service-title">Custom House Design</div><div>Tailored plans for your needs</div></div>
+            <div class="service-item reveal"><i class="fas fa-building"></i><div class="service-title">Commercial Building Planning</div><div>Offices, shops, and more</div></div>
+        </div>
+        <div class="portfolio-section">
+            <h2 class="section-title">Our Design Portfolio</h2>
+            <div class="portfolio-gallery">
+                <div class="portfolio-item reveal">
+                    <img src="images/hostels.jpeg" alt="Modern Hostel Design">
+                    <div class="portfolio-caption">Modern Hostel Exterior</div>
+                </div>
+                <div class="portfolio-item reveal">
+                    <img src="images/tenant.jpeg" alt="Cozy Interior Design">
+                    <div class="portfolio-caption">Cozy Living Room Interior</div>
+                </div>
+                <div class="portfolio-item reveal">
+                    <img src="images/Estate flyer design.jpeg" alt="Estate Flyer">
+                    <div class="portfolio-caption">Promotional Estate Design</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <div class="cta-content">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1rem;">Ready to Build Your Dream Home?</h2>
+                <p style="margin-bottom: 2rem;">Let's discuss your vision and how we can make it a reality.</p>
+                <button class="cta-btn">Start Your Project</button>
+            </div>
+        </div>
+    </div>
+    <footer style="background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,0.07);margin-top:3rem;padding:2.5rem 2rem 2rem 2rem;">
+        <section id="contact" style="max-width:900px;margin:0 auto;">
+            <h2 style="color:#FFB800;font-size:1.5rem;font-weight:800;margin-bottom:1rem;">About Our Design Team</h2>
+            <p style="font-size:1.08rem;color:#444;margin-bottom:1.2rem;">DeniFinder’s design studio brings together architects, 3D artists, and engineers with 10+ years of experience in residential and commercial projects across Africa. We’re passionate about making great design accessible and affordable for everyone.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:2rem;margin-bottom:1.5rem;">
+                <div style="flex:1 1 220px;background:#f8f9fa;padding:1.2rem;border-radius:10px;">
+                    <strong>Vishan Hussein</strong><br>Lead Architect<br><span style="color:#888;font-size:0.95em;">6 yrs exp.</span>
+                </div>
+                <div style="flex:1 1 220px;background:#f8f9fa;padding:1.2rem;border-radius:10px;">
+                    <strong>Mphatso Hassan</strong><br>3D Visualization Expert<br><span style="color:#888;font-size:0.95em;">5 yrs exp.</span>
+                </div>
+                <div style="flex:1 1 220px;background:#f8f9fa;padding:1.2rem;border-radius:10px;">
+                    <strong>Tumelo Saizi</strong><br>Interior Designer<br><span style="color:#888;font-size:0.95em;">2 yrs exp.</span>
+                </div>
+            </div>
+            <h3 style="color:#222;font-size:1.15rem;font-weight:700;margin-bottom:0.7rem;">Contact Us</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;">
+                <a href="https://wa.me/254700000000" target="_blank" style="color:#25D366;font-weight:600;text-decoration:none;font-size:1.1rem;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="mailto:design@denifinder.com" style="color:#0072c6;font-weight:600;text-decoration:none;font-size:1.1rem;"><i class="fas fa-envelope"></i> Email</a>
+                <a href="tel:+254700000000" style="color:#222;font-weight:600;text-decoration:none;font-size:1.1rem;"><i class="fas fa-phone"></i> +265 984 898 167</a>
+                <a href="https://calendly.com/denifinder-design/consult" target="_blank" style="color:#FFB800;font-weight:600;text-decoration:none;font-size:1.1rem;"><i class="fas fa-calendar-alt"></i> Book a Call</a>
+            </div>
+        </section>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const revealElements = document.querySelectorAll('.reveal');
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            revealElements.forEach((elem, index) => {
+                elem.style.transitionDelay = `${index * 100}ms`;
+                revealObserver.observe(elem);
+            });
+        });
+    </script>
+
+</body>
+</html> 

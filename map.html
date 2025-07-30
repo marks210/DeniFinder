@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Map - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-gray);
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .logo img {
+            height: 32px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: calc(100vh - 80px);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--white);
+            padding: 1.5rem;
+            border-right: 1px solid var(--light-gray);
+            overflow-y: auto;
+        }
+
+        .search-section {
+            margin-bottom: 2rem;
+        }
+
+        .search-section h3 {
+            margin-bottom: 1rem;
+            color: var(--charcoal);
+            font-size: 1.1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .price-input {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn-filter {
+            background: var(--sky-blue);
+            color: var(--white);
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .btn-filter:hover {
+            background: #0099cc;
+        }
+
+        /* Property List */
+        .property-list {
+            margin-top: 1rem;
+        }
+
+        .property-item {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .property-item:hover {
+            border-color: var(--gold);
+            box-shadow: 0 2px 8px rgba(255, 184, 0, 0.2);
+        }
+
+        .property-item.active {
+            border-color: var(--gold);
+            background: var(--gold-light);
+        }
+
+        .property-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .property-location {
+            font-size: 0.9rem;
+            color: var(--charcoal);
+            opacity: 0.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-price {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .property-status {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: var(--primary-green);
+            color: var(--white);
+        }
+
+        .status-rented {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        /* Map Container */
+        .map-container {
+            position: relative;
+            height: 100%;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Map Controls */
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .map-btn {
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            padding: 0.8rem;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            background: var(--light-gray);
+        }
+
+        .map-btn i {
+            font-size: 1.2rem;
+            color: var(--charcoal);
+        }
+
+        /* Property Popup */
+        .property-popup {
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .popup-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--charcoal);
+        }
+
+        .popup-price {
+            font-weight: 600;
+            color: var(--primary-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .popup-btn {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .popup-btn:hover {
+            background: var(--gold-dark);
+            color: var(--white);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .sidebar {
+                order: 2;
+                border-right: none;
+                border-top: 1px solid var(--light-gray);
+            }
+
+            .map-container {
+                order: 1;
+                height: 400px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/deniM.png" alt="DeniFinder Logo">
+                DeniFinder
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="messages.html">Messages</a>
+                <a href="landlord-dashboard.html" id="landlordMapLink" style="display: none;">Landlord Dashboard</a>
+                <a href="signin.html">Sign In</a>
+                <a href="signup.html" class="btn-primary">Sign Up</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="search-section">
+                <h3>Find Your Perfect Home</h3>
+                <input type="text" class="search-input" placeholder="Search by area, city, or landmark..." id="searchInput">
+                
+                <div class="filter-group">
+                    <label>Property Type</label>
+                    <select class="filter-select" id="propertyType">
+                        <option value="">All Types</option>
+                        <option value="house">House</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="hostel">Hostel</option>
+                        <option value="room">Room</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Price Range</label>
+                    <div class="price-range">
+                        <input type="number" class="price-input" placeholder="Min" id="minPrice">
+                        <span>-</span>
+                        <input type="number" class="price-input" placeholder="Max" id="maxPrice">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select class="filter-select" id="status">
+                        <option value="">All Status</option>
+                        <option value="available">Available</option>
+                        <option value="rented">Rented</option>
+                    </select>
+                </div>
+
+                <button class="btn-filter" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+
+            <div class="property-list" id="propertyList">
+                <!-- Properties will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-btn" onclick="locateUser()" title="Use My Location">
+                    <i class="fas fa-location-arrow"></i>
+                </button>
+                <button class="map-btn" onclick="toggleListView()" title="Toggle List View">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+
+            <!-- Location Status -->
+            <div class="location-status" id="locationStatus" style="
+                position: absolute;
+                top: 70px;
+                right: 10px;
+                background: white;
+                padding: 10px;
+                border-radius: 6px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                font-size: 12px;
+                max-width: 250px;
+                display: none;
+            ">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Click location button to find your position</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhHxCNlJl_Y93Hskm5ogiiYHIhfIVIS8A",
+            authDomain: "defi-finder.firebaseapp.com",
+            projectId: "defi-finder",
+            storageBucket: "defi-finder.firebasestorage.app",
+            messagingSenderId: "665116835708",
+            appId: "1:665116835708:web:11ade28588832aa3c9aef9"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        // Map variables
+        let map;
+        let markers = [];
+        let properties = [];
+
+        // Sample property data (replace with Firebase data)
+        const sampleProperties = [
+            {
+                id: '1',
+                title: 'Modern 2-Bedroom Apartment',
+                location: 'Area 18, Lilongwe',
+                price: 150000,
+                type: 'apartment',
+                status: 'available',
+                coordinates: [-13.9626, 33.7741],
+                description: 'Beautiful apartment with modern amenities',
+                contact: '+265 999 123 456'
+            },
+            {
+                id: '2',
+                title: 'Cozy Room Near University',
+                location: 'Area 47, Lilongwe',
+                price: 80000,
+                type: 'room',
+                status: 'available',
+                coordinates: [-13.9500, 33.7800],
+                description: 'Perfect for students, close to campus',
+                contact: '+265 888 234 567'
+            },
+            {
+                id: '3',
+                title: 'Family House with Garden',
+                location: 'Area 12, Lilongwe',
+                price: 250000,
+                type: 'house',
+                status: 'rented',
+                coordinates: [-13.9700, 33.7600],
+                description: 'Spacious family home with beautiful garden',
+                contact: '+265 777 345 678'
+            },
+            {
+                id: '4',
+                title: 'Student Hostel',
+                location: 'Area 49, Lilongwe',
+                price: 60000,
+                type: 'hostel',
+                status: 'available',
+                coordinates: [-13.9400, 33.7900],
+                description: 'Affordable student accommodation',
+                contact: '+265 666 456 789'
+            }
+        ];
+
+        // Initialize map
+        function initMap() {
+            // Centered at Lilongwe, Malawi
+            map = L.map('map').setView([-13.9626, 33.7741], 13);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Load properties
+            loadProperties();
+        }
+
+        // Load properties from Firebase or sample data
+        async function loadProperties() {
+            try {
+                // Try to load from Firebase first
+                const snapshot = await db.collection('properties').get();
+                if (!snapshot.empty) {
+                    properties = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                } else {
+                    // Use sample data if no Firebase data
+                    properties = sampleProperties;
+                }
+                
+                displayProperties();
+                addMarkersToMap();
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                // Fallback to sample data
+                properties = sampleProperties;
+                displayProperties();
+                addMarkersToMap();
+            }
+        }
+
+        // Display properties in sidebar
+        function displayProperties() {
+            const container = document.getElementById('propertyList');
+            container.innerHTML = '';
+
+            properties.forEach(property => {
+                const propertyElement = document.createElement('div');
+                propertyElement.className = 'property-item';
+                propertyElement.onclick = () => focusOnProperty(property.id);
+                
+                propertyElement.innerHTML = `
+                    <div class="property-title">${property.title}</div>
+                    <div class="property-location">${property.location}</div>
+                    <div class="property-price">MK ${property.price.toLocaleString()}/month</div>
+                    <div class="property-status status-${property.status}">${property.status}</div>
+                `;
+                
+                container.appendChild(propertyElement);
+            });
+        }
+
+        // Add markers to map
+        function addMarkersToMap() {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            properties.forEach(property => {
+                if (property.coordinates) {
+                    // Create custom icon based on status
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="
+                            background: ${property.status === 'available' ? '#4CAF50' : '#666'};
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        "></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+
+                    const marker = L.marker(property.coordinates, { icon }).addTo(map);
+                    
+                    // Add popup
+                    marker.bindPopup(`
+                        <div class="property-popup">
+                            <div class="popup-title">${property.title}</div>
+                            <div class="popup-price">MK ${property.price.toLocaleString()}/month</div>
+                            <div>${property.location}</div>
+                            <div>${property.description}</div>
+                            <a href="tel:${property.contact}" class="popup-btn">
+                                <i class="fas fa-phone"></i> Call
+                            </a>
+                        </div>
+                    `);
+
+                    // Store marker reference
+                    marker.propertyId = property.id;
+                    markers.push(marker);
+                }
+            });
+        }
+
+        // Focus on specific property
+        function focusOnProperty(propertyId) {
+            const property = properties.find(p => p.id === propertyId);
+            if (property && property.coordinates) {
+                map.setView(property.coordinates, 16);
+                
+                // Highlight property in list
+                document.querySelectorAll('.property-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Find and highlight the clicked property
+                const propertyElements = document.querySelectorAll('.property-item');
+                propertyElements.forEach((element, index) => {
+                    if (properties[index] && properties[index].id === propertyId) {
+                        element.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const propertyType = document.getElementById('propertyType').value;
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const status = document.getElementById('status').value;
+
+            const filteredProperties = properties.filter(property => {
+                const matchesSearch = !searchTerm || 
+                    property.title.toLowerCase().includes(searchTerm) ||
+                    property.location.toLowerCase().includes(searchTerm);
+                
+                const matchesType = !propertyType || property.type === propertyType;
+                const matchesStatus = !status || property.status === status;
+                
+                const matchesPrice = (!minPrice || property.price >= parseInt(minPrice)) &&
+                                   (!maxPrice || property.price <= parseInt(maxPrice));
+
+                return matchesSearch && matchesType && matchesStatus && matchesPrice;
+            });
+
+            // Update display
+            displayFilteredProperties(filteredProperties);
+            updateMarkers(filteredProperties);
+        }
+
+        // Display filtered properties
+        function displayFilteredProperties(filteredProperties) {
+            const container = document.getElementById('propertyList');
+            container.innerHTML = '';
+
+            if (filteredProperties.length === 0) {
+                container.innerHTML = '<p>No properties found matching your criteria.</p>';
+                return;
+            }
+
+            filteredProperties.forEach(property => {
+                const propertyElement = document.createElement('div');
+                propertyElement.className = 'property-item';
+                propertyElement.onclick = () => focusOnProperty(property.id);
+                
+                propertyElement.innerHTML = `
+                    <div class="property-title">${property.title}</div>
+                    <div class="property-location">${property.location}</div>
+                    <div class="property-price">MK ${property.price.toLocaleString()}/month</div>
+                    <div class="property-status status-${property.status}">${property.status}</div>
+                `;
+                
+                container.appendChild(propertyElement);
+            });
+        }
+
+        // Update markers based on filtered properties
+        function updateMarkers(filteredProperties) {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            filteredProperties.forEach(property => {
+                if (property.coordinates) {
+                    const icon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="
+                            background: ${property.status === 'available' ? '#4CAF50' : '#666'};
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        "></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+
+                    const marker = L.marker(property.coordinates, { icon }).addTo(map);
+                    
+                    marker.bindPopup(`
+                        <div class="property-popup">
+                            <div class="popup-title">${property.title}</div>
+                            <div class="popup-price">MK ${property.price.toLocaleString()}/month</div>
+                            <div>${property.location}</div>
+                            <div>${property.description}</div>
+                            <a href="tel:${property.contact}" class="popup-btn">
+                                <i class="fas fa-phone"></i> Call
+                            </a>
+                        </div>
+                    `);
+
+                    marker.propertyId = property.id;
+                    markers.push(marker);
+                }
+            });
+        }
+
+        // Locate user with high accuracy
+        function locateUser() {
+            if (navigator.geolocation) {
+                // High accuracy options
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                };
+
+                // Show loading status
+                const statusElement = document.getElementById('locationStatus');
+                if (statusElement) {
+                    statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting your location...';
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const { latitude, longitude, accuracy } = position.coords;
+                        const accuracyInMeters = Math.round(accuracy);
+                        
+                        // Determine zoom level based on accuracy
+                        let zoomLevel = 15;
+                        if (accuracyInMeters > 1000) zoomLevel = 12;
+                        else if (accuracyInMeters > 500) zoomLevel = 13;
+                        else if (accuracyInMeters > 100) zoomLevel = 14;
+                        else zoomLevel = 16;
+                        
+                        map.setView([latitude, longitude], zoomLevel);
+                        
+                        // Remove any existing user location markers
+                        if (window.userLocationMarker) {
+                            map.removeLayer(window.userLocationMarker);
+                        }
+                        if (window.userAccuracyCircle) {
+                            map.removeLayer(window.userAccuracyCircle);
+                        }
+                        
+                        // Create custom user location marker
+                        const userIcon = L.divIcon({
+                            className: 'user-location-marker',
+                            html: `<div style="
+                                background: #007bff;
+                                width: 20px;
+                                height: 20px;
+                                border-radius: 50%;
+                                border: 3px solid white;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                            "></div>`,
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        });
+                        
+                        // Add user location marker
+                        window.userLocationMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
+                        
+                        // Add accuracy circle
+                        window.userAccuracyCircle = L.circle([latitude, longitude], {
+                            radius: accuracy,
+                            color: '#007bff',
+                            fillColor: '#007bff',
+                            fillOpacity: 0.1,
+                            weight: 1
+                        }).addTo(map);
+                        
+                        // Create popup with accuracy info and options
+                        const popupContent = `
+                            <div style="text-align: center; min-width: 200px;">
+                                <strong>Your Location</strong><br>
+                                <small>Accuracy: ${accuracyInMeters}m</small><br><br>
+                                <div style="margin: 10px 0;">
+                                    <button onclick="refineLocation()" style="
+                                        background: #28a745;
+                                        color: white;
+                                        border: none;
+                                        padding: 8px 12px;
+                                        border-radius: 4px;
+                                        margin: 2px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                    ">Use This Location</button>
+                                    <button onclick="searchNearby()" style="
+                                        background: #ffc107;
+                                        color: #212529;
+                                        border: none;
+                                        padding: 8px 12px;
+                                        border-radius: 4px;
+                                        margin: 2px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                    ">Search Nearby</button>
+                                </div>
+                                <small style="color: #666;">
+                                    ${accuracyInMeters > 500 ? 'Location accuracy is low. Consider manually selecting your exact location.' : 'Location accuracy is good.'}
+                                </small>
+                            </div>
+                        `;
+                        
+                        window.userLocationMarker.bindPopup(popupContent).openPopup();
+                        
+                        // Update status
+                        if (statusElement) {
+                            statusElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> Location found (accuracy: ${accuracyInMeters}m)`;
+                        }
+                    },
+                    (error) => {
+                        let errorMessage = 'Unable to get your location. ';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += 'Please allow location access in your browser settings.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += 'Location information is unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += 'Location request timed out. Please try again.';
+                                break;
+                            default:
+                                errorMessage += 'An unknown error occurred.';
+                        }
+                        
+                        if (statusElement) {
+                            statusElement.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${errorMessage}`;
+                        } else {
+                            alert(errorMessage);
+                        }
+                    },
+                    options
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Refine location manually
+        function refineLocation() {
+            alert('Click on the map to set your exact location, then drag the marker if needed.');
+            map.once('click', function(e) {
+                const { lat, lng } = e.latlng;
+                
+                // Remove user location markers
+                if (window.userLocationMarker) {
+                    map.removeLayer(window.userLocationMarker);
+                }
+                if (window.userAccuracyCircle) {
+                    map.removeLayer(window.userAccuracyCircle);
+                }
+                
+                // Add draggable marker
+                window.userLocationMarker = L.marker([lat, lng], {
+                    draggable: true,
+                    icon: L.divIcon({
+                        className: 'user-location-marker',
+                        html: `<div style="
+                            background: #28a745;
+                            width: 20px;
+                            height: 20px;
+                            border-radius: 50%;
+                            border: 3px solid white;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        "></div>`,
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    })
+                }).addTo(map);
+                
+                window.userLocationMarker.bindPopup(`
+                    <div style="text-align: center;">
+                        <strong>Manual Location Set</strong><br>
+                        <small>Drag marker to adjust if needed</small><br>
+                        <button onclick="confirmLocation()" style="
+                            background: #28a745;
+                            color: white;
+                            border: none;
+                            padding: 5px 10px;
+                            border-radius: 4px;
+                            margin-top: 5px;
+                            cursor: pointer;
+                        ">Confirm Location</button>
+                    </div>
+                `).openPopup();
+            });
+        }
+
+        // Confirm manual location
+        function confirmLocation() {
+            const position = window.userLocationMarker.getLatLng();
+            alert(`Location confirmed at: ${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`);
+            
+            // You can add logic here to save this location or use it for property search
+            if (window.userLocationMarker) {
+                window.userLocationMarker.closePopup();
+            }
+        }
+
+        // Search for properties near user location
+        function searchNearby() {
+            if (window.userLocationMarker) {
+                const position = window.userLocationMarker.getLatLng();
+                
+                // Filter properties within 5km radius
+                const nearbyProperties = properties.filter(property => {
+                    if (!property.coordinates) return false;
+                    
+                    const distance = map.distance(position, property.coordinates);
+                    return distance <= 5000; // 5km
+                });
+                
+                if (nearbyProperties.length > 0) {
+                    // Update display to show nearby properties
+                    displayFilteredProperties(nearbyProperties);
+                    updateMarkers(nearbyProperties);
+                    
+                    // Show status
+                    const statusElement = document.getElementById('locationStatus');
+                    if (statusElement) {
+                        statusElement.innerHTML = `<i class="fas fa-search"></i> Found ${nearbyProperties.length} properties within 5km`;
+                    }
+                } else {
+                    alert('No properties found within 5km of your location.');
+                }
+            }
+        }
+
+        // Toggle list view (for mobile)
+        function toggleListView() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Confirm manual location
+        function confirmLocation() {
+            const position = window.userLocationMarker.getLatLng();
+            alert(`Location confirmed at: ${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`);
+            
+            const statusElement = document.getElementById('locationStatus');
+            if (statusElement) {
+                statusElement.innerHTML = `<i class="fas fa-check"></i> Location confirmed`;
+            }
+            
+            if (window.userLocationMarker) {
+                window.userLocationMarker.closePopup();
+            }
+        }
+
+        // Search for properties near user location
+        function searchNearby() {
+            if (window.userLocationMarker) {
+                const position = window.userLocationMarker.getLatLng();
+                
+                // Filter properties within 5km radius
+                const nearbyProperties = properties.filter(property => {
+                    if (!property.coordinates) return false;
+                    
+                    const distance = map.distance(position, property.coordinates);
+                    return distance <= 5000; // 5km
+                });
+                
+                if (nearbyProperties.length > 0) {
+                    // Update display to show nearby properties
+                    displayFilteredProperties(nearbyProperties);
+                    updateMarkers(nearbyProperties);
+                    
+                    // Show status
+                    const statusElement = document.getElementById('locationStatus');
+                    if (statusElement) {
+                        statusElement.style.display = 'block';
+                        statusElement.innerHTML = `<i class="fas fa-search"></i> Found ${nearbyProperties.length} properties within 5km`;
+                    }
+                } else {
+                    alert('No properties found within 5km of your location.');
+                }
+            }
+        }
+
+        // Check user authentication and update navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = localStorage.getItem('deniFinderCurrentUser');
+            const landlordMapLink = document.getElementById('landlordMapLink');
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                if (user.userType === 'landlord' && landlordMapLink) {
+                    landlordMapLink.style.display = 'inline-block';
+                }
+            }
+            
+            // Initialize map
+            initMap();
+        });
+    </script>
+</body>
+</html> 

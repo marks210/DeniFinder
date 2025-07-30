@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced House Assist - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #FFB800;
+            --charcoal: #222;
+            --white: #fff;
+            --light-gray: #f8f9fa;
+            --dark-gray: #666;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+            background: var(--light-gray);
+        }
+        
+        /* Header */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-decoration: none;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--charcoal);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--gold);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(34, 34, 34, 0.6), rgba(34, 34, 34, 0.6)), url('../images/hero.jpeg') no-repeat center center/cover;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: var(--white);
+        }
+        
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background: var(--gold);
+            color: var(--charcoal);
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        
+        .btn-primary:hover {
+            background: #FFD700;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* Main Content */
+        .advanced-assist-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .intro-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+        
+        .intro-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .intro-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .intro-card h2 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            margin: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--charcoal);
+        }
+        
+        .timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .timeline-item {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+        }
+        
+        .timeline-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gold);
+            color: var(--charcoal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+        
+        .timeline-content h3 {
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+        }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .service-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .service-card h4 {
+            color: var(--charcoal);
+            font-size: 1.1rem;
+        }
+        
+        /* Pricing */
+        .pricing-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .pricing-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .pricing-card.featured {
+            border: 3px solid var(--gold);
+            transform: scale(1.05);
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+        
+        .pricing-card h3 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-top: 1rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(rgba(34, 34, 34, 0.7), rgba(34, 34, 34, 0.7)), url('../images/project.jpg') no-repeat center center/cover;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 20px;
+            margin: 4rem 0;
+            color: var(--white);
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            color: var(--white);
+        }
+        
+        .btn-secondary {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+        
+        .btn-secondary:hover {
+            background: #000;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--charcoal);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s;
+        }
+        
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            nav ul {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <a href="../index.html" class="logo">DeniFinder</a>
+            <ul>
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../dashboard.html">Dashboard</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="../messages.html">Messages</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="advanced-assist-page">
+        <section class="hero">
+            <div class="hero-text">
+                <h1>DeniFinder Advanced Assist</h1>
+                <p class="tagline">"We find your perfect home — while you relax."</p>
+                <a href="#request-form" class="btn btn-primary">Request Home Finder Service</a>
+            </div>
+        </section>
+
+        <section class="intro-section">
+            <div class="intro-card animate-on-scroll">
+                <h2>🔍 What It Does</h2>
+                <p>Users can submit a detailed request, and our team will personally search for a matching home, filtering out scams and stress. We handle the entire process from search to move-in.</p>
+            </div>
+            <div class="intro-card animate-on-scroll">
+                <h2>🎯 Why It's Valuable</h2>
+                <p>Perfect for those relocating, busy professionals, or anyone wanting a VIP-level service to find a home before they even arrive. Save time and avoid rental scams.</p>
+            </div>
+            <div class="intro-card animate-on-scroll">
+                <h2>⚡ How Fast</h2>
+                <p>We typically find 3-5 matching properties within 48-72 hours. For urgent requests, we can expedite the search process to get you results within 24 hours.</p>
+            </div>
+        </section>
+
+        <section class="how-it-works">
+            <h2 class="section-title animate-on-scroll">How It Works</h2>
+            <div class="timeline">
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-icon">1</div>
+                    <div class="timeline-content">
+                        <h3>Submit a Request</h3>
+                        <p>Fill out our detailed form with your preferences, budget, and timeline. The more details you provide, the better matches we can find.</p>
+                    </div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-icon">2</div>
+                    <div class="timeline-content">
+                        <h3>We Get to Work</h3>
+                        <p>Our dedicated property scouts start searching immediately, using our extensive network and database to find the perfect match for your needs.</p>
+                    </div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-icon">3</div>
+                    <div class="timeline-content">
+                        <h3>Get First Access</h3>
+                        <p>Receive exclusive first-look access to matching properties before they go public. We arrange viewings and provide detailed reports.</p>
+                    </div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="timeline-icon">4</div>
+                    <div class="timeline-content">
+                        <h3>Secure Your Home</h3>
+                        <p>Choose your favorite, request a virtual tour, and let us handle the paperwork, negotiations, and move-in coordination.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="extra-services">
+            <h2 class="section-title animate-on-scroll">Optional Add-on Services</h2>
+            <div class="services-grid">
+                <div class="service-card animate-on-scroll">
+                    <h4>✅ Property Verification</h4>
+                    <p>We verify ownership, check for liens, and ensure the property is legally available for rent.</p>
+                </div>
+                <div class="service-card animate-on-scroll">
+                    <h4>🚚 Moving Services</h4>
+                    <p>Professional moving and transport services to get you and your belongings safely to your new home.</p>
+                </div>
+                <div class="service-card animate-on-scroll">
+                    <h4>⚖️ Legal Contract Help</h4>
+                    <p>Legal review of rental agreements and assistance with contract negotiations to protect your interests.</p>
+                </div>
+                <div class="service-card animate-on-scroll">
+                    <h4>🔐 Secure Deposit Handling</h4>
+                    <p>Secure escrow service for deposits and rent payments, ensuring your money is protected until move-in.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="pricing-table-section">
+            <h2 class="section-title animate-on-scroll">Service Packages</h2>
+            <div class="pricing-table">
+                <div class="pricing-card animate-on-scroll">
+                    <h3>Basic Assist</h3>
+                    <p>Perfect for simple requests</p>
+                    <ul style="text-align: left; margin: 1rem 0; list-style: none;">
+                        <li>✓ 3 property matches</li>
+                        <li>✓ Basic property info</li>
+                        <li>✓ Contact details</li>
+                        <li>✓ 48-hour response</li>
+                    </ul>
+                    <div class="price">Free</div>
+                </div>
+                <div class="pricing-card featured animate-on-scroll">
+                    <h3>Pro Assist</h3>
+                    <p>Most popular choice</p>
+                    <ul style="text-align: left; margin: 1rem 0; list-style: none;">
+                        <li>✓ 5-8 property matches</li>
+                        <li>✓ Detailed property reports</li>
+                        <li>✓ Virtual tours arranged</li>
+                        <li>✓ Negotiation assistance</li>
+                        <li>✓ 24-hour response</li>
+                        <li>✓ Move-in coordination</li>
+                    </ul>
+                    <div class="price">MWK 10,000 – 30,000</div>
+                </div>
+                <div class="pricing-card animate-on-scroll">
+                    <h3>Corporate Assist</h3>
+                    <p>For companies & organizations</p>
+                    <ul style="text-align: left; margin: 1rem 0; list-style: none;">
+                        <li>✓ Unlimited property search</li>
+                        <li>✓ Priority service</li>
+                        <li>✓ Legal contract review</li>
+                        <li>✓ Bulk rental agreements</li>
+                        <li>✓ Dedicated account manager</li>
+                        <li>✓ Same-day response</li>
+                    </ul>
+                    <div class="price">MWK 50,000+</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section" id="request-form">
+            <h2>Ready to Find Your Perfect Home?</h2>
+            <p>Fill out our detailed request form and let our experts handle the search for you.</p>
+            <a href="../advance-house-finder.html" class="btn btn-secondary">Start Your Request Now</a>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 DeniFinder. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

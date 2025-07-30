@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Background Check - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-tenant-check">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title"><i class="fas fa-user-check"></i> Tenant Background Check</h1>
+                <p class="service-subtitle">Build trust and make informed decisions. Get a comprehensive report on potential tenants.</p>
+                
+                <div class="service-description">
+                    <p>Our background check service for landlords includes:</p>
+                    <ul>
+                        <li><i class="fas fa-id-card"></i> ID and personal information verification.</li>
+                        <li><i class="fas fa-briefcase"></i> Employment history confirmation (where possible).</li>
+                        <li><i class="fas fa-history"></i> Previous rental history and references.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Request a Tenant Check</h2>
+                    <p>To begin, please provide your details and the applicant's email. We will then contact the tenant to obtain their consent.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="landlord-name">Your Name (Landlord/Agent)</label>
+                            <input type="text" id="landlord-name" name="landlord-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="landlord-email">Your Email</label>
+                            <input type="email" id="landlord-email" name="landlord-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tenant-email">Prospective Tenant's Email</label>
+                            <input type="email" id="tenant-email" name="tenant-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="property-address">Property Address</label>
+                            <input type="text" id="property-address" name="property-address" required>
+                        </div>
+                        <button type="submit" class="btn-submit">Initiate Background Check</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

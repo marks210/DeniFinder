@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance & Repairs - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-maintenance-repairs">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title"><i class="fas fa-tools"></i> Maintenance & Repairs</h1>
+                <p class="service-subtitle">Book trusted professionals for DSTV/GOtv setup, plumbing, cleaning, solar installation, and general repairs.</p>
+                
+                <div class="service-description">
+                    <p>Get on-demand help with just one click:</p>
+                    <ul>
+                        <li><i class="fas fa-satellite-dish"></i> DSTV, GOtv, and streaming service setup.</li>
+                        <li><i class="fas fa-solar-panel"></i> Solar panel installation and maintenance.</li>
+                        <li><i class="fas fa-wrench"></i> Plumbing, carpentry, and electrical work.</li>
+                        <li><i class="fas fa-broom"></i> Professional cleaning and painting services.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Book a Service Professional</h2>
+                    <p>Describe the job you need done, and we'll connect you with a verified expert.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Your Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="service-type">Type of Service Needed</label>
+                            <select id="service-type" name="service-type" required>
+                                <option value="dstv-setup">DSTV/GOtv Setup</option>
+                                <option value="solar">Solar Installation/Repair</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="cleaning">Cleaning Service</option>
+                                <option value="painting">Painting</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="job-description">Brief Description of the Job</label>
+                            <textarea id="job-description" name="job-description" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit">Request a Professional</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

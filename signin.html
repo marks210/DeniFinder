@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(255, 184, 0, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .signin-container {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .signin-form {
+            padding: 3rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--charcoal);
+            opacity: 0.7;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--charcoal);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--charcoal);
+            opacity: 0.6;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .password-toggle:hover {
+            opacity: 1;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+        }
+
+        .remember-me label {
+            font-size: 0.9rem;
+            color: var(--charcoal);
+            opacity: 0.8;
+        }
+
+        .forgot-password {
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .signin-btn {
+            width: 100%;
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .signin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 184, 0, 0.4);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--light-gray);
+        }
+
+        .divider span {
+            background: var(--white);
+            padding: 0 1rem;
+            color: var(--charcoal);
+            opacity: 0.6;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--charcoal);
+            text-decoration: none;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            border-color: var(--gold);
+            background: rgba(255, 184, 0, 0.1);
+        }
+
+        .signup-link {
+            text-align: center;
+            color: var(--charcoal);
+            opacity: 0.8;
+        }
+
+        .signup-link a {
+            color: var(--gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .signin-visual {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .signin-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white" opacity="0.1"><circle cx="20" cy="20" r="2"/><circle cx="80" cy="40" r="1"/><circle cx="40" cy="80" r="1.5"/><circle cx="90" cy="90" r="1"/><circle cx="10" cy="70" r="1"/></svg>');
+            background-size: 100px 100px;
+        }
+
+        .visual-content {
+            text-align: center;
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+
+        .visual-content i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .visual-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .visual-content p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .stats {
+            margin-top: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .signin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .signin-visual {
+                display: none;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signin-container">
+        <div class="signin-form">
+            <div class="logo-section">
+                <a href="index.html" class="logo">
+                    <img src="images/deniM.png" alt="DeniFinder Logo">
+                    <span class="logo-text">DeniFinder</span>
+                </a>
+            </div>
+
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your DeniFinder account</p>
+            </div>
+
+            <form id="signinForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="signin-btn">Sign In</button>
+
+                <div class="divider">
+                    <span>or sign in with</span>
+                </div>
+
+                <div class="social-login">
+                    <a href="#" class="social-btn">
+                        <i class="fab fa-google"></i> Google
+                    </a>
+                    <a href="#" class="social-btn">
+                        <i class="fab fa-facebook"></i> Facebook
+                    </a>
+                </div>
+
+                <div class="signup-link">
+                    Don't have an account? <a href="signup.html">Sign Up</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="signin-visual">
+            <div class="visual-content">
+                <i class="fas fa-user-check"></i>
+                <h2>Welcome Back!</h2>
+                <p>Access your saved properties, messages, and personalized recommendations</p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">5K+</div>
+                        <div class="stat-label">Properties</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Satisfaction</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Support</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-init.js"></script>
+
+    <script>
+        // Password toggle
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.classList.remove('fa-eye');
+                toggleBtn.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.classList.remove('fa-eye-slash');
+                toggleBtn.classList.add('fa-eye');
+            }
+        }
+
+        // Form submission with Firebase
+        document.getElementById('signinForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const userData = {
+                email: formData.get('email'),
+                password: formData.get('password'),
+                remember: formData.get('remember') === 'on'
+            };
+
+            // Show loading state
+            const submitBtn = document.querySelector('.signin-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Signing In...';
+            submitBtn.disabled = true;
+
+            try {
+                // Initialize Firebase if not already done
+                if (!window.DeniFinderFirebase) {
+                    console.error('Firebase not initialized');
+                    alert('Error: Firebase not loaded. Please refresh the page.');
+                    return;
+                }
+
+                // Sign in with Firebase Auth
+                const result = await window.DeniFinderFirebase.authService.signIn(
+                    userData.email, 
+                    userData.password
+                );
+
+                if (result.success) {
+                    // Get user data from Firestore
+                    const userDoc = await window.DeniFinderFirebase.dbService.getDocument(
+                        'users', 
+                        result.user.uid
+                    );
+
+                    if (userDoc.success) {
+                        // Store user data locally
+                    localStorage.setItem('deniFinderLoggedIn', 'true');
+                        localStorage.setItem('deniFinderCurrentUser', JSON.stringify(userDoc.data));
+                        
+                        // Show success message
+                        alert('Welcome back!');
+                    
+                        // Redirect to dashboard based on user type
+                        const userType = userDoc.data.userType || 'tenant';
+                        if (userType === 'landlord') {
+                            window.location.href = 'landlord-dashboard.html';
+                        } else {
+                    window.location.href = 'dashboard.html';
+                        }
+                    } else {
+                        alert('Error loading user data. Please try again.');
+                    }
+                } else if (result.needsVerification) {
+                    // Handle email verification needed
+                    alert('Please verify your email address before signing in. Check your inbox for a verification link.');
+                    
+                    // Store user data for verification page
+                    localStorage.setItem('pendingVerificationUser', JSON.stringify({
+                        uid: result.user.uid,
+                        email: userData.email
+                    }));
+                    
+                    // Redirect to email verification page
+                    window.location.href = 'email-verification.html';
+                } else {
+                    alert(`Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Signin error:', error);
+                alert(`Error signing in: ${error.message}`);
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 

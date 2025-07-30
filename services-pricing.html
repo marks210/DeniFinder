@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Services Pricing - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #222; margin: 0; }
+        .header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; text-decoration: none; color: #FFB800; font-size: 1.5rem; font-weight: 700; }
+        .logo img { height: 32px; margin-right: 0.5rem; }
+        .nav-link { color: #222; text-decoration: none; font-weight: 500; margin-left: 2rem; }
+        .nav-link:hover { color: #FFB800; }
+        .container { max-width: 900px; margin: 2rem auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 2.5rem 2rem; }
+        .headline { font-size: 2rem; font-weight: 800; margin-bottom: 2rem; color: #FFB800; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 2.5rem; }
+        th, td { padding: 1rem 0.7rem; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #FFEB99; color: #7A5C00; font-size: 1.1rem; }
+        tr:last-child td { border-bottom: none; }
+        .package-section { margin: 2.5rem 0; }
+        .package-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: #222; }
+        .package-list { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+        .package-card { background: #f8f9fa; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 1.5rem 1.2rem; width: 260px; }
+        .package-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; color: #FFB800; }
+        .package-price { font-size: 1.1rem; color: #4CAF50; font-weight: 700; margin-bottom: 0.5rem; }
+        .package-features { font-size: 0.98rem; color: #444; margin-bottom: 0.5rem; }
+        .cta-section { text-align: center; margin: 2.5rem 0 1rem 0; }
+        .cta-btn { background: linear-gradient(90deg, #FFB800, #FFEB99); color: #222; font-weight: 700; font-size: 1.1rem; border: none; border-radius: 10px; padding: 1rem 2.5rem; cursor: pointer; box-shadow: 0 2px 8px rgba(255,184,0,0.12); transition: background 0.2s; }
+        .cta-btn:hover { background: linear-gradient(90deg, #FFB800, #FFD700); }
+        @media (max-width: 900px) { .container { padding: 1.2rem; } .package-list { flex-direction: column; align-items: center; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="dashboard.html" class="logo"><img src="images/deniM.png" alt="DeniFinder Logo"> DeniFinder</a>
+        <nav>
+            <a href="dashboard.html" class="nav-link">Dashboard</a>
+            <a href="services-dashboard.html" class="nav-link">Services</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="headline">Design Services Pricing</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Price Range</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>2D Floor Plan Design</td><td>$100 – $300</td><td>Professional 2D layout with dimensions</td></tr>
+                <tr><td>3D House Modeling</td><td>$300 – $1,000+</td><td>Full exterior and interior modeling</td></tr>
+                <tr><td>Walkthrough Animation</td><td>$500 – $2,000+</td><td>Animated fly-through or interior walkthrough</td></tr>
+                <tr><td>Full Building Design (BIM)</td><td>$1,000 – $10,000+</td><td>Structural + MEP modeling and docs</td></tr>
+                <tr><td>Interior Design Rendering</td><td>$150 – $600</td><td>3D room design with materials</td></tr>
+            </tbody>
+        </table>
+        <div class="package-section">
+            <div class="package-title">Popular Packages</div>
+            <div class="package-list">
+                <div class="package-card">
+                    <div class="package-name">Starter Home Pack</div>
+                    <div class="package-price">$450</div>
+                    <div class="package-features">2D Floor Plan + 3D Model + 2 Renderings</div>
+                </div>
+                <div class="package-card">
+                    <div class="package-name">Developer Pack</div>
+                    <div class="package-price">$2,500</div>
+                    <div class="package-features">Full Building Design + Walkthrough + 5 Renderings</div>
+                </div>
+                <div class="package-card">
+                    <div class="package-name">Interior Makeover</div>
+                    <div class="package-price">$350</div>
+                    <div class="package-features">Room Design + 2 Renderings</div>
+                </div>
+            </div>
+        </div>
+        <section class="cta-section">
+            <button class="cta-btn" onclick="window.location.href='quote-form.html'">Get a Quote / Start a Project</button>
+        </section>
+    </div>
+</body>
+</html> 

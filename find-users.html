@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Users - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #222; margin: 0; }
+        .header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.07); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; text-decoration: none; color: #FFB800; font-size: 1.5rem; font-weight: 700; }
+        .logo img { height: 32px; margin-right: 0.5rem; }
+        .back-btn { background: var(--sky-blue); color: #fff; border: none; border-radius: 8px; padding: 0.7rem 1.2rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .container { max-width: 600px; margin: 2rem auto; background: #fff; border-radius: 18px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); padding: 2.5rem 2rem; }
+        .headline { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; color: #FFB800; text-align: center; }
+        .search-box { width: 100%; padding: 1rem; border: 1px solid #eee; border-radius: 8px; font-size: 1rem; margin-bottom: 2rem; }
+        .user-list { display: flex; flex-direction: column; gap: 1.2rem; }
+        .user-card { display: flex; align-items: center; gap: 1rem; background: #f8f9fa; border-radius: 10px; padding: 1rem 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: #FFB800; }
+        .user-info { flex: 1; }
+        .user-name { font-weight: 700; font-size: 1.08rem; }
+        .user-email { color: #888; font-size: 0.97rem; }
+        .message-btn { background: var(--gold); color: #222; border: none; border-radius: 8px; padding: 0.7rem 1.2rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .message-btn:hover { background: var(--gold-dark); color: #fff; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="messages.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Messages</a>
+        <a href="dashboard.html" class="logo"><img src="images/deniM.png" alt="DeniFinder Logo"> DeniFinder</a>
+    </header>
+    <div class="container">
+        <div class="headline">Find People on DeniFinder</div>
+        <input type="text" class="search-box" id="userSearch" placeholder="Search by name or email..." oninput="filterUsers()">
+        <div class="user-list" id="userList">
+            <!-- Users will be loaded here -->
+        </div>
+    </div>
+    <div class="container" style="margin-top:2rem;">
+        <div class="headline" style="font-size:1.2rem;color:#00B4D8;">Contact Admin</div>
+        <form id="contactForm" action="https://formspree.io/f/mkgzobza" method="POST" style="display:flex;flex-direction:column;gap:1rem;max-width:400px;margin:0 auto;">
+            <input type="text" name="name" placeholder="Your Name" required style="padding:0.8rem;border-radius:8px;border:1px solid #eee;font-size:1rem;">
+            <input type="email" name="email" placeholder="Your Email" required style="padding:0.8rem;border-radius:8px;border:1px solid #eee;font-size:1rem;">
+            <textarea name="message" placeholder="Your Message" required style="padding:0.8rem;border-radius:8px;border:1px solid #eee;font-size:1rem;min-height:80px;"></textarea>
+            <button type="submit" class="message-btn" style="background:#00B4D8;color:#fff;">Send Message</button>
+            <div id="formSuccess" style="display:none;color:#4CAF50;font-weight:600;text-align:center;margin-top:1rem;">Thank you! Your message has been sent.</div>
+        </form>
+    </div>
+    <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        setTimeout(function() {
+            document.getElementById('formSuccess').style.display = 'block';
+        }, 500);
+    });
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="js/firebase-init.js"></script>
+    <script>
+        let allUsers = [];
+        let filteredUsers = [];
+        async function loadUsers() {
+            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) return;
+            const result = await window.DeniFinderFirebase.dbService.queryDocuments('users', [], { field: 'displayName', direction: 'asc' }, 50);
+            if (result.success) {
+                allUsers = result.data;
+                filteredUsers = allUsers;
+                renderUsers(filteredUsers);
+            } else {
+                document.getElementById('userList').innerHTML = '<p>Error loading users.</p>';
+            }
+        }
+        function renderUsers(users) {
+            const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
+            const list = document.getElementById('userList');
+            const visibleUsers = users.filter(u => u.uid !== currentUser.uid);
+            if (!visibleUsers || visibleUsers.length === 0) {
+                list.innerHTML = '<p>No users found.</p>';
+                return;
+            }
+            list.innerHTML = visibleUsers.map(user => `
+                <div class="user-card" onclick="showUserProfile('${user.uid}')" style="cursor:pointer;">
+                    <div class="user-avatar">${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}</div>
+                    <div class="user-info">
+                        <div class="user-name">${user.displayName || 'User'}</div>
+                        <div class="user-email">${user.email || ''}</div>
+                    </div>
+                    <button class="message-btn" onclick="event.stopPropagation(); startConversation('${user.uid}', '${user.displayName || 'User'}')">
+                        <i class="fas fa-comment"></i> Message
+                    </button>
+                </div>
+            `).join('');
+        }
+        // Modal for user profile
+        function showUserProfile(userId) {
+            const user = allUsers.find(u => u.uid === userId);
+            if (!user) return;
+            const modal = document.createElement('div');
+            modal.className = 'profile-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-user"></i> User Profile</h3>
+                        <button class="close-btn" onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:1.5rem;">
+                            <div class="user-avatar" style="width:64px;height:64px;font-size:2rem;">${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}</div>
+                            <div>
+                                <div class="user-name" style="font-size:1.2rem;font-weight:700;">${user.displayName || 'User'}</div>
+                                <div class="user-email">${user.email || ''}</div>
+                                <div style="color:#888;font-size:0.97rem;">${user.userType ? user.userType.charAt(0).toUpperCase() + user.userType.slice(1) : ''}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:1rem;justify-content:flex-end;">
+                            <button class="message-btn" onclick="startConversation('${user.uid}', '${user.displayName || 'User'}')"><i class="fas fa-comment"></i> Message</button>
+                            <button class="message-btn" style="background:#00B4D8;color:#fff;" onclick="alert('Profile details coming soon!')"><i class="fas fa-user"></i> View Profile</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            // Add modal styles if not already present
+            if (!document.getElementById('profile-modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'profile-modal-styles';
+                style.textContent = `
+                    .profile-modal { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:10000; }
+                    .profile-modal .modal-content { background:#fff; border-radius:16px; max-width:400px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+                    .profile-modal .modal-header { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 1.5rem; border-bottom:1px solid #eee; }
+                    .profile-modal .modal-header h3 { font-size:1.1rem; color:#222; }
+                    .profile-modal .close-btn { background:none; border:none; font-size:1.2rem; cursor:pointer; color:#888; padding:0.5rem; border-radius:50%; transition:all 0.3s; }
+                    .profile-modal .close-btn:hover { background:#f8f9fa; color:#222; }
+                    .profile-modal .modal-body { padding:1.5rem; }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        function filterUsers() {
+            const search = document.getElementById('userSearch').value.trim().toLowerCase();
+            if (!search) {
+                filteredUsers = allUsers;
+            } else {
+                filteredUsers = allUsers.filter(user =>
+                    (user.displayName && user.displayName.toLowerCase().includes(search)) ||
+                    (user.email && user.email.toLowerCase().includes(search))
+                );
+            }
+            renderUsers(filteredUsers);
+        }
+        async function startConversation(userId, userName) {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
+                if (!currentUser || !currentUser.uid) throw new Error('Not signed in');
+                // Find or create the conversation
+                const convo = await window.DeniFinderFirebase.messagingUtils.findOrCreateConversation(currentUser.uid, userId);
+                if (convo && convo.id) {
+                    window.location.href = `messages.html?conversationId=${convo.id}`;
+                } else {
+                    alert('Failed to start conversation. Please try again.');
+                }
+            } catch (err) {
+                alert('Failed to start conversation. Please try again.');
+            }
+        }
+        window.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moving & Transport Services - DeniFinder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/services.css">
+</head>
+<body>
+    <div class="service-page-container bg-moving-services">
+        <header class="service-header">
+            <div class="header-container">
+                <div class="logo">
+                    <a href="../index.html"><img src="../images/deniM.png" alt="DeniFinder Logo"></a>
+                    <span>DeniFinder</span>
+                </div>
+                <nav class="main-nav">
+                    <a href="../index.html">Home</a>
+                    <a href="../dashboard.html">Dashboard</a>
+                    <a href="#">Services</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="service-main-content">
+            <div class="content-wrapper">
+                <h1 class="service-title"><i class="fas fa-truck"></i> Moving & Transport Services</h1>
+                <p class="service-subtitle">Hire affordable, trusted trucks and movers directly through DeniFinder. Your seamless move starts here.</p>
+                
+                <div class="service-description">
+                    <p>We partner with local drivers and companies to offer:</p>
+                    <ul>
+                        <li><i class="fas fa-truck-pickup"></i> Small trucks and pickup vans for any size move.</li>
+                        <li><i class="fas fa-box-open"></i> Optional packing and unpacking assistance.</li>
+                        <li><i class="fas fa-calendar-check"></i> Flexible scheduling to fit your timeline.</li>
+                    </ul>
+                </div>
+
+                <div class="form-container">
+                    <h2>Book a Mover</h2>
+                    <p>Fill out the form below and we'll provide an instant quote or have a mover call you back shortly.</p>
+                    <form action="https://formspree.io/f/xdkdazyk" method="POST">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Your Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="move-date">Preferred Moving Date</label>
+                            <input type="date" id="move-date" name="move-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicle-type">Vehicle Needed</label>
+                            <select id="vehicle-type" name="vehicle-type" required>
+                                <option value="pickup-van">Pickup Van</option>
+                                <option value="small-truck">Small Truck (1-2 Ton)</option>
+                                <option value="large-truck">Large Truck (3-5 Ton)</option>
+                                <option value="not-sure">I'm not sure</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">Get a Quote</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
