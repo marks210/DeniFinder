@@ -455,106 +455,144 @@ function initializeBlog() {
     loadBlogPosts();
 }
 
-function loadBlogPosts() {
-    // This function loads real blog posts from Supabase without refreshing the page
-    console.log('Loading blog posts...');
-    
+async function loadBlogPosts() {
     const blogPostsContainer = document.getElementById('blogPosts');
     if (!blogPostsContainer) {
         console.error('Blog posts container not found!');
         return;
     }
     
-    // Show loading state
-    blogPostsContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading posts...</div>';
+    console.log('Loading blog posts...');
     
-    // Load posts asynchronously
-    setTimeout(async () => {
-        try {
-            let posts = [];
+    try {
+        // Show loading state
+        blogPostsContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading posts...</div>';
+        
+        let posts = [];
+        
+        // Try to load from Supabase first
+        if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+            console.log('Supabase available, querying blog posts...');
             
-            // Try to load from Supabase first
-            if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
-                console.log('Supabase available, querying blog posts...');
+            const result = await window.DeniFinderSupabase.dbService.queryDocuments(
+                'blog_posts',
+                [{ field: 'status', operator: '==', value: 'published' }],
+                { field: 'created_at', direction: 'desc' },
+                20 // Limit to 20 most recent posts
+            );
+            
+            console.log('Supabase query result:', result);
+            
+            if (result.success && result.data.length > 0) {
+                // Process posts to add author information
+                posts = await Promise.all(result.data.map(async (post) => {
+                    try {
+                        // Get author information from users table
+                        if (post.author_id) {
+                            const userResult = await window.DeniFinderSupabase.dbService.getDocument('users', post.author_id);
+                            if (userResult.success && userResult.data) {
+                                const user = userResult.data;
+                                return {
+                                    ...post,
+                                    authorName: user.display_name || user.email?.split('@')[0] || 'Anonymous',
+                                    authorEmail: user.email,
+                                    likes: post.likes || 0,
+                                    comments: post.comments || [],
+                                    reposts: post.reposts || 0,
+                                    timestamp: post.created_at || post.published_at || new Date()
+                                };
+                            }
+                        }
+                        
+                        // Fallback if user not found
+                        return {
+                            ...post,
+                            authorName: 'Anonymous',
+                            authorEmail: '',
+                            likes: post.likes || 0,
+                            comments: post.comments || [],
+                            reposts: post.reposts || 0,
+                            timestamp: post.created_at || post.published_at || new Date()
+                        };
+                    } catch (error) {
+                        console.error('Error getting author info for post:', post.id, error);
+                        return {
+                            ...post,
+                            authorName: 'Anonymous',
+                            authorEmail: '',
+                            likes: post.likes || 0,
+                            comments: post.comments || [],
+                            reposts: post.reposts || 0,
+                            timestamp: post.created_at || post.published_at || new Date()
+                        };
+                    }
+                }));
                 
-                const result = await window.DeniFinderSupabase.dbService.queryDocuments(
-                    'blog_posts',
-                    [{ field: 'status', operator: '==', value: 'published' }],
-                    { field: 'created_at', direction: 'desc' },
-                    20 // Limit to 20 most recent posts
-                );
-                
-                console.log('Supabase query result:', result);
-                
-                if (result.success) {
-                    posts = result.data;
-                    console.log('Posts loaded from Supabase:', posts.length);
-                } else {
-                    console.warn('Failed to load posts from Supabase, using sample data');
-                    posts = getSamplePosts();
-                }
+                console.log('Posts loaded from Supabase:', posts.length);
             } else {
-                console.log('Supabase not available, using sample posts');
+                console.warn('Failed to load posts from Supabase, using sample data');
                 posts = getSamplePosts();
             }
-            
-            // Render blog posts
-            if (posts.length === 0) {
-                blogPostsContainer.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: #666;">
-                        <i class="fas fa-newspaper"></i>
-                        <h4>No posts yet</h4>
-                        <p>Be the first to create a blog post!</p>
-                    </div>
-                `;
-            } else {
-                blogPostsContainer.innerHTML = posts.map(post => `
-                    <div class="blog-post" data-post-id="${post.id || ''}">
-                        <div class="post-header">
-                            <h4>${post.title}</h4>
-                            <div class="post-meta">
-                                <span class="author">By ${post.authorName || 'Anonymous'}</span>
-                                <span class="date">${formatDate(post.timestamp)}</span>
-                                <span class="read-time">${estimateReadTime(post.content)} min read</span>
-                            </div>
-                        </div>
-                        ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ''}
-                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Featured Image" style="width: 100%; max-width: 300px; border-radius: 8px; margin: 1rem 0;">` : ''}
-                        
-                        <div class="post-actions">
-                            <button class="action-btn like-btn" onclick="handleLike(this)" data-post-id="${post.id || ''}">
-                                <i class="fas fa-heart"></i> <span class="like-count">${post.likes || 0}</span>
-                            </button>
-                            <button class="action-btn comment-btn" onclick="toggleComments(this)" data-post-id="${post.id || ''}">
-                                <i class="fas fa-comment"></i> <span class="comment-count">${post.comments ? post.comments.length : 0}</span>
-                            </button>
-                            <button class="action-btn repost-btn" onclick="handleRepost(this)" data-post-id="${post.id || ''}">
-                                <i class="fas fa-retweet"></i> <span class="repost-count">${post.reposts || 0}</span>
-                            </button>
-                            <button class="action-btn save-btn" onclick="handleSave(this)" data-post-id="${post.id || ''}">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                            <button class="action-btn message-btn" onclick="messageAuthor(this)" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; margin-left: auto;">
-                                <i class="fas fa-envelope"></i> Message Author
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        } catch (error) {
-            console.error('Error loading blog posts:', error);
+        } else {
+            console.log('Supabase not available, using sample posts');
+            // Fallback to sample posts if Supabase not available
+            posts = getSamplePosts();
+        }
+    
+        // Render blog posts
+        if (posts.length === 0) {
             blogPostsContainer.innerHTML = `
                 <div style="text-align: center; padding: 2rem; color: #666;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h4>Error loading posts</h4>
-                    <p>Please try again later.</p>
-                    <button onclick="loadBlogPosts()" style="background: var(--gold); color: var(--charcoal); border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 1rem; cursor: pointer;">
-                        <i class="fas fa-redo"></i> Retry
-                    </button>
+                    <i class="fas fa-newspaper"></i>
+                    <h4>No posts yet</h4>
+                    <p>Be the first to create a blog post!</p>
                 </div>
             `;
+        } else {
+            blogPostsContainer.innerHTML = posts.map(post => `
+                <div class="blog-post" data-post-id="${post.id || ''}">
+                    <div class="post-header">
+                        <h4>${post.title}</h4>
+                        <div class="post-meta">
+                            <span class="author">By ${post.authorName || 'Anonymous'}</span>
+                            <span class="date">${formatDate(post.timestamp)}</span>
+                            <span class="read-time">${estimateReadTime(post.content)} min read</span>
+                        </div>
+                    </div>
+                    ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ''}
+                    ${post.featured_image_url ? `<img src="${post.featured_image_url}" alt="Featured Image" style="width: 100%; max-width: 300px; border-radius: 8px; margin: 1rem 0;">` : ''}
+                    
+                    <div class="post-actions">
+                        <button class="action-btn like-btn" onclick="handleLike(this)" data-post-id="${post.id || ''}">
+                            <i class="fas fa-heart"></i> <span class="like-count">${post.likes || 0}</span>
+                        </button>
+                        <button class="action-btn comment-btn" onclick="toggleComments(this)" data-post-id="${post.id || ''}">
+                            <i class="fas fa-comment"></i> <span class="comment-count">${post.comments ? post.comments.length : 0}</span>
+                        </button>
+                        <button class="action-btn repost-btn" onclick="handleRepost(this)" data-post-id="${post.id || ''}">
+                            <i class="fas fa-retweet"></i> <span class="repost-count">${post.reposts || 0}</span>
+                        </button>
+                        <button class="action-btn save-btn" onclick="handleSave(this)" data-post-id="${post.id || ''}">
+                            <i class="fas fa-bookmark"></i>
+                        </button>
+                        <button class="action-btn message-btn" onclick="messageAuthor(this)" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; margin-left: auto;">
+                            <i class="fas fa-envelope"></i> Message Author
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
-    }, 100); // Small delay to show loading state
+
+    } catch (error) {
+        console.error('Error loading blog posts:', error);
+        blogPostsContainer.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #666;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h4>Error loading posts</h4>
+                <p>Please try refreshing the page.</p>
+            </div>
+        `;
+    }
 }
 
 // Get sample posts for fallback
@@ -1489,8 +1527,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function publishPost(postData) {
     try {
-    console.log('Publishing post:', postData);
-    
+        console.log('Publishing post:', postData);
+        
         // Get current user
         const currentUser = localStorage.getItem('deniFinderCurrentUser');
         if (!currentUser) {
@@ -1501,22 +1539,16 @@ async function publishPost(postData) {
         const user = JSON.parse(currentUser);
         console.log('Current user:', user);
         
-        // Prepare post data for Supabase
+        // Prepare post data for Supabase - match the actual schema
         const supabasePostData = {
             title: postData.title,
             content: postData.content,
-            excerpt: postData.excerpt || '',
+            excerpt: postData.excerpt || postData.content.substring(0, 150) + '...',
+            featured_image_url: postData.image || null,
             tags: postData.tags || [],
-            imageUrl: postData.image || null,
-            authorId: user.uid,
-            authorName: user.displayName || user.firstName || 'Anonymous',
-            authorEmail: user.email,
-            timestamp: new Date(),
-            likes: 0,
-            comments: [],
-            reposts: 0,
+            author_id: user.id || user.uid, // Use the user's ID from auth
             status: 'published',
-            views: 0
+            published_at: new Date()
         };
         
         console.log('Supabase post data:', supabasePostData);
@@ -1530,13 +1562,23 @@ async function publishPost(postData) {
             
             if (result.success) {
                 // Add post to local blog section immediately
-                addPostToBlog(supabasePostData);
+                const postWithAuthorInfo = {
+                    ...supabasePostData,
+                    authorName: user.displayName || user.firstName || user.email?.split('@')[0] || 'Anonymous',
+                    authorEmail: user.email,
+                    likes: 0,
+                    comments: [],
+                    reposts: 0,
+                    timestamp: new Date()
+                };
+                
+                addPostToBlog(postWithAuthorInfo);
     
-    // Show success message
-    showNotification('Post published successfully!', 'success');
-    
-    // Reset form
-    resetPostForm();
+                // Show success message
+                showNotification('Post published successfully!', 'success');
+                
+                // Reset form
+                resetPostForm();
                 
                 // Close modal
                 closePostModal();
@@ -1551,7 +1593,17 @@ async function publishPost(postData) {
         } else {
             console.log('Supabase not available, saving locally...');
             // Fallback: save locally if Supabase not available
-            addPostToBlog(postData);
+            const localPostData = {
+                ...postData,
+                authorName: user.displayName || user.firstName || user.email?.split('@')[0] || 'Anonymous',
+                authorEmail: user.email,
+                timestamp: new Date(),
+                likes: 0,
+                comments: [],
+                reposts: 0
+            };
+            
+            addPostToBlog(localPostData);
             showNotification('Post published (saved locally)!', 'success');
             resetPostForm();
             closePostModal();
