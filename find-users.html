@@ -54,24 +54,30 @@
         }, 500);
     });
     </script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="js/firebase-init.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
     <script>
         let allUsers = [];
         let filteredUsers = [];
         async function loadUsers() {
-            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) return;
-            const result = await window.DeniFinderFirebase.dbService.queryDocuments('users', [], { field: 'displayName', direction: 'asc' }, 50);
-            if (result.success) {
-                allUsers = result.data;
-                filteredUsers = allUsers;
-                renderUsers(filteredUsers);
-            } else {
+            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.supabase) return;
+            const { data, error } = await window.DeniFinderSupabase.supabase
+                .from('users')
+                .select('*')
+                .order('displayName', { ascending: true });
+
+            if (error) {
                 document.getElementById('userList').innerHTML = '<p>Error loading users.</p>';
+                console.error('Error fetching users:', error);
+                return;
             }
+            allUsers = data;
+            filteredUsers = allUsers;
+            renderUsers(filteredUsers);
         }
         function renderUsers(users) {
             const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
@@ -158,9 +164,34 @@
                 const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
                 if (!currentUser || !currentUser.uid) throw new Error('Not signed in');
                 // Find or create the conversation
-                const convo = await window.DeniFinderFirebase.messagingUtils.findOrCreateConversation(currentUser.uid, userId);
-                if (convo && convo.id) {
-                    window.location.href = `messages.html?conversationId=${convo.id}`;
+                const convo = await window.DeniFinderSupabase.supabase
+                    .from('conversations')
+                    .select('*')
+                    .eq('user1_id', currentUser.uid)
+                    .eq('user2_id', userId)
+                    .single();
+
+                let conversationId = null;
+                if (convo.data) {
+                    conversationId = convo.data.id;
+                } else {
+                    // Create new conversation if it doesn't exist
+                    const { data, error } = await window.DeniFinderSupabase.supabase
+                        .from('conversations')
+                        .insert([
+                            { user1_id: currentUser.uid, user2_id: userId, created_at: new Date() }
+                        ])
+                        .select()
+                        .single();
+
+                    if (error) {
+                        throw new Error('Failed to create conversation: ' + error.message);
+                    }
+                    conversationId = data.id;
+                }
+
+                if (conversationId) {
+                    window.location.href = `messages.html?conversationId=${conversationId}`;
                 } else {
                     alert('Failed to start conversation. Please try again.');
                 }

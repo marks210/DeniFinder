@@ -309,14 +309,12 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
-    <!-- Firebase Configuration -->
-    <script src="js/firebase-init.js"></script>
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
 
     <script>
         let resendTimer = null;
@@ -355,29 +353,33 @@
             checkBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
             
             try {
-                if (!window.DeniFinderFirebase) {
-                    throw new Error('Firebase not initialized');
+                if (!window.DeniFinderSupabase) {
+                    throw new Error('Supabase not initialized');
                 }
 
                 // Reload user to get latest verification status
-                const currentUser = window.DeniFinderFirebase.authService.getCurrentUser();
-                if (currentUser) {
-                    await currentUser.reload();
+                const { data: user, error } = await window.DeniFinderSupabase.auth.getUser();
+                if (user) {
+                    await user.reload();
                     
-                    if (currentUser.emailVerified) {
-                        // Update user status in Firestore
-                        await window.DeniFinderFirebase.dbService.updateDocument('users', currentUser.uid, {
+                    if (user.emailVerified) {
+                        // Update user status in Supabase database
+                        const { error: updateError } = await window.DeniFinderSupabase.from('users').update({
                             emailVerified: true,
                             accountStatus: 'active'
-                        });
+                        }).eq('id', user.id);
+                        
+                        if (updateError) {
+                            throw updateError;
+                        }
 
                         // Get user data
-                        const userDoc = await window.DeniFinderFirebase.dbService.getDocument('users', currentUser.uid);
+                        const { data: userDoc, error: getError } = await window.DeniFinderSupabase.from('users').select('*').eq('id', user.id).single();
                         
-                        if (userDoc.success) {
+                        if (userDoc) {
                             // Store user data locally
                             localStorage.setItem('deniFinderLoggedIn', 'true');
-                            localStorage.setItem('deniFinderCurrentUser', JSON.stringify(userDoc.data));
+                            localStorage.setItem('deniFinderCurrentUser', JSON.stringify(userDoc));
                             
                             // Clear pending verification data
                             localStorage.removeItem('pendingVerificationUser');
@@ -389,13 +391,18 @@
                             
                             // Redirect to appropriate dashboard
                             setTimeout(() => {
-                                const userType = userDoc.data.userType || 'tenant';
+                                const userType = userDoc.user_type || userDoc.userType || 'tenant';
+                                console.log('User type for routing:', userType);
                                 if (userType === 'landlord') {
+                                    console.log('Redirecting to landlord dashboard');
                                     window.location.href = 'landlord-dashboard.html';
                                 } else {
+                                    console.log('Redirecting to tenant dashboard');
                                     window.location.href = 'dashboard.html';
                                 }
                             }, 2000);
+                        } else {
+                            throw new Error('User document not found');
                         }
                     } else {
                         statusDiv.className = 'verification-status status-pending';
@@ -423,13 +430,17 @@
             const statusDiv = document.getElementById('verificationStatus');
             
             try {
-                if (!window.DeniFinderFirebase) {
-                    throw new Error('Firebase not initialized');
+                if (!window.DeniFinderSupabase) {
+                    throw new Error('Supabase not initialized');
                 }
 
-                const result = await window.DeniFinderFirebase.authService.sendEmailVerification();
+                const { data, error } = await window.DeniFinderSupabase.auth.sendUserMultifactorEmail('current');
                 
-                if (result.success) {
+                if (error) {
+                    throw error;
+                }
+                
+                if (data) {
                     statusDiv.className = 'verification-status status-verified';
                     statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Verification email sent successfully!';
                     statusDiv.style.display = 'block';
@@ -442,7 +453,7 @@
                     timerDiv.style.display = 'block';
                     updateResendTimer();
                 } else {
-                    throw new Error(result.error);
+                    throw new Error('Unknown error sending verification email');
                 }
             } catch (error) {
                 console.error('Resend error:', error);

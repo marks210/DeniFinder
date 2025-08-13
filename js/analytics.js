@@ -59,7 +59,7 @@ class AnalyticsSystem {
     }
 
     async fetchUserAnalytics() {
-        // Mock data - in real app this comes from Firestore
+        // Mock data - in real app this comes from Supabase
         const userRole = this.currentUser?.role || 'renter';
         
         if (userRole === 'renter') {
@@ -426,7 +426,7 @@ class AnalyticsSystem {
 
     async saveAnalyticsEvent(eventType, eventData) {
         try {
-            // In a real app, this would save to Firestore
+            // In a real app, this would save to Supabase
             const analyticsEvent = {
                 eventType: eventType,
                 eventData: eventData,

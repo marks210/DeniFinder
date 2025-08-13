@@ -421,14 +421,12 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
-    <!-- Firebase Configuration -->
-    <script src="js/firebase-init.js"></script>
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
 
     <script>
         // Password toggle
@@ -447,7 +445,7 @@
             }
         }
 
-        // Form submission with Firebase
+        // Form submission with Supabase
         document.getElementById('signinForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -465,56 +463,44 @@
             submitBtn.disabled = true;
 
             try {
-                // Initialize Firebase if not already done
-                if (!window.DeniFinderFirebase) {
-                    console.error('Firebase not initialized');
-                    alert('Error: Firebase not loaded. Please refresh the page.');
+                // Initialize Supabase if not already done
+                if (!window.DeniFinderSupabase) {
+                    console.error('Supabase not initialized');
+                    alert('Error: Supabase not loaded. Please refresh the page.');
                     return;
                 }
 
-                // Sign in with Firebase Auth
-                const result = await window.DeniFinderFirebase.authService.signIn(
+                // Sign in with Supabase Auth
+                const result = await window.DeniFinderSupabase.authService.signIn(
                     userData.email, 
                     userData.password
                 );
 
                 if (result.success) {
-                    // Get user data from Firestore
-                    const userDoc = await window.DeniFinderFirebase.dbService.getDocument(
+                    // Get user data from Supabase
+                    const userDoc = await window.DeniFinderSupabase.dbService.getDocument(
                         'users', 
-                        result.user.uid
+                        result.user.id
                     );
 
                     if (userDoc.success) {
                         // Store user data locally
-                    localStorage.setItem('deniFinderLoggedIn', 'true');
+                        localStorage.setItem('deniFinderLoggedIn', 'true');
                         localStorage.setItem('deniFinderCurrentUser', JSON.stringify(userDoc.data));
                         
                         // Show success message
                         alert('Welcome back!');
                     
                         // Redirect to dashboard based on user type
-                        const userType = userDoc.data.userType || 'tenant';
+                        const userType = userDoc.data.user_type || 'tenant';
                         if (userType === 'landlord') {
                             window.location.href = 'landlord-dashboard.html';
                         } else {
-                    window.location.href = 'dashboard.html';
+                            window.location.href = 'dashboard.html';
                         }
                     } else {
                         alert('Error loading user data. Please try again.');
                     }
-                } else if (result.needsVerification) {
-                    // Handle email verification needed
-                    alert('Please verify your email address before signing in. Check your inbox for a verification link.');
-                    
-                    // Store user data for verification page
-                    localStorage.setItem('pendingVerificationUser', JSON.stringify({
-                        uid: result.user.uid,
-                        email: userData.email
-                    }));
-                    
-                    // Redirect to email verification page
-                    window.location.href = 'email-verification.html';
                 } else {
                     alert(`Error: ${result.error}`);
                 }

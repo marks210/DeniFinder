@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeniFinder Sponsorship Program - Partner With Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --gold-light: #FFEB99;
+            --gold: #FFB800;
+            --gold-dark: #7A5C00;
+            --charcoal: #222222;
+            --white: #FFFFFF;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--charcoal);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .sponsor-hero {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+
+        /* Sponsorship Tiers */
+        .sponsorship-tiers {
+            padding: 80px 0;
+            background: var(--light-gray);
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .tier-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .tier-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .tier-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--gold-dark);
+        }
+
+        .tier-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .tier-features li {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .tier-features i {
+            color: var(--primary-green);
+        }
+
+        .btn-sponsor {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-sponsor:hover {
+            background: var(--gold-dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Success Stories */
+        .success-stories {
+            padding: 80px 0;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .story-card {
+            background: var(--light-gray);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: left;
+        }
+
+        .story-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+            object-fit: cover;
+        }
+
+        .story-quote {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .story-author {
+            font-weight: 600;
+            color: var(--gold-dark);
+        }
+
+        /* Contact Form */
+        .contact-section {
+            padding: 80px 0;
+            background: var(--gold-light);
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 3rem auto 0;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .btn-submit {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: var(--gold-dark);
+            color: white;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .tier-grid,
+            .story-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="sponsor-hero">
+        <div class="container">
+            <h1 class="hero-title">Partner With DeniFinder</h1>
+            <p class="hero-subtitle">Join our mission to revolutionize housing solutions in Africa. Become a sponsor and reach thousands of active property seekers while making a real difference.</p>
+            <a href="#contact" class="btn-sponsor">Become a Sponsor</a>
+        </div>
+    </section>
+
+    <!-- Sponsorship Tiers -->
+    <section class="sponsorship-tiers" id="tiers">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1rem;">Sponsorship Tiers</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">Choose the perfect sponsorship tier for your business and start reaching more customers today.</p>
+            <div class="tier-grid">
+                <div class="tier-card">
+                    <h3 class="tier-name">Platinum Partner</h3>
+                    <div class="tier-price">$2000/month</div>
+                    <ul class="tier-features">
+                        <li><i class="fas fa-check-circle"></i> Free featured placement</li>
+                        <li><i class="fas fa-check-circle"></i> Maximum visibility</li>
+                        <li><i class="fas fa-check-circle"></i> Event partnership shoutouts</li>
+                        <li><i class="fas fa-check-circle"></i> Advance Assist priority listing</li>
+                        <li><i class="fas fa-check-circle"></i> Custom marketing campaigns</li>
+                        <li><i class="fas fa-check-circle"></i> Direct customer referrals</li>
+                    </ul>
+                    <a href="#contact" class="btn-sponsor">Get Started</a>
+                </div>
+                <div class="tier-card">
+                    <h3 class="tier-name">Gold Patron</h3>
+                    <div class="tier-price">$1000/month</div>
+                    <ul class="tier-features">
+                        <li><i class="fas fa-check-circle"></i> Enhanced visibility</li>
+                        <li><i class="fas fa-check-circle"></i> Event partnership shoutouts</li>
+                        <li><i class="fas fa-check-circle"></i> Featured listings</li>
+                        <li><i class="fas fa-check-circle"></i> Marketing support</li>
+                        <li><i class="fas fa-check-circle"></i> Monthly performance reports</li>
+                    </ul>
+                    <a href="#contact" class="btn-sponsor">Get Started</a>
+                </div>
+                <div class="tier-card">
+                    <h3 class="tier-name">Silver Supporter</h3>
+                    <div class="tier-price">$500/month</div>
+                    <ul class="tier-features">
+                        <li><i class="fas fa-check-circle"></i> Event partnership shoutouts</li>
+                        <li><i class="fas fa-check-circle"></i> Basic visibility package</li>
+                        <li><i class="fas fa-check-circle"></i> Quarterly performance reports</li>
+                        <li><i class="fas fa-check-circle"></i> Basic marketing support</li>
+                    </ul>
+                    <a href="#contact" class="btn-sponsor">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="success-stories">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1rem;">Success Stories</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">Hear from our current sponsors about their experience partnering with DeniFinder.</p>
+            <div class="story-grid">
+                <div class="story-card">
+                    <img src="images/sponsors/BICC.jpg" alt="BICC" class="story-logo">
+                    <p class="story-quote">"Partnering with DeniFinder has significantly increased our visibility and brought us quality leads. The ROI has been exceptional."</p>
+                    <p class="story-author">- BICC Presidential Hotel</p>
+                </div>
+                <div class="story-card">
+                    <img src="images/sponsors/natasha.png" alt="Natasha" class="story-logo">
+                    <p class="story-quote">"The platform's reach and professional approach have helped us connect with serious property seekers. Highly recommended!"</p>
+                    <p class="story-author">- Natasha Houses</p>
+                </div>
+                <div class="story-card">
+                    <img src="images/sponsors/kumudzin.jpg" alt="Kumudzi" class="story-logo">
+                    <p class="story-quote">"DeniFinder's sponsorship program has been a game-changer for our business growth in the local market."</p>
+                    <p class="story-author">- Kumudzi Lodge</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 1rem;">Become a Sponsor</h2>
+            <p style="text-align: center; max-width: 800px; margin: 0 auto;">Ready to take your property business to the next level? Fill out the form below and we'll get back to you within 24 hours.</p>
+            <form class="contact-form">
+                <div class="form-group">
+                    <label for="name">Company Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="tier">Preferred Sponsorship Tier</label>
+                    <select id="tier" required>
+                        <option value="">Select a tier</option>
+                        <option value="platinum">Platinum Partner</option>
+                        <option value="gold">Gold Patron</option>
+                        <option value="silver">Silver Supporter</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Submit Application</button>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

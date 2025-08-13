@@ -55,8 +55,8 @@ function initializeDashboard() {
     // Initialize blog section
     initializeBlog();
     
-    // Test Firebase connection
-    testFirebaseConnection();
+    // Test Supabase connection
+    testSupabaseConnection();
 
     // Initialize dashboard map (for all users)
     initDashboardMap();
@@ -104,7 +104,7 @@ async function loadDashboardProperties() {
             console.error('MapService not initialized');
             return;
         }
-        // Load properties from Firebase or fallback to sample data
+        // Load properties from Supabase or fallback to sample data
         const properties = await mapService.loadProperties();
         // Show only available properties (limit to 8 for dashboard)
         const availableProperties = properties.filter(p => p.status === 'available').slice(0, 8);
@@ -346,8 +346,8 @@ async function loadAdminData() {
     if (!currentUser) return;
     const user = JSON.parse(currentUser);
     const userId = user.uid;
-    if (window.firebase && window.firebase.firestore) {
-        const db = window.firebase.firestore();
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+            // Use Supabase database service
         const listingsTable = document.querySelector('#adminDashboard .listings-table tbody');
         if (!listingsTable) return;
         listingsTable.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
@@ -409,29 +409,29 @@ async function loadBlogPosts() {
         
         let posts = [];
         
-        // Try to load from Firebase first
-        if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-            console.log('Firebase available, querying blog posts...');
+        // Try to load from Supabase first
+        if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+            console.log('Supabase available, querying blog posts...');
             
-            const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+            const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                 'blog_posts',
                 [{ field: 'status', operator: '==', value: 'published' }],
-                { field: 'timestamp', direction: 'desc' },
+                { field: 'created_at', direction: 'desc' },
                 20 // Limit to 20 most recent posts
             );
             
-            console.log('Firebase query result:', result);
+            console.log('Supabase query result:', result);
             
             if (result.success) {
                 posts = result.data;
-                console.log('Posts loaded from Firebase:', posts.length);
+                console.log('Posts loaded from Supabase:', posts.length);
             } else {
-                console.warn('Failed to load posts from Firebase, using sample data');
+                console.warn('Failed to load posts from Supabase, using sample data');
                 posts = getSamplePosts();
             }
         } else {
-            console.log('Firebase not available, using sample posts');
-            // Fallback to sample posts if Firebase not available
+            console.log('Supabase not available, using sample posts');
+            // Fallback to sample posts if Supabase not available
             posts = getSamplePosts();
         }
     
@@ -547,39 +547,39 @@ function estimateReadTime(content) {
     return readTime < 1 ? 1 : readTime;
 }
 
-// Test Firebase connection
-async function testFirebaseConnection() {
-    console.log('Testing Firebase connection...');
+// Test Supabase connection
+async function testSupabaseConnection() {
+    console.log('Testing Supabase connection...');
     
-    if (window.DeniFinderFirebase) {
-        console.log('✅ DeniFinderFirebase object found');
+    if (window.DeniFinderSupabase) {
+        console.log('✅ DeniFinderSupabase object found');
         
-        if (window.DeniFinderFirebase.dbService) {
+        if (window.DeniFinderSupabase.dbService) {
             console.log('✅ Database service available');
             
             // Test a simple query
             try {
-                const testResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                const testResult = await window.DeniFinderSupabase.dbService.queryDocuments(
                     'blog_posts',
                     [],
                     { field: 'timestamp', direction: 'desc' },
                     1
                 );
-                console.log('✅ Firebase query test result:', testResult);
+                console.log('✅ Supabase query test result:', testResult);
             } catch (error) {
-                console.error('❌ Firebase query test failed:', error);
+                console.error('❌ Supabase query test failed:', error);
             }
         } else {
             console.log('❌ Database service not available');
         }
         
-        if (window.DeniFinderFirebase.storageService) {
+        if (window.DeniFinderSupabase.storageService) {
             console.log('✅ Storage service available');
         } else {
             console.log('❌ Storage service not available');
         }
     } else {
-        console.log('❌ DeniFinderFirebase object not found');
+        console.log('❌ DeniFinderSupabase object not found');
     }
 }
 
@@ -596,12 +596,12 @@ async function testBlogLoading() {
         return;
     }
     
-    // Test Firebase connection
-    if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-        console.log('🔍 Testing Firebase query...');
+    // Test Supabase connection
+    if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+        console.log('🔍 Testing Supabase query...');
         
         try {
-            const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+            const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                 'blog_posts',
                 [],
                 { field: 'timestamp', direction: 'desc' },
@@ -634,16 +634,16 @@ async function testBlogLoading() {
             console.error('❌ Query error:', error);
         }
     } else {
-        console.log('❌ Firebase not available');
+        console.log('❌ Supabase not available');
     }
 }
 
 function formatDate(timestamp) {
-    // Handle different timestamp formats (Firestore timestamp, Date object, or string)
+    // Handle different timestamp formats (Supabase timestamp, Date object, or string)
     let date;
     
     if (timestamp && timestamp.toDate) {
-        // Firestore timestamp
+        // Supabase timestamp
         date = timestamp.toDate();
     } else if (timestamp instanceof Date) {
         // Date object
@@ -995,16 +995,16 @@ async function handleRepost(button) {
 
 // Check if user has reposted
 async function checkIfReposted(postId, userId) {
-    if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+    if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
         return false;
     }
     
     try {
-        const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+        const result = await window.DeniFinderSupabase.dbService.queryDocuments(
             'post_reposts',
             [
-                { field: 'postId', operator: '==', value: postId },
-                { field: 'userId', operator: '==', value: userId }
+                { field: 'post_id', operator: '==', value: postId },
+                { field: 'user_id', operator: '==', value: userId }
             ]
         );
         
@@ -1017,27 +1017,27 @@ async function checkIfReposted(postId, userId) {
 
 // Add repost
 async function addRepost(postId, userId, userName) {
-    if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
-        console.log('Firebase not available, repost saved locally');
+    if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+        console.log('Supabase not available, repost saved locally');
         return;
     }
     
     try {
         // Add repost to collection
-    const repostData = {
-            postId: postId,
-            userId: userId,
-            userName: userName,
-            timestamp: new Date()
+        const repostData = {
+            post_id: postId,
+            user_id: userId,
+            user_name: userName,
+            created_at: new Date()
         };
         
-        await window.DeniFinderFirebase.dbService.addDocument('post_reposts', repostData);
+        await window.DeniFinderSupabase.dbService.addDocument('post_reposts', repostData);
         
         // Update post repost count
-        const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+        const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
         if (postRef.success) {
             const currentReposts = postRef.data.reposts || 0;
-            await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+            await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                 reposts: currentReposts + 1
             });
         }
@@ -1051,30 +1051,30 @@ async function addRepost(postId, userId, userName) {
 
 // Remove repost
 async function removeRepost(postId, userId) {
-    if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
-        console.log('Firebase not available, repost removal saved locally');
+    if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+        console.log('Supabase not available, repost removal saved locally');
         return;
     }
     
     try {
         // Remove repost from collection
-        const repostsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+        const repostsResult = await window.DeniFinderSupabase.dbService.queryDocuments(
             'post_reposts',
             [
-                { field: 'postId', operator: '==', value: postId },
-                { field: 'userId', operator: '==', value: userId }
+                { field: 'post_id', operator: '==', value: postId },
+                { field: 'user_id', operator: '==', value: userId }
             ]
         );
         
         if (repostsResult.success && repostsResult.data.length > 0) {
-            await window.DeniFinderFirebase.dbService.deleteDocument('post_reposts', repostsResult.data[0].id);
+            await window.DeniFinderSupabase.dbService.deleteDocument('post_reposts', repostsResult.data[0].id);
         }
         
         // Update post repost count
-        const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+        const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
         if (postRef.success) {
             const currentReposts = Math.max(0, (postRef.data.reposts || 0) - 1);
-            await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+            await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                 reposts: currentReposts
             });
         }
@@ -1224,7 +1224,7 @@ function handleSave(button) {
     }
 }
 
-// Enhanced image upload functionality with Firebase Storage
+        // Enhanced image upload functionality with Supabase Storage
 function handleImageUpload(event) {
     const file = event.target.files[0];
     if (file) {
@@ -1239,16 +1239,16 @@ function handleImageUpload(event) {
             uploadArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
         }
         
-        // Upload to Firebase Storage
+        // Upload to Supabase Storage
         uploadImageToStorage(file);
     }
 }
 
-// Upload image to Firebase Storage
+// Upload image to Supabase Storage
 async function uploadImageToStorage(file) {
     try {
-        // Check if Firebase Storage is available
-        if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.storageService) {
+        // Check if Supabase Storage is available
+        if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.storageService) {
             // Fallback to base64 for now
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -1263,8 +1263,8 @@ async function uploadImageToStorage(file) {
         const timestamp = Date.now();
         const fileName = `blog-images/${timestamp}_${file.name}`;
         
-        // Upload to Firebase Storage
-        const result = await window.DeniFinderFirebase.storageService.uploadFile(file, fileName);
+        // Upload to Supabase Storage
+        const result = await window.DeniFinderSupabase.storageService.uploadFile(file, fileName);
         
         if (result.success) {
             // Store the download URL
@@ -1379,7 +1379,7 @@ function handlePostSubmit(event) {
         content,
         excerpt,
         tags: selectedTags,
-        imageUrl: uploadedImage, // Now stores Firebase Storage URL
+                    imageUrl: uploadedImage, // Now stores Supabase Storage URL
         author: currentUserRole === 'admin' ? 'Admin' : 'User',
         date: new Date().toISOString(),
         likes: 0,
@@ -1455,8 +1455,8 @@ async function publishPost(postData) {
         const user = JSON.parse(currentUser);
         console.log('Current user:', user);
         
-        // Prepare post data for Firebase
-        const firebasePostData = {
+        // Prepare post data for Supabase
+        const supabasePostData = {
             title: postData.title,
             content: postData.content,
             excerpt: postData.excerpt || '',
@@ -1473,18 +1473,18 @@ async function publishPost(postData) {
             views: 0
         };
         
-        console.log('Firebase post data:', firebasePostData);
+        console.log('Supabase post data:', supabasePostData);
         
-        // Save to Firebase Firestore
-        if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-            console.log('Firebase available, saving to Firestore...');
-            const result = await window.DeniFinderFirebase.dbService.addDocument('blog_posts', firebasePostData);
+        // Save to Supabase Database
+        if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+            console.log('Supabase available, saving to database...');
+            const result = await window.DeniFinderSupabase.dbService.addDocument('blog_posts', supabasePostData);
             
-            console.log('Firebase save result:', result);
+            console.log('Supabase save result:', result);
             
             if (result.success) {
                 // Add post to local blog section immediately
-                addPostToBlog(firebasePostData);
+                addPostToBlog(supabasePostData);
     
     // Show success message
     showNotification('Post published successfully!', 'success');
@@ -1503,8 +1503,8 @@ async function publishPost(postData) {
                 throw new Error(result.error || 'Failed to save post');
             }
         } else {
-            console.log('Firebase not available, saving locally...');
-            // Fallback: save locally if Firebase not available
+            console.log('Supabase not available, saving locally...');
+            // Fallback: save locally if Supabase not available
             addPostToBlog(postData);
             showNotification('Post published (saved locally)!', 'success');
             resetPostForm();
@@ -1525,14 +1525,14 @@ function addPostToBlog(postData) {
     const postElement = document.createElement('div');
     postElement.className = 'blog-post';
     
-    // Handle different data formats (Firebase vs local)
+    // Handle different data formats (Supabase vs local)
     const authorName = postData.authorName || postData.author || 'Anonymous';
     const timestamp = postData.timestamp || postData.date || new Date();
     const likes = postData.likes || 0;
     const comments = postData.comments || [];
     const excerpt = postData.excerpt || postData.content?.substring(0, 150) + '...' || '';
     
-    // Convert Firestore timestamp to Date if needed
+    // Convert Supabase timestamp to Date if needed
     const postDate = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     
     postElement.innerHTML = `

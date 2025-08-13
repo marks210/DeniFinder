@@ -458,82 +458,16 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
     
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDhHxCNlJl_Y93Hskm5ogiiYHIhfIVIS8A",
-            authDomain: "defi-finder.firebaseapp.com",
-            projectId: "defi-finder",
-            storageBucket: "defi-finder.firebasestorage.app",
-            messagingSenderId: "665116835708",
-            appId: "1:665116835708:web:11ade28588832aa3c9aef9"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(app);
-        const db = firebase.firestore(app);
-
-        // Make Firebase available globally
-        window.DeniFinderFirebase = {
-            auth,
-            db,
-            authService: {
-                async signUp(email, password, userData = {}) {
-                    try {
-                        console.log('Starting Firebase signup for:', email);
-                        console.log('User data:', userData);
-                        
-                        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                        const user = userCredential.user;
-                        
-                        console.log('User created in Firebase Auth:', user.uid);
-                        
-                        // Update profile with additional data
-                        await user.updateProfile({
-                            displayName: userData.displayName || '',
-                            photoURL: userData.photoURL || ''
-                        });
-                        
-                        console.log('Profile updated');
-                        
-                        // Send email verification
-                        await user.sendEmailVerification();
-                        
-                        console.log('Email verification sent');
-                        
-                        // Save user data to Firestore
-                        await db.collection('users').doc(user.uid).set({
-                            uid: user.uid,
-                            email: user.email,
-                            displayName: userData.displayName || '',
-                            phone: userData.phone || '',
-                            userType: userData.userType || 'tenant',
-                            emailVerified: false,
-                            accountStatus: 'pending_verification',
-                            createdAt: new Date(),
-                            lastLogin: new Date(),
-                            ...userData
-                        });
-                        
-                        console.log('User data saved to Firestore');
-                        
-                        return { success: true, user };
-                    } catch (error) {
-                        console.error('Sign up error:', error);
-                        console.error('Error code:', error.code);
-                        console.error('Error message:', error.message);
-                        return { success: false, error: error.message, code: error.code };
-                    }
-                }
-            }
-        };
+        // Supabase is now loaded from external files
+        // No need for local configuration here
     </script>
 
     <script>
@@ -552,7 +486,7 @@
         // Set default selection
         document.querySelector('[data-role="renter"]').classList.add('selected');
 
-        // Form submission with Firebase
+        // Form submission with Supabase
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -581,24 +515,17 @@
             try {
                 console.log('Starting signup process...');
                 
-                // Check if Firebase is loaded
-                if (typeof firebase === 'undefined') {
-                    console.error('Firebase SDK not loaded');
-                    alert('Error: Firebase SDK not loaded. Please check your internet connection and refresh the page.');
+                // Check if Supabase is loaded
+                if (!window.DeniFinderSupabase) {
+                    console.error('Supabase not loaded');
+                    alert('Error: Supabase not loaded. Please check your internet connection and refresh the page.');
                     return;
                 }
 
-                // Check if DeniFinderFirebase is available
-                if (!window.DeniFinderFirebase) {
-                    console.error('DeniFinderFirebase not initialized');
-                    alert('Error: Firebase configuration not loaded. Please refresh the page.');
-                    return;
-                }
+                console.log('Supabase is loaded, attempting to create user...');
 
-                console.log('Firebase is loaded, attempting to create user...');
-
-                // Create user with Firebase Auth
-                const result = await window.DeniFinderFirebase.authService.signUp(
+                // Create user with Supabase Auth
+                const result = await window.DeniFinderSupabase.authService.signUp(
                     userData.email, 
                     userData.password, 
                     {
@@ -616,7 +543,8 @@
                     // Store user data locally
                     localStorage.setItem('deniFinderUser', JSON.stringify({
                         ...userData,
-                        uid: result.user.uid
+                        uid: result.user.id,
+                        userType: userData.role === 'renter' ? 'tenant' : 'landlord'
                     }));
             
                     // Show email verification message

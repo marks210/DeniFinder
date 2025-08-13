@@ -233,7 +233,7 @@
             transition: all 0.3s ease;
             min-height: 52px;
             font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgb(254, 253, 253);
         }
 
         .mobile-nav-actions .btn-primary {
@@ -1061,30 +1061,7 @@
             }
 
             .step-card {
-                padding: 1.5rem;
-            }
-
-            /* Fix "How It Works" section for mobile */
-            .how-it-works {
-                padding: 2rem 0 1.5rem 0 !important;
-            }
-
-            .how-it-works .section-header h2 {
-                font-size: 1.8rem !important;
-                margin-bottom: 1rem !important;
-            }
-
-            .how-it-works .section-header p {
-                font-size: 1rem !important;
-                margin-bottom: 1.5rem !important;
-            }
-
-            .steps-grid {
-                gap: 1rem !important;
-            }
-
-            .step-card {
-                padding: 1.2rem !important;
+                padding: 1.5rem !important;
                 min-height: auto !important;
                 border-radius: 16px !important;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
@@ -1426,39 +1403,72 @@
         document.addEventListener('DOMContentLoaded', function() {
             const logoLink = document.getElementById('logoLink');
             const navActions = document.getElementById('navActions');
-            const currentUser = localStorage.getItem('deniFinderCurrentUser');
             
-            if (currentUser) {
-                // User is logged in
-                const user = JSON.parse(currentUser);
-                
-                // Logo goes to dashboard
-                logoLink.href = 'dashboard.html';
-                
-                // Update navigation actions for logged-in user
-                navActions.innerHTML = `
-                    <a href="dashboard.html" class="nav-cta" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-tachometer-alt"></i> Dashboard
-                    </a>
-                    <a href="messages.html" class="btn-messages" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-comments"></i> Messages
-                    </a>
-                    <a href="#" class="btn-secondary" onclick="signOut()" style="font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none;">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                `;
+            // Check if user is authenticated with Supabase
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.authService) {
+                window.DeniFinderSupabase.authService.getCurrentUser().then(({ data: { user } }) => {
+                    if (user) {
+                        // User is logged in
+                        // Logo goes to dashboard
+                        logoLink.href = 'dashboard.html';
+                        
+                        // Update navigation actions for logged-in user
+                        navActions.innerHTML = `
+                            <a href="dashboard.html" class="nav-cta" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a href="messages.html" class="btn-messages" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-comments"></i> Messages
+                            </a>
+                            <a href="#" class="btn-secondary" onclick="signOut()" style="font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        `;
+                    } else {
+                        // User is not logged in
+                        logoLink.href = '#';
+                        // Keep original navigation actions
+                    }
+                });
             } else {
-                // User is not logged in
-                logoLink.href = '#';
-                // Keep original navigation actions
+                // Supabase not loaded yet, check localStorage as fallback
+                const currentUser = localStorage.getItem('deniFinderCurrentUser');
+                if (currentUser) {
+                    const user = JSON.parse(currentUser);
+                    logoLink.href = 'dashboard.html';
+                    navActions.innerHTML = `
+                        <a href="dashboard.html" class="nav-cta" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="messages.html" class="btn-messages" style="background: var(--gold); color: var(--charcoal); font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-comments"></i> Messages
+                        </a>
+                        <a href="#" class="btn-secondary" onclick="signOut()" style="font-size: 1rem; padding: 0.5rem 1.2rem; text-decoration: none;">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    `;
+                } else {
+                    logoLink.href = '#';
+                }
             }
         });
 
         // Sign out function
-        function signOut() {
-            localStorage.removeItem('deniFinderLoggedIn');
-            localStorage.removeItem('deniFinderCurrentUser');
-            window.location.href = 'index.html';
+        async function signOut() {
+            try {
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.authService) {
+                    await window.DeniFinderSupabase.authService.signOut();
+                }
+                localStorage.removeItem('deniFinderLoggedIn');
+                localStorage.removeItem('deniFinderCurrentUser');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Sign out error:', error);
+                // Fallback to localStorage cleanup
+                localStorage.removeItem('deniFinderLoggedIn');
+                localStorage.removeItem('deniFinderCurrentUser');
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </head>
@@ -2076,153 +2086,319 @@
         </div>
     </section>
 
-    <!-- Top Sponsors Section (Animated) -->
-    <section class="top-sponsors-section animated-section" id="top-sponsors" style="background: linear-gradient(120deg, #fffbe6 60%, #f8f9fa 100%); padding: 4rem 0 3rem 0; border-top: 2px solid #FFB800; border-bottom: 2px solid #FFB800; position:relative; overflow:hidden;">
-      <!-- Animated Sparkles Background -->
-      <div class="sparkle-bg"></div>
+    <!-- Events & Venues Section -->
+    <section class="events-venues-section">
       <div class="container">
-        <h2 class="section-title animated-fadein" style="text-align:center; color:#B38600; font-size:2.2rem; font-weight:800; margin-bottom:2.2rem; letter-spacing:0.5px;">Powering Smart Housing With Us</h2>
-        <div class="sponsors-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:2.5rem; justify-items:center; align-items:stretch; margin-bottom:2.5rem;">
-          <!-- Platinum Sponsor -->
-          <div class="sponsor-card animated-card" style="background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(255,184,0,0.10); padding:2rem 1.2rem 1.5rem 1.2rem; display:flex; flex-direction:column; align-items:center; border:2.5px solid #FFB800; min-height:260px; position:relative;">
-            <img src="images/sponsors/BICC.jpg" alt="Hotel Platinum" class="sponsor-logo" style="width:80px; height:80px; object-fit:cover; border-radius:16px; margin-bottom:1rem; background:#f8f9fa;">
-            <h3 style="font-size:1.18rem; font-weight:700; color:#B38600; margin-bottom:0.7rem;">BICC Presidential Hotel</h3>
-            <span class="sponsor-badge platinum-badge shimmer" style="background:linear-gradient(90deg,#FFB800,#FFD764); color:#7A5C00; font-weight:700; border-radius:18px; padding:0.5rem 1.2rem; font-size:1rem; margin-bottom:0.7rem; display:inline-block;">🌟 DeniPartner Platinum Sponsor</span>
-            <p style="font-size:1rem; color:#4CAF50; margin-bottom:0.5rem; text-align:center;">Proudly supporting smart housing in Africa.</p>
-            <a href="#" class="sponsor-spotlight-link" style="color:#00B4D8; font-weight:600; text-decoration:underline; margin-top:0.5rem;">View Spotlight &rarr;</a>
+        <h2 class="section-title">
+          Discover Perfect Venues
+          <span class="section-subtitle">For Your Special Moments & Celebrations</span>
+        </h2>
+
+        <!-- Event Types Grid -->
+        <div class="event-types-grid">
+          <!-- Wedding Events -->
+          <div class="event-type-card">
+            <div class="event-icon">
+              <i class="fas fa-rings-wedding"></i>
+            </div>
+            <h3>Weddings</h3>
+            <p>Perfect venues for your special day</p>
+            <a href="#" class="event-link">View Venues <i class="fas fa-arrow-right"></i></a>
           </div>
-          <!-- Gold Patron -->
-          <div class="sponsor-card animated-card" style="background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(255,184,0,0.10); padding:2rem 1.2rem 1.5rem 1.2rem; display:flex; flex-direction:column; align-items:center; border:2px solid #FFD764; min-height:260px; position:relative;">
-            <img src="images/sponsors/natasha.png" alt="Cottage Gold" class="sponsor-logo" style="width:80px; height:80px; object-fit:cover; border-radius:16px; margin-bottom:1rem; background:#f8f9fa;">
-            <h3 style="font-size:1.18rem; font-weight:700; color:#B38600; margin-bottom:0.7rem;">Natasha Houses</h3>
-            <span class="sponsor-badge gold-badge" style="background:linear-gradient(90deg,#FFD764,#FFEB99); color:#7A5C00; font-weight:700; border-radius:18px; padding:0.5rem 1.2rem; font-size:1rem; margin-bottom:0.7rem; display:inline-block;">Gold Patron</span>
-            <p style="font-size:1rem; color:#4CAF50; margin-bottom:0.5rem; text-align:center;">Thank you for empowering local housing solutions.</p>
-            <a href="#" class="sponsor-spotlight-link" style="color:#00B4D8; font-weight:600; text-decoration:underline; margin-top:0.5rem;">View Spotlight &rarr;</a>
+
+          <!-- Birthday Events -->
+          <div class="event-type-card">
+            <div class="event-icon">
+              <i class="fas fa-birthday-cake"></i>
+            </div>
+            <h3>Birthdays</h3>
+            <p>Celebrate in style</p>
+            <a href="#" class="event-link">View Venues <i class="fas fa-arrow-right"></i></a>
           </div>
-          <!-- Silver Supporter -->
-          <div class="sponsor-card animated-card" style="background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(255,184,0,0.10); padding:2rem 1.2rem 1.5rem 1.2rem; display:flex; flex-direction:column; align-items:center; border:2px solid #E0E0E0; min-height:260px; position:relative;">
-            <img src="images/sponsors/kumudzin.jpg" alt="Lodge Silver" class="sponsor-logo" style="width:80px; height:80px; object-fit:cover; border-radius:16px; margin-bottom:1rem; background:#f8f9fa;">
-            <h3 style="font-size:1.18rem; font-weight:700; color:#B38600; margin-bottom:0.7rem;">Kumudzi Lodge</h3>
-            <span class="sponsor-badge silver-badge" style="background:linear-gradient(90deg,#E0E0E0,#FFEB99); color:#7A5C00; font-weight:700; border-radius:18px; padding:0.5rem 1.2rem; font-size:1rem; margin-bottom:0.7rem; display:inline-block;">Silver Supporter</span>
-            <p style="font-size:1rem; color:#4CAF50; margin-bottom:0.5rem; text-align:center;">Helping us build a trusted community.</p>
-            <a href="#" class="sponsor-spotlight-link" style="color:#00B4D8; font-weight:600; text-decoration:underline; margin-top:0.5rem;">View Spotlight &rarr;</a>
+
+          <!-- Corporate Events -->
+          <div class="event-type-card">
+            <div class="event-icon">
+              <i class="fas fa-briefcase"></i>
+            </div>
+            <h3>Corporate</h3>
+            <p>Professional meeting spaces</p>
+            <a href="#" class="event-link">View Venues <i class="fas fa-arrow-right"></i></a>
+          </div>
+
+          <!-- Garden Events -->
+          <div class="event-type-card">
+            <div class="event-icon">
+              <i class="fas fa-tree"></i>
+            </div>
+            <h3>Gardens</h3>
+            <p>Beautiful outdoor venues</p>
+            <a href="#" class="event-link">View Venues <i class="fas fa-arrow-right"></i></a>
           </div>
         </div>
-        <div class="sponsor-benefits animated-fadein" style="text-align:center; margin-top:2.5rem;">
-          <h3 style="color:#B38600; font-size:1.3rem; font-weight:700; margin-bottom:0.7rem;">Sponsorship Tiers & Benefits</h3>
-          <ul style="display:inline-block; text-align:left; margin:0 auto 1.5rem auto; padding:0; font-size:1.05rem; color:#222;">
-            <li><b>Platinum Partner:</b> Free featured placement, extra visibility, event partnership shoutouts, Advance Assist priority listing</li>
-            <li><b>Gold Patron:</b> Extra visibility, event partnership shoutouts</li>
-            <li><b>Silver Supporter:</b> Event partnership shoutouts</li>
-          </ul>
-          <div class="sponsor-pitch" style="margin-top:1.5rem; font-size:1.15rem; color:#4CAF50; font-weight:600; max-width:600px; margin-left:auto; margin-right:auto;">
-            "Your property deserves more than just a booking page. With DeniFinder, you get visibility, trust, and priority access to real, local customers who are actively searching. This is not just another site — it's your digital showroom."
+
+        <!-- Featured Venues Slider -->
+        <div class="featured-venues-slider">
+          <h3>Featured Venues</h3>
+          <div class="venue-cards">
+            <div class="venue-card">
+              <img src="images/garden1.jpg" alt="Luxury Garden">
+              <div class="venue-info">
+                <h4>Luxury Garden</h4>
+                <p>Perfect for outdoor events</p>
+              </div>
+            </div>
+            <div class="venue-card">
+              <img src="images/garden2.jpg" alt="Event Center">
+              <div class="venue-info">
+                <h4>Event Center</h4>
+                <p>Modern indoor facility</p>
+              </div>
+            </div>
+            <div class="venue-card">
+              <img src="images/garden3.jpg" alt="Party Hall">
+              <div class="venue-info">
+                <h4>Party Hall</h4>
+                <p>Ideal for celebrations</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Mobile-Optimized Styles -->
       <style>
-        /* Sparkle background animation */
-        .sparkle-bg {
-          pointer-events: none;
-          position: absolute;
-          top: 0; left: 0; width: 100%; height: 100%;
-          z-index: 0;
+        .events-venues-section {
+          padding: 2rem 0;
+          background: linear-gradient(135deg, #fffbe6 0%, #fff 100%);
           overflow: hidden;
         }
-        .sparkle {
-          position: absolute;
-          width: 18px; height: 18px;
-          background: radial-gradient(circle, #FFD764 60%, #FFB800 100%, transparent 100%);
+
+        .section-title {
+          text-align: center;
+          color: var(--gold-dark);
+          font-size: 1.8rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+          display: block;
+          font-size: 1rem;
+          color: var(--charcoal);
+          font-weight: 500;
+          margin-top: 0.3rem;
+        }
+
+        .event-types-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          padding: 1rem;
+          margin: 1.5rem 0;
+        }
+
+        .event-type-card {
+          background: white;
+          border-radius: 16px;
+          padding: 1.2rem;
+          text-align: center;
+          box-shadow: 0 2px 8px rgba(122,92,0,0.1);
+          transition: transform 0.2s;
+        }
+
+        .event-type-card:hover {
+          transform: translateY(-4px);
+        }
+
+        .event-icon {
+          width: 48px;
+          height: 48px;
+          background: var(--gold-light);
           border-radius: 50%;
-          opacity: 0.7;
-          animation: sparkleMove 8s linear infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 0.8rem;
         }
-        @keyframes sparkleMove {
-          0% { transform: translateY(0) scale(1); opacity: 0.7; }
-          50% { transform: translateY(-40px) scale(1.2); opacity: 1; }
-          100% { transform: translateY(0) scale(1); opacity: 0.7; }
+
+        .event-icon i {
+          font-size: 1.2rem;
+          color: var(--gold-dark);
         }
-        /* Card entrance animation */
-        .animated-card {
-          opacity: 0;
-          transform: translateY(40px) scale(0.98);
-          transition: opacity 0.7s cubic-bezier(.4,1.4,.6,1), transform 0.7s cubic-bezier(.4,1.4,.6,1);
+
+        .event-type-card h3 {
+          font-size: 1.1rem;
+          color: var(--gold-dark);
+          margin-bottom: 0.4rem;
         }
-        .animated-card.visible {
-          opacity: 1;
-          transform: translateY(0) scale(1);
+
+        .event-type-card p {
+          font-size: 0.9rem;
+          color: var(--charcoal);
+          margin-bottom: 0.8rem;
         }
-        /* Fade-in for section title and benefits */
-        .animated-fadein {
-          opacity: 0;
-          transform: translateY(30px);
-          transition: opacity 0.8s cubic-bezier(.4,1.4,.6,1), transform 0.8s cubic-bezier(.4,1.4,.6,1);
+
+        .event-link {
+          color: var(--gold-dark);
+          text-decoration: none;
+          font-size: 0.9rem;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
         }
-        .animated-fadein.visible {
-          opacity: 1;
-          transform: translateY(0);
+
+        .featured-venues-slider {
+          padding: 1rem;
+          margin-top: 2rem;
         }
-        /* Shimmer effect for Platinum badge */
-        .shimmer {
-          background: linear-gradient(90deg, #FFB800 25%, #FFD764 50%, #FFB800 75%);
-          background-size: 200% 100%;
-          animation: shimmerMove 2.5s linear infinite;
+
+        .featured-venues-slider h3 {
+          font-size: 1.3rem;
+          color: var(--gold-dark);
+          margin-bottom: 1rem;
+          text-align: center;
         }
-        @keyframes shimmerMove {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
+
+        .venue-cards {
+          display: flex;
+          overflow-x: auto;
+          gap: 1rem;
+          padding: 0.5rem 0;
+          scroll-snap-type: x mandatory;
+          -webkit-overflow-scrolling: touch;
         }
-        /* Card hover effects */
-        .sponsor-card {
-          transition: box-shadow 0.3s, transform 0.3s;
+
+        .venue-card {
+          flex: 0 0 280px;
+          border-radius: 12px;
+          overflow: hidden;
+          position: relative;
+          scroll-snap-align: start;
         }
-        .sponsor-card:hover {
-          box-shadow: 0 8px 32px rgba(255,184,0,0.18), 0 0 32px 0 #FFD764;
-          transform: translateY(-8px) scale(1.03);
+
+        .venue-card img {
+          width: 100%;
+          height: 160px;
+          object-fit: cover;
         }
-        .sponsor-card:hover .sponsor-badge {
-          filter: brightness(1.1) drop-shadow(0 0 8px #FFD764);
+
+        .venue-info {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 1rem;
+          background: linear-gradient(transparent, rgba(0,0,0,0.8));
+          color: white;
         }
-        /* Responsive */
-        @media (max-width: 700px) {
-          .sponsors-grid { gap: 1.1rem; }
-          .sponsor-card { padding: 1.2rem 0.7rem 1rem 0.7rem; min-height: 180px; }
+
+        .venue-info h4 {
+          font-size: 1rem;
+          margin-bottom: 0.2rem;
+        }
+
+        .venue-info p {
+          font-size: 0.8rem;
+          opacity: 0.9;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .venue-cards::-webkit-scrollbar {
+          display: none;
+        }
+
+        .venue-cards {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        /* Larger screen adjustments */
+        @media (min-width: 768px) {
+          .event-types-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            padding: 1.5rem;
+          }
+
+          .section-title {
+            font-size: 2.5rem;
+          }
+
+          .section-subtitle {
+            font-size: 1.2rem;
+          }
+
+          .event-type-card {
+            padding: 1.5rem;
+          }
+
+          .event-icon {
+            width: 64px;
+            height: 64px;
+          }
+
+          .event-icon i {
+            font-size: 1.5rem;
+          }
+
+          .event-type-card h3 {
+            font-size: 1.3rem;
+          }
+
+          .event-type-card p {
+            font-size: 1rem;
+          }
+
+          .venue-card {
+            flex: 0 0 320px;
+          }
+
+          .venue-card img {
+            height: 200px;
+          }
+        }
+
+        /* Small screen optimizations */
+        @media (max-width: 380px) {
+          .event-types-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            padding: 0.8rem;
+          }
+
+          .event-type-card {
+            padding: 1rem;
+          }
+
+          .event-icon {
+            width: 40px;
+            height: 40px;
+          }
+
+          .event-icon i {
+            font-size: 1rem;
+          }
+
+          .event-type-card h3 {
+            font-size: 1rem;
+          }
+
+          .event-type-card p {
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .venue-card {
+            flex: 0 0 240px;
+          }
+
+          .venue-card img {
+            height: 140px;
+          }
         }
       </style>
-      <script>
-        // Sparkle background generator
-        function createSparkles() {
-          const sparkleBg = document.querySelector('.sparkle-bg');
-          if (!sparkleBg) return;
-          sparkleBg.innerHTML = '';
-          for (let i = 0; i < 18; i++) {
-            const s = document.createElement('div');
-            s.className = 'sparkle';
-            s.style.left = Math.random() * 98 + '%';
-            s.style.top = Math.random() * 98 + '%';
-            s.style.animationDelay = (Math.random() * 8) + 's';
-            s.style.opacity = 0.5 + Math.random() * 0.5;
-            s.style.width = s.style.height = (12 + Math.random() * 16) + 'px';
-            sparkleBg.appendChild(s);
-          }
-        }
-        createSparkles();
-        window.addEventListener('resize', createSparkles);
-        // Animate cards and fade-ins on scroll
-        function animateSponsorSection() {
-          const section = document.getElementById('top-sponsors');
-          if (!section) return;
-          const cards = section.querySelectorAll('.animated-card');
-          const fadeins = section.querySelectorAll('.animated-fadein');
-          const rect = section.getBoundingClientRect();
-          if (rect.top < window.innerHeight - 100) {
-            cards.forEach((c, i) => setTimeout(() => c.classList.add('visible'), 200 + i * 180));
-            fadeins.forEach(f => f.classList.add('visible'));
-          }
-        }
-        window.addEventListener('scroll', animateSponsorSection);
-        window.addEventListener('DOMContentLoaded', animateSponsorSection);
-      </script>
     </section>
 
     <!-- Sponsors Logo Wall & Call to Support (Animated) -->
@@ -2230,11 +2406,11 @@
       <div class="container">
         <h2 class="animated-fadein" style="text-align:center; color:#B38600; font-size:2rem; font-weight:700; margin-bottom:2rem;">Our Proud Sponsors</h2>
         <div class="logo-wall" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:2rem; justify-items:center; align-items:center; margin-bottom:2.5rem;">
-          <img src="images/sponsors/designing (1).jpeg" alt="Hotel Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
-          <img src="images/sponsors/cottage.jpg" alt="Cottage Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
-          <img src="images/sponsors/spar.jpeg" alt="Lodge Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
-          <img src="images/customer-care.png" alt="Customer Care Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
-          <img src="images/sponsors/hotel.jpg" alt="Design Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.10);">
+          <img src="images/sponsors/designing (1).jpeg" alt="Hotel Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.1);">
+          <img src="images/sponsors/cottage.jpg" alt="Cottage Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.1);">
+          <img src="images/sponsors/spar.jpeg" alt="Lodge Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.1);">
+          <img src="images/customer-care.png" alt="Customer Care Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.1);">
+          <img src="images/sponsors/hotel.jpg" alt="Design Sponsor" class="logo-anim" style="width:100px; height:100px; object-fit:contain; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(255,184,0,0.1);">
         </div>
         <div style="text-align:center; margin-top:1.5rem;">
           <h3 class="animated-fadein" style="color:#4CAF50; font-size:1.2rem; font-weight:600; margin-bottom:0.7rem;">Want to see your company here?</h3>
@@ -2738,6 +2914,13 @@
     }
     </style>
 
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
+
     <!-- Mobile Menu JavaScript -->
     <script>
         // Mobile Menu Functionality
@@ -2849,12 +3032,22 @@
         });
 
         // Logout function
-        function logout() {
-            localStorage.removeItem('deniFinderLoggedIn');
-            localStorage.removeItem('deniFinderCurrentUser');
-            window.location.href = 'index.html';
+        async function logout() {
+            try {
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.authService) {
+                    await window.DeniFinderSupabase.authService.signOut();
+                }
+                localStorage.removeItem('deniFinderLoggedIn');
+                localStorage.removeItem('deniFinderCurrentUser');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                // Fallback to localStorage cleanup
+                localStorage.removeItem('deniFinderLoggedIn');
+                localStorage.removeItem('deniFinderCurrentUser');
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>
 </html>
-                    

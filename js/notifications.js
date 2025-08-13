@@ -88,7 +88,7 @@ class NotificationSystem {
 
     async loadNotifications() {
         try {
-            // In a real app, this would fetch from Firestore
+            // In a real app, this would fetch from Supabase
             const notifications = await this.fetchNotifications();
             this.notifications = notifications;
             this.unreadCount = notifications.filter(n => !n.read).length;
@@ -100,7 +100,7 @@ class NotificationSystem {
     }
 
     async fetchNotifications() {
-        // Mock data - in real app this comes from Firestore
+        // Mock data - in real app this comes from Supabase
         return [
             {
                 id: 'notif1',
@@ -274,7 +274,7 @@ class NotificationSystem {
 
     async markAsRead(notificationId) {
         try {
-            // In a real app, this would update Firestore
+            // In a real app, this would update Supabase
             const notification = this.notifications.find(n => n.id === notificationId);
             if (notification) {
                 notification.read = true;
@@ -289,7 +289,7 @@ class NotificationSystem {
 
     async markAllAsRead() {
         try {
-            // In a real app, this would update Firestore
+            // In a real app, this would update Supabase
             this.notifications.forEach(notification => {
                 notification.read = true;
             });
@@ -444,7 +444,7 @@ class NotificationSystem {
             this.showPushNotification(notification);
         }
 
-        // In a real app, this would save to Firestore
+        // In a real app, this would save to Supabase
         await this.saveNotification(notification);
     }
 
@@ -501,19 +501,19 @@ class NotificationSystem {
     }
 
     async saveNotification(notification) {
-        // In a real app, this would save to Firestore
+        // In a real app, this would save to Supabase
         console.log('Saving notification:', notification);
     }
 
     startRealTimeUpdates() {
-        // In a real app, this would set up Firestore listeners
+        // In a real app, this would set up Supabase listeners
         setInterval(() => {
             this.checkForNewNotifications();
         }, 30000); // Check every 30 seconds
     }
 
     async checkForNewNotifications() {
-        // In a real app, this would check Firestore for new notifications
+        // In a real app, this would check Supabase for new notifications
         // For now, we'll just simulate
     }
 

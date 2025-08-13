@@ -82,7 +82,7 @@ class MessagingSystem {
 
     async loadConversations() {
         try {
-            // In a real app, this would fetch from Firestore
+            // In a real app, this would fetch from Supabase
             const conversations = await this.fetchConversations();
             this.conversations = conversations;
             this.displayConversations();
@@ -96,51 +96,69 @@ class MessagingSystem {
         if (!this.currentUser) return [];
 
         try {
-            const db = firebase.firestore();
-            const conversationsSnapshot = await db.collection('conversations')
-                .where('participants', 'array-contains', this.currentUser.id)
-                .orderBy('lastTimestamp', 'desc')
-                .get();
+            const supabase = window.DeniFinderSupabase.getClient();
+            if (!supabase) {
+                throw new Error('Supabase not initialized');
+            }
 
-            if (conversationsSnapshot.empty) {
+            const { data: conversations, error } = await supabase
+                .from('conversations')
+                .select('*')
+                .contains('participants', [this.currentUser.id])
+                .order('last_timestamp', { ascending: false });
+
+            if (error) {
+                throw error;
+            }
+
+            if (!conversations || conversations.length === 0) {
                 return [];
             }
 
-            const conversationsPromises = conversationsSnapshot.docs.map(async (doc) => {
-                const conversationData = doc.data();
-                const conversationId = doc.id;
+            const conversationsPromises = conversations.map(async (conversation) => {
+                const conversationData = conversation;
+                const conversationId = conversation.id;
                 const otherParticipantId = conversationData.participants.find(id => id !== this.currentUser.id);
 
                 if (!otherParticipantId) return null;
 
-                const userDoc = await db.collection('users').doc(otherParticipantId).get();
-                const userData = userDoc.exists ? userDoc.data() : { displayName: 'Unknown User', avatar: 'images/deniM.png' };
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', otherParticipantId)
+                    .single();
+
+                const user = userData || { display_name: 'Unknown User', profile_image_url: 'images/deniM.png' };
 
                 let propertyData = { title: 'No property specified', image: 'images/deniM.png' };
-                if (conversationData.propertyId) {
-                    const propertyDoc = await db.collection('properties').doc(conversationData.propertyId).get();
-                    if (propertyDoc.exists) {
-                        const pData = propertyDoc.data();
+                if (conversationData.property_id) {
+                    const { data: propertyDoc } = await supabase
+                        .from('properties')
+                        .select('*')
+                        .eq('id', conversationData.property_id)
+                        .single();
+                    
+                    if (propertyDoc) {
                         propertyData = {
                             id: propertyDoc.id,
-                            title: pData.title,
-                            image: (pData.images && pData.images[0]) ? pData.images[0] : 'images/deniM.png'
+                            title: propertyDoc.title,
+                            image: (propertyDoc.images && propertyDoc.images[0]) ? propertyDoc.images[0] : 'images/deniM.png'
                         };
                     }
                 }
                 
                 return {
                     id: conversationId,
-                participants: [
-                        { id: this.currentUser.id, name: this.currentUser.displayName || 'Me', avatar: this.currentUser.avatar || 'images/deniM.png' },
-                        { id: otherParticipantId, name: userData.displayName || 'User', avatar: userData.avatarUrl || userData.avatar || 'images/deniM.png' }
-                ],
-                lastMessage: {
-                        text: conversationData.lastMessage || '...',
-                        timestamp: conversationData.lastTimestamp.toDate(),
+                    participants: [
+                        { id: this.currentUser.id, name: this.currentUser.display_name || 'Me', avatar: this.currentUser.profile_image_url || 'images/deniM.png' },
+                        { id: otherParticipantId, name: user.display_name || 'User', avatar: user.profile_image_url || 'images/deniM.png' }
+                    ],
+                    lastMessage: {
+                        text: conversationData.last_message || '...',
+                        timestamp: new Date(conversationData.last_timestamp),
                     },
                     property: propertyData,
-                    unreadCount: conversationData.unreadCounts ? (conversationData.unreadCounts[this.currentUser.id] || 0) : 0
+                    unreadCount: conversationData.unread_counts ? (conversationData.unread_counts[this.currentUser.id] || 0) : 0
                 };
             });
 
@@ -148,7 +166,7 @@ class MessagingSystem {
             return resolvedConversations.filter(c => c !== null);
 
         } catch (error) {
-            console.error("Error fetching conversations from Firestore:", error);
+            console.error("Error fetching conversations from Supabase:", error);
             this.showError("Could not load conversations.");
             return [];
         }
@@ -238,25 +256,42 @@ class MessagingSystem {
     }
 
     async loadConversationById(convoId) {
-        // Load conversation from Firestore
-        if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) return;
-        const convoResult = await window.DeniFinderFirebase.dbService.getDocument('conversations', convoId);
-        if (!convoResult.success) return;
-        const convo = convoResult.data;
+        // Load conversation from Supabase
+        if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.getClient) return;
+        
+        const supabase = window.DeniFinderSupabase.getClient();
+        if (!supabase) return;
+        
+        const { data: convo, error } = await supabase
+            .from('conversations')
+            .select('*')
+            .eq('id', convoId)
+            .single();
+            
+        if (error || !convo) return;
+        
         this.activeConversation = { id: convoId, ...convo };
+        
         // Load user info for participants
         const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
-        const otherUserId = convo.participants.find(uid => uid !== currentUser.uid);
-        let otherUser = { displayName: 'User', avatar: 'images/deniM.png' };
+        const otherUserId = convo.participants.find(uid => uid !== currentUser.id);
+        let otherUser = { display_name: 'User', profile_image_url: 'images/deniM.png' };
+        
         if (otherUserId) {
-            const userResult = await window.DeniFinderFirebase.dbService.getDocument('users', otherUserId);
-            if (userResult.success) {
-                otherUser = userResult.data;
+            const { data: userData } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', otherUserId)
+                .single();
+                
+            if (userData) {
+                otherUser = userData;
             }
         }
+        
         // Update chat header
-        document.getElementById('chatUserName').textContent = otherUser.displayName || 'User';
-        document.getElementById('chatUserAvatar').src = otherUser.avatarUrl || otherUser.avatar || 'images/deniM.png';
+        document.getElementById('chatUserName').textContent = otherUser.display_name || 'User';
+        document.getElementById('chatUserAvatar').src = otherUser.profile_image_url || 'images/deniM.png';
         document.getElementById('chatUserStatus').textContent = otherUser.email || '';
         
         // Use the real-time listener for messages
@@ -360,7 +395,7 @@ class MessagingSystem {
                 read: false
             };
 
-            // Save to Firestore, listener will update UI
+            // Save to Supabase, listener will update UI
             await this.saveMessage(message);
 
             // Clear input and update conversation list
@@ -375,11 +410,26 @@ class MessagingSystem {
     }
 
     async saveMessage(message) {
-        // Real save to Firestore
+        // Real save to Supabase
         try {
-            await firebase.firestore().collection('messages').add(message);
+            const supabase = window.DeniFinderSupabase.getClient();
+            if (!supabase) {
+                throw new Error('Supabase not initialized');
+            }
+
+            const { data, error } = await supabase
+                .from('messages')
+                .insert([message])
+                .select()
+                .single();
+
+            if (error) {
+                throw error;
+            }
+            return data;
+
         } catch (error) {
-            console.error("Error saving message to Firestore:", error);
+            console.error("Error saving message to Supabase:", error);
             throw error; // Re-throw to be caught by sendMessage
         }
     }
@@ -564,17 +614,28 @@ class MessagingSystem {
         if (!messagesContainer) return;
         messagesContainer.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading messages...</div>`;
 
-        this.unsubscribeMessages = firebase.firestore()
-            .collection('messages')
-            .where('conversationId', '==', conversationId)
-            .orderBy('timestamp', 'asc')
-            .onSnapshot(snapshot => {
-                const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const supabase = window.DeniFinderSupabase.getClient();
+        if (!supabase) {
+            console.error("Supabase client not initialized for real-time listener.");
+            messagesContainer.innerHTML = `<div class="empty-state"><h3>Error loading messages</h3></div>`;
+            return;
+        }
+
+        this.unsubscribeMessages = supabase
+            .channel(`messages:${conversationId}`)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'messages',
+                filter: `conversation_id=eq.${conversationId}`
+            }, (payload) => {
+                const messages = payload.new.map(doc => ({ id: doc.id, ...doc }));
                 this.displayMessages(messages);
             }, error => {
                 console.error("Error fetching real-time messages:", error);
                 messagesContainer.innerHTML = `<div class="empty-state"><h3>Error loading messages</h3></div>`;
-            });
+            })
+            .subscribe();
     }
 
     formatTime(timestamp) {
@@ -620,19 +681,27 @@ class MessagingSystem {
         propertyPickerList.innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading properties...</div>`;
 
         try {
-            const db = firebase.firestore();
-            const propertiesSnapshot = await db.collection('properties')
-                .where('ownerId', '==', this.currentUser.id)
-                .get();
+            const supabase = window.DeniFinderSupabase.getClient();
+            if (!supabase) {
+                throw new Error('Supabase not initialized');
+            }
 
-            if (propertiesSnapshot.empty) {
+            const { data: properties, error } = await supabase
+                .from('properties')
+                .select('*')
+                .eq('ownerId', this.currentUser.id);
+
+            if (error || !properties) {
+                throw error;
+            }
+
+            if (properties.length === 0) {
                 propertyPickerList.innerHTML = '<p>You have no properties to share.</p>';
                 return;
             }
 
             propertyPickerList.innerHTML = '';
-            propertiesSnapshot.forEach(doc => {
-                const property = { id: doc.id, ...doc.data() };
+            properties.forEach(property => {
                 const propertyItem = document.createElement('div');
                 propertyItem.className = 'property-picker-item';
                 propertyItem.innerHTML = `

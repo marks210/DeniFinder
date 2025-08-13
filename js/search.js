@@ -1,31 +1,56 @@
-// Search and Filtering System for DeniFinder
+// Search Service for DeniFinder - Supabase Integration
 
-class PropertySearch {
+class SearchService {
     constructor() {
-        this.filters = {
-            location: '',
-            priceRange: { min: 0, max: 1000000 },
+        this.currentUser = null;
+        this.searchHistory = [];
+        this.savedSearches = [];
+        this.searchFilters = {
             propertyType: [],
+            priceRange: { min: 0, max: 1000000 },
+            location: '',
+            bedrooms: [],
+            bathrooms: [],
             amenities: [],
-            availability: 'available',
-            verifiedOnly: false,
-            studentFriendly: false,
             university: '',
-            bedrooms: 0,
-            bathrooms: 0
+            distance: 10, // km
+            availability: 'all', // all, available, rented
+            verifiedLandlord: false,
+            studentFriendly: false
         };
-        
         this.searchResults = [];
+        this.totalResults = 0;
         this.currentPage = 1;
-        this.resultsPerPage = 12;
+        this.resultsPerPage = 20;
     }
 
-    // Initialize search functionality
     init() {
+        this.loadCurrentUser();
+        this.loadSearchHistory();
+        this.loadSavedSearches();
         this.setupEventListeners();
-        this.setupPriceSlider();
-        this.setupAmenitiesFilter();
-        this.setupLocationAutocomplete();
+        this.initializeSearchUI();
+    }
+
+    loadCurrentUser() {
+        const userData = localStorage.getItem('deniFinderCurrentUser');
+        if (userData) {
+            this.currentUser = JSON.parse(userData);
+        }
+    }
+
+    loadSearchHistory() {
+        const history = localStorage.getItem('deniFinderSearchHistory');
+        if (history) {
+            this.searchHistory = JSON.parse(history);
+        }
+    }
+
+    loadSavedSearches() {
+        const saved = localStorage.getItem('deniFinderSavedSearches');
+        if (saved) {
+            this.savedSearches = JSON.parse(saved);
+        }
     }
 
     setupEventListeners() {
@@ -38,234 +63,367 @@ class PropertySearch {
             });
         }
 
-        // Filter changes
-        const filterInputs = document.querySelectorAll('.filter-input');
-        filterInputs.forEach(input => {
-            input.addEventListener('change', () => {
-                this.updateFilters();
-                this.performSearch();
+        // Quick search input
+        const quickSearchInput = document.getElementById('quickSearchInput');
+        if (quickSearchInput) {
+            quickSearchInput.addEventListener('input', this.debounce(() => {
+                this.performQuickSearch();
+            }, 500));
+        }
+
+        // Filter toggles
+        const filterToggles = document.querySelectorAll('.filter-toggle');
+        filterToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                this.toggleFilterPanel();
             });
         });
 
-        // Clear filters
-        const clearFiltersBtn = document.getElementById('clearFilters');
-        if (clearFiltersBtn) {
-            clearFiltersBtn.addEventListener('click', () => {
-                this.clearFilters();
+        // Save search button
+        const saveSearchBtn = document.getElementById('saveSearchBtn');
+        if (saveSearchBtn) {
+            saveSearchBtn.addEventListener('click', () => {
+                this.saveCurrentSearch();
+            });
+        }
+
+        // Load more results
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => {
+                this.loadMoreResults();
             });
         }
     }
 
-    setupPriceSlider() {
-        const priceSlider = document.getElementById('priceSlider');
-        const priceDisplay = document.getElementById('priceDisplay');
+    initializeSearchUI() {
+        // Initialize price range slider
+        this.initializePriceSlider();
         
-        if (priceSlider && priceDisplay) {
-            priceSlider.addEventListener('input', (e) => {
-                const value = e.target.value;
-                this.filters.priceRange.max = parseInt(value);
-                priceDisplay.textContent = `Up to KSh ${value.toLocaleString()}`;
-            });
+        // Initialize location autocomplete
+        this.initializeLocationAutocomplete();
+        
+        // Initialize university selector
+        this.initializeUniversitySelector();
+        
+        // Initialize amenities checkboxes
+        this.initializeAmenitiesCheckboxes();
+    }
+
+    initializePriceSlider() {
+        const priceSlider = document.getElementById('priceSlider');
+        if (priceSlider) {
+            const minPrice = document.getElementById('minPrice');
+            const maxPrice = document.getElementById('maxPrice');
+            
+            if (minPrice && maxPrice) {
+                priceSlider.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    maxPrice.textContent = `KSh ${parseInt(value).toLocaleString()}`;
+                    this.searchFilters.priceRange.max = parseInt(value);
+                });
+            }
         }
     }
 
-    setupAmenitiesFilter() {
-        const amenityCheckboxes = document.querySelectorAll('.amenity-checkbox');
-        amenityCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                this.updateAmenitiesFilter();
-            });
-        });
-    }
-
-    setupLocationAutocomplete() {
+    initializeLocationAutocomplete() {
         const locationInput = document.getElementById('locationInput');
         if (locationInput) {
-            // Add autocomplete functionality
-            locationInput.addEventListener('input', (e) => {
-                this.suggestLocations(e.target.value);
+            locationInput.addEventListener('input', this.debounce(async (e) => {
+                const query = e.target.value;
+                if (query.length > 2) {
+                    const suggestions = await this.getLocationSuggestions(query);
+                    this.showLocationSuggestions(suggestions);
+                }
+            }, 300));
+        }
+    }
+
+    initializeUniversitySelector() {
+        const universitySelect = document.getElementById('universitySelect');
+        if (universitySelect) {
+            universitySelect.addEventListener('change', (e) => {
+                this.searchFilters.university = e.target.value;
             });
         }
     }
 
-    updateFilters() {
-        // Update filters based on form inputs
-        const locationInput = document.getElementById('locationInput');
-        const propertyTypeSelect = document.getElementById('propertyType');
-        const availabilitySelect = document.getElementById('availability');
-        const verifiedCheckbox = document.getElementById('verifiedOnly');
-        const studentCheckbox = document.getElementById('studentFriendly');
-        const universitySelect = document.getElementById('university');
-        const bedroomsSelect = document.getElementById('bedrooms');
-        const bathroomsSelect = document.getElementById('bathrooms');
-
-        if (locationInput) this.filters.location = locationInput.value;
-        if (propertyTypeSelect) this.filters.propertyType = propertyTypeSelect.value ? [propertyTypeSelect.value] : [];
-        if (availabilitySelect) this.filters.availability = availabilitySelect.value;
-        if (verifiedCheckbox) this.filters.verifiedOnly = verifiedCheckbox.checked;
-        if (studentCheckbox) this.filters.studentFriendly = studentCheckbox.checked;
-        if (universitySelect) this.filters.university = universitySelect.value;
-        if (bedroomsSelect) this.filters.bedrooms = parseInt(bedroomsSelect.value) || 0;
-        if (bathroomsSelect) this.filters.bathrooms = parseInt(bathroomsSelect.value) || 0;
-    }
-
-    updateAmenitiesFilter() {
-        const amenityCheckboxes = document.querySelectorAll('.amenity-checkbox:checked');
-        this.filters.amenities = Array.from(amenityCheckboxes).map(cb => cb.value);
+    initializeAmenitiesCheckboxes() {
+        const amenityCheckboxes = document.querySelectorAll('input[name="amenities"]');
+        amenityCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    this.searchFilters.amenities.push(e.target.value);
+                } else {
+                    const index = this.searchFilters.amenities.indexOf(e.target.value);
+                    if (index > -1) {
+                        this.searchFilters.amenities.splice(index, 1);
+                    }
+                }
+            });
+        });
     }
 
     async performSearch() {
         try {
-            // Show loading state
             this.showLoadingState();
-
-            // In a real app, this would be a Firestore query
-            // For now, we'll simulate the search
-            const results = await this.simulateSearch();
             
-            this.searchResults = results;
-            this.displayResults();
-            this.updateSearchStats();
+            // Build search query
+            const searchQuery = this.buildSearchQuery();
+            
+            // Perform search in Supabase
+            const results = await this.searchProperties(searchQuery);
+            
+            // Process results
+            this.processSearchResults(results);
+            
+            // Save to search history
+            this.saveToSearchHistory(searchQuery);
+            
+            // Display results
+            this.displaySearchResults();
+            
+            // Update URL with search params
+            this.updateURLWithSearchParams();
             
         } catch (error) {
             console.error('Search error:', error);
-            this.showError('Search failed. Please try again.');
+            this.showErrorState('Search failed. Please try again.');
         }
     }
 
-    async simulateSearch() {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    async performQuickSearch() {
+        const query = document.getElementById('quickSearchInput').value.trim();
+        if (query.length < 2) return;
 
-        // Mock data - in real app this comes from Firestore
-        const mockProperties = [
-            {
-                id: '1',
-                title: 'Modern 2-Bedroom Apartment',
-                location: 'Westlands, Nairobi',
-                price: 45000,
-                type: 'apartment',
-                bedrooms: 2,
-                bathrooms: 2,
-                amenities: ['wifi', 'parking', 'security'],
-                verified: true,
-                studentFriendly: true,
-                university: 'uon',
-                availability: 'available',
-                images: ['images/project.jpg'],
-                description: 'Beautiful modern apartment with all amenities...',
-                landlord: {
-                    name: 'John Doe',
-                    verified: true,
-                    rating: 4.5
-                }
-            },
-            {
-                id: '2',
-                title: 'Student Hostel - Near University',
-                location: 'Kilimani, Nairobi',
-                price: 15000,
-                type: 'hostel',
-                bedrooms: 1,
-                bathrooms: 1,
-                amenities: ['wifi', 'meals', 'laundry'],
-                verified: true,
-                studentFriendly: true,
-                university: 'ku',
-                availability: 'available',
-                images: ['images/hostels.jpeg'],
-                description: 'Perfect for students with meal plans included...',
-                landlord: {
-                    name: 'Student Housing Ltd',
-                    verified: true,
-                    rating: 4.2
-                }
-            },
-            {
-                id: '3',
-                title: 'Family House with Garden',
-                location: 'Eastlands, Nairobi',
-                price: 35000,
-                type: 'house',
-                bedrooms: 3,
-                bathrooms: 2,
-                amenities: ['garden', 'parking', 'security'],
-                verified: false,
-                studentFriendly: false,
-                university: '',
-                availability: 'available',
-                images: ['images/tenant.jpeg'],
-                description: 'Spacious family home with beautiful garden...',
-                landlord: {
-                    name: 'Mary Smith',
-                    verified: false,
-                    rating: 4.0
-                }
-            }
-        ];
-
-        // Apply filters
-        return mockProperties.filter(property => this.matchesFilters(property));
+        try {
+            const results = await this.quickSearch(query);
+            this.displayQuickSearchResults(results);
+        } catch (error) {
+            console.error('Quick search error:', error);
+        }
     }
 
-    matchesFilters(property) {
+    buildSearchQuery() {
+        const query = {
+            filters: {},
+            sort: { field: 'created_at', direction: 'desc' },
+            pagination: { page: 1, limit: this.resultsPerPage }
+        };
+
         // Location filter
-        if (this.filters.location && !property.location.toLowerCase().includes(this.filters.location.toLowerCase())) {
-            return false;
+        if (this.searchFilters.location) {
+            query.filters.location = {
+                operator: 'ilike',
+                value: `%${this.searchFilters.location}%`
+            };
         }
 
-        // Price filter
-        if (property.price > this.filters.priceRange.max || property.price < this.filters.priceRange.min) {
-            return false;
+        // Price range filter
+        if (this.searchFilters.priceRange.min > 0 || this.searchFilters.priceRange.max < 1000000) {
+            query.filters.price = {
+                operator: 'between',
+                value: [this.searchFilters.priceRange.min, this.searchFilters.priceRange.max]
+            };
         }
 
         // Property type filter
-        if (this.filters.propertyType.length > 0 && !this.filters.propertyType.includes(property.type)) {
-            return false;
-        }
-
-        // Availability filter
-        if (this.filters.availability !== 'all' && property.availability !== this.filters.availability) {
-            return false;
-        }
-
-        // Verified only filter
-        if (this.filters.verifiedOnly && !property.verified) {
-            return false;
-        }
-
-        // Student friendly filter
-        if (this.filters.studentFriendly && !property.studentFriendly) {
-            return false;
-        }
-
-        // University filter
-        if (this.filters.university && property.university !== this.filters.university) {
-            return false;
+        if (this.searchFilters.propertyType.length > 0) {
+            query.filters.property_type = {
+                operator: 'in',
+                value: this.searchFilters.propertyType
+            };
         }
 
         // Bedrooms filter
-        if (this.filters.bedrooms > 0 && property.bedrooms < this.filters.bedrooms) {
-            return false;
-        }
-
-        // Bathrooms filter
-        if (this.filters.bathrooms > 0 && property.bathrooms < this.filters.bathrooms) {
-            return false;
+        if (this.searchFilters.bedrooms.length > 0) {
+            query.filters.bedrooms = {
+                operator: 'in',
+                value: this.searchFilters.bedrooms
+            };
         }
 
         // Amenities filter
-        if (this.filters.amenities.length > 0) {
-            const hasAllAmenities = this.filters.amenities.every(amenity => 
-                property.amenities.includes(amenity)
-            );
-            if (!hasAllAmenities) return false;
+        if (this.searchFilters.amenities.length > 0) {
+            query.filters.amenities = {
+                operator: 'contains',
+                value: this.searchFilters.amenities
+            };
         }
 
-        return true;
+        // University filter
+        if (this.searchFilters.university) {
+            query.filters.university = {
+                operator: 'eq',
+                value: this.searchFilters.university
+            };
+        }
+
+        // Availability filter
+        if (this.searchFilters.availability !== 'all') {
+            query.filters.status = {
+                operator: 'eq',
+                value: this.searchFilters.availability
+            };
+        }
+
+        // Verified landlord filter
+        if (this.searchFilters.verifiedLandlord) {
+            query.filters.verified_landlord = {
+                operator: 'eq',
+                value: true
+            };
+        }
+
+        return query;
     }
 
-    displayResults() {
+    async searchProperties(searchQuery) {
+        if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+            // Fallback to sample data
+            return this.getSampleProperties();
+        }
+
+        try {
+            const supabase = window.DeniFinderSupabase.getClient();
+            if (!supabase) {
+                throw new Error('Supabase client not available');
+            }
+
+            let query = supabase
+                .from('properties')
+                .select('*');
+
+            // Apply filters
+            if (searchQuery.filters.location) {
+                query = query.ilike('location', searchQuery.filters.location.value);
+            }
+
+            if (searchQuery.filters.price) {
+                query = query.gte('price', searchQuery.filters.price.value[0])
+                           .lte('price', searchQuery.filters.price.value[1]);
+            }
+
+            if (searchQuery.filters.property_type) {
+                query = query.in('property_type', searchQuery.filters.property_type.value);
+            }
+
+            if (searchQuery.filters.bedrooms) {
+                query = query.in('bedrooms', searchQuery.filters.bedrooms.value);
+            }
+
+            if (searchQuery.filters.status) {
+                query = query.eq('status', searchQuery.filters.status.value);
+            }
+
+            // Apply sorting
+            query = query.order(searchQuery.sort.field, { 
+                ascending: searchQuery.sort.direction === 'asc' 
+            });
+
+            // Apply pagination
+            const from = (searchQuery.pagination.page - 1) * searchQuery.pagination.limit;
+            const to = from + searchQuery.pagination.limit - 1;
+            query = query.range(from, to);
+
+            const { data, error, count } = await query;
+
+            if (error) {
+                throw error;
+            }
+
+            return {
+                properties: data || [],
+                total: count || 0,
+                page: searchQuery.pagination.page,
+                hasMore: (data && data.length === searchQuery.pagination.limit)
+            };
+
+        } catch (error) {
+            console.error('Supabase search error:', error);
+            // Fallback to sample data
+            return this.getSampleProperties();
+        }
+    }
+
+    async quickSearch(query) {
+        if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+            return this.getSampleProperties().slice(0, 5);
+        }
+
+        try {
+            const supabase = window.DeniFinderSupabase.getClient();
+            if (!supabase) {
+                return this.getSampleProperties().slice(0, 5);
+            }
+
+            const { data, error } = await supabase
+                .from('properties')
+                .select('*')
+                .or(`title.ilike.%${query}%,location.ilike.%${query}%,description.ilike.%${query}%`)
+                .limit(5);
+
+            if (error) {
+                throw error;
+            }
+
+            return data || [];
+
+        } catch (error) {
+            console.error('Quick search error:', error);
+            return this.getSampleProperties().slice(0, 5);
+        }
+    }
+
+    processSearchResults(results) {
+        this.searchResults = results.properties || [];
+        this.totalResults = results.total || 0;
+        this.currentPage = results.page || 1;
+        
+        // Enrich results with additional data
+        this.enrichSearchResults();
+    }
+
+    enrichSearchResults() {
+        this.searchResults = this.searchResults.map(property => ({
+            ...property,
+            distance: this.calculateDistance(property.location),
+            rating: this.getPropertyRating(property.id),
+            imageCount: property.images ? property.images.length : 0,
+            isSaved: this.isPropertySaved(property.id),
+            isFavorited: this.isPropertyFavorited(property.id)
+        }));
+    }
+
+    calculateDistance(location) {
+        // Mock distance calculation - in real app, use geolocation API
+        return Math.floor(Math.random() * 20) + 1;
+    }
+
+    getPropertyRating(propertyId) {
+        // Mock rating - in real app, fetch from ratings table
+        return (Math.random() * 2 + 3).toFixed(1);
+    }
+
+    isPropertySaved(propertyId) {
+        const saved = localStorage.getItem('deniFinderSavedProperties');
+        if (saved) {
+            const savedProperties = JSON.parse(saved);
+            return savedProperties.includes(propertyId);
+        }
+        return false;
+    }
+
+    isPropertyFavorited(propertyId) {
+        const favorites = localStorage.getItem('deniFinderFavoriteProperties');
+        if (favorites) {
+            const favoriteProperties = JSON.parse(favorites);
+            return favoriteProperties.includes(propertyId);
+        }
+        return false;
+    }
+
+    displaySearchResults() {
         const resultsContainer = document.getElementById('searchResults');
         if (!resultsContainer) return;
 
@@ -274,61 +432,113 @@ class PropertySearch {
                 <div class="no-results">
                     <i class="fas fa-search"></i>
                     <h3>No properties found</h3>
-                    <p>Try adjusting your search criteria or browse all properties.</p>
-                    <button onclick="propertySearch.clearFilters()" class="btn-primary">Clear Filters</button>
+                    <p>Try adjusting your search criteria or browse our featured properties.</p>
+                    <button class="btn-primary" onclick="searchService.clearFilters()">
+                        Clear Filters
+                    </button>
                 </div>
             `;
             return;
         }
 
-        const startIndex = (this.currentPage - 1) * this.resultsPerPage;
-        const endIndex = startIndex + this.resultsPerPage;
-        const pageResults = this.searchResults.slice(startIndex, endIndex);
+        // Display results
+        resultsContainer.innerHTML = `
+            <div class="search-results-header">
+                <h3>Found ${this.totalResults} properties</h3>
+                <div class="results-controls">
+                    <select id="sortResults" onchange="searchService.sortResults(this.value)">
+                        <option value="newest">Newest First</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="distance">Distance</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                    <button class="btn-secondary" onclick="searchService.toggleViewMode()">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="search-results-grid">
+                ${this.searchResults.map(property => this.createPropertyCard(property)).join('')}
+            </div>
+            ${this.hasMoreResults() ? `
+                <div class="load-more-section">
+                    <button id="loadMoreBtn" class="btn-primary" onclick="searchService.loadMoreResults()">
+                        Load More Results
+                    </button>
+                </div>
+            ` : ''}
+        `;
 
-        resultsContainer.innerHTML = pageResults.map(property => this.createPropertyCard(property)).join('');
-        
-        this.displayPagination();
+        // Update pagination info
+        this.updatePaginationInfo();
+    }
+
+    displayQuickSearchResults(results) {
+        const quickResultsContainer = document.getElementById('quickSearchResults');
+        if (!quickResultsContainer) return;
+
+        if (results.length === 0) {
+            quickResultsContainer.style.display = 'none';
+            return;
+        }
+
+        quickResultsContainer.innerHTML = results.map(property => `
+            <div class="quick-result-item" onclick="searchService.selectQuickResult('${property.id}')">
+                <div class="quick-result-image">
+                    <img src="${property.images && property.images[0] ? property.images[0] : 'images/deniM.png'}" alt="${property.title}">
+                </div>
+                <div class="quick-result-content">
+                    <h4>${property.title}</h4>
+                    <p>${property.location}</p>
+                    <span class="quick-result-price">KSh ${property.price?.toLocaleString() || '0'}/month</span>
+                </div>
+            </div>
+        `).join('');
+
+        quickResultsContainer.style.display = 'block';
     }
 
     createPropertyCard(property) {
-        const amenitiesList = property.amenities.map(amenity => 
-            `<span class="amenity-tag">${this.getAmenityIcon(amenity)} ${amenity}</span>`
-        ).join('');
-
         return `
             <div class="property-card" data-property-id="${property.id}">
                 <div class="property-image">
-                    <img src="${property.images[0]}" alt="${property.title}">
+                    <img src="${property.images && property.images[0] ? property.images[0] : 'images/deniM.png'}" alt="${property.title}">
                     <div class="property-badges">
-                        ${property.verified ? '<span class="badge verified">Verified</span>' : ''}
-                        ${property.studentFriendly ? '<span class="badge student">Student</span>' : ''}
-                        <span class="badge ${property.availability}">${property.availability}</span>
+                        ${property.status === 'available' ? '<span class="badge available">Available</span>' : ''}
+                        ${property.verified_landlord ? '<span class="badge verified">Verified</span>' : ''}
+                        ${property.student_friendly ? '<span class="badge student">Student Friendly</span>' : ''}
+                    </div>
+                    <div class="property-actions">
+                        <button class="action-btn favorite" onclick="searchService.toggleFavorite('${property.id}')">
+                            <i class="fas fa-heart ${property.isFavorited ? 'filled' : ''}"></i>
+                        </button>
+                        <button class="action-btn save" onclick="searchService.toggleSave('${property.id}')">
+                            <i class="fas fa-bookmark ${property.isSaved ? 'filled' : ''}"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="property-content">
-                    <h3>${property.title}</h3>
-                    <p class="location"><i class="fas fa-map-marker-alt"></i> ${property.location}</p>
-                    <p class="price">KSh ${property.price.toLocaleString()}/month</p>
+                    <h3 class="property-title">${property.title}</h3>
+                    <p class="property-location">
+                        <i class="fas fa-map-marker-alt"></i> ${property.location}
+                        <span class="property-distance">${property.distance} km away</span>
+                    </p>
                     <div class="property-details">
-                        <span><i class="fas fa-bed"></i> ${property.bedrooms} Bed</span>
-                        <span><i class="fas fa-bath"></i> ${property.bathrooms} Bath</span>
-                        <span><i class="fas fa-home"></i> ${property.type}</span>
+                        <span><i class="fas fa-bed"></i> ${property.bedrooms || 0} Bed</span>
+                        <span><i class="fas fa-bath"></i> ${property.bathrooms || 0} Bath</span>
+                        <span><i class="fas fa-ruler-combined"></i> ${property.size || 'N/A'}</span>
                     </div>
-                    <div class="amenities">
-                        ${amenitiesList}
+                    <div class="property-price">
+                        <span class="price-amount">KSh ${property.price?.toLocaleString() || '0'}</span>
+                        <span class="price-period">/month</span>
                     </div>
-                    <div class="landlord-info">
-                        <span class="landlord-name">${property.landlord.name}</span>
-                        <span class="landlord-rating">
-                            <i class="fas fa-star"></i> ${property.landlord.rating}
-                        </span>
-                    </div>
-                    <div class="property-actions">
-                        <button class="btn-primary" onclick="propertySearch.viewProperty('${property.id}')">
+                    <div class="property-footer">
+                        <div class="property-rating">
+                            <i class="fas fa-star"></i> ${property.rating}
+                        </div>
+                        <button class="btn-primary" onclick="searchService.viewProperty('${property.id}')">
                             View Details
-                        </button>
-                        <button class="btn-secondary" onclick="propertySearch.contactLandlord('${property.id}')">
-                            <i class="fas fa-envelope"></i> Contact
                         </button>
                     </div>
                 </div>
@@ -336,150 +546,236 @@ class PropertySearch {
         `;
     }
 
-    getAmenityIcon(amenity) {
-        const icons = {
-            wifi: 'fas fa-wifi',
-            parking: 'fas fa-parking',
-            security: 'fas fa-shield-alt',
-            meals: 'fas fa-utensils',
-            laundry: 'fas fa-tshirt',
-            garden: 'fas fa-leaf',
-            gym: 'fas fa-dumbbell',
-            pool: 'fas fa-swimming-pool'
-        };
-        return icons[amenity] || 'fas fa-check';
+    async loadMoreResults() {
+        try {
+            this.currentPage++;
+            const searchQuery = this.buildSearchQuery();
+            searchQuery.pagination.page = this.currentPage;
+            
+            const results = await this.searchProperties(searchQuery);
+            this.searchResults = [...this.searchResults, ...(results.properties || [])];
+            
+            this.displaySearchResults();
+            
+        } catch (error) {
+            console.error('Load more error:', error);
+        }
     }
 
-    displayPagination() {
-        const totalPages = Math.ceil(this.searchResults.length / this.resultsPerPage);
-        const paginationContainer = document.getElementById('pagination');
-        
-        if (!paginationContainer || totalPages <= 1) return;
+    hasMoreResults() {
+        return this.searchResults.length < this.totalResults;
+    }
 
-        let paginationHTML = '<div class="pagination">';
-        
-        // Previous button
-        if (this.currentPage > 1) {
-            paginationHTML += `<button onclick="propertySearch.goToPage(${this.currentPage - 1})">Previous</button>`;
+    updatePaginationInfo() {
+        const paginationInfo = document.getElementById('paginationInfo');
+        if (paginationInfo) {
+            const start = (this.currentPage - 1) * this.resultsPerPage + 1;
+            const end = Math.min(this.currentPage * this.resultsPerPage, this.totalResults);
+            
+            paginationInfo.innerHTML = `
+                Showing ${start}-${end} of ${this.totalResults} properties
+            `;
         }
+    }
 
-        // Page numbers
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === this.currentPage) {
-                paginationHTML += `<button class="active">${i}</button>`;
+    sortResults(sortBy) {
+        switch (sortBy) {
+            case 'newest':
+                this.searchResults.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+            case 'price-low':
+                this.searchResults.sort((a, b) => (a.price || 0) - (b.price || 0));
+                break;
+            case 'price-high':
+                this.searchResults.sort((a, b) => (b.price || 0) - (a.price || 0));
+                break;
+            case 'distance':
+                this.searchResults.sort((a, b) => a.distance - b.distance);
+                break;
+            case 'rating':
+                this.searchResults.sort((a, b) => b.rating - a.rating);
+                break;
+        }
+        
+        this.displaySearchResults();
+    }
+
+    toggleViewMode() {
+        const resultsGrid = document.querySelector('.search-results-grid');
+        if (resultsGrid) {
+            resultsGrid.classList.toggle('list-view');
+        }
+    }
+
+    async toggleFavorite(propertyId) {
+        try {
+            const favorites = JSON.parse(localStorage.getItem('deniFinderFavoriteProperties') || '[]');
+            const index = favorites.indexOf(propertyId);
+            
+            if (index > -1) {
+                favorites.splice(index, 1);
             } else {
-                paginationHTML += `<button onclick="propertySearch.goToPage(${i})">${i}</button>`;
+                favorites.push(propertyId);
             }
-        }
-
-        // Next button
-        if (this.currentPage < totalPages) {
-            paginationHTML += `<button onclick="propertySearch.goToPage(${this.currentPage + 1})">Next</button>`;
-        }
-
-        paginationHTML += '</div>';
-        paginationContainer.innerHTML = paginationHTML;
-    }
-
-    goToPage(page) {
-        this.currentPage = page;
-        this.displayResults();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    updateSearchStats() {
-        const statsContainer = document.getElementById('searchStats');
-        if (!statsContainer) return;
-
-        statsContainer.innerHTML = `
-            <p>Found ${this.searchResults.length} properties matching your criteria</p>
-        `;
-    }
-
-    clearFilters() {
-        this.filters = {
-            location: '',
-            priceRange: { min: 0, max: 1000000 },
-            propertyType: [],
-            amenities: [],
-            availability: 'available',
-            verifiedOnly: false,
-            studentFriendly: false,
-            university: '',
-            bedrooms: 0,
-            bathrooms: 0
-        };
-
-        // Reset form inputs
-        const form = document.getElementById('searchForm');
-        if (form) form.reset();
-
-        // Reset price slider
-        const priceSlider = document.getElementById('priceSlider');
-        const priceDisplay = document.getElementById('priceDisplay');
-        if (priceSlider) {
-            priceSlider.value = 1000000;
-            if (priceDisplay) priceDisplay.textContent = 'Up to KSh 1,000,000';
-        }
-
-        // Uncheck all amenity checkboxes
-        const amenityCheckboxes = document.querySelectorAll('.amenity-checkbox');
-        amenityCheckboxes.forEach(cb => cb.checked = false);
-
-        this.performSearch();
-    }
-
-    showLoadingState() {
-        const resultsContainer = document.getElementById('searchResults');
-        if (resultsContainer) {
-            resultsContainer.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Searching for properties...</p>
-                </div>
-            `;
+            
+            localStorage.setItem('deniFinderFavoriteProperties', JSON.stringify(favorites));
+            
+            // Update UI
+            this.updatePropertyCard(propertyId);
+            
+        } catch (error) {
+            console.error('Toggle favorite error:', error);
         }
     }
 
-    showError(message) {
-        const resultsContainer = document.getElementById('searchResults');
-        if (resultsContainer) {
-            resultsContainer.innerHTML = `
-                <div class="error">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>${message}</p>
-                </div>
-            `;
+    async toggleSave(propertyId) {
+        try {
+            const saved = JSON.parse(localStorage.getItem('deniFinderSavedProperties') || '[]');
+            const index = saved.indexOf(propertyId);
+            
+            if (index > -1) {
+                saved.splice(index, 1);
+            } else {
+                saved.push(propertyId);
+            }
+            
+            localStorage.setItem('deniFinderSavedProperties', JSON.stringify(saved));
+            
+            // Update UI
+            this.updatePropertyCard(propertyId);
+            
+        } catch (error) {
+            console.error('Toggle save error:', error);
+        }
+    }
+
+    updatePropertyCard(propertyId) {
+        const card = document.querySelector(`[data-property-id="${propertyId}"]`);
+        if (card) {
+            const isFavorited = this.isPropertyFavorited(propertyId);
+            const isSaved = this.isPropertySaved(propertyId);
+            
+            const favoriteBtn = card.querySelector('.favorite i');
+            const saveBtn = card.querySelector('.save i');
+            
+            if (favoriteBtn) {
+                favoriteBtn.className = `fas fa-heart ${isFavorited ? 'filled' : ''}`;
+            }
+            
+            if (saveBtn) {
+                saveBtn.className = `fas fa-bookmark ${isSaved ? 'filled' : ''}`;
+            }
         }
     }
 
     viewProperty(propertyId) {
-        // Navigate to property details page
-        window.location.href = `property-details.html?id=${propertyId}`;
+        // Navigate to property detail page
+        window.location.href = `property-detail.html?id=${propertyId}`;
     }
 
-    contactLandlord(propertyId) {
-        // Open contact modal or navigate to messaging
-        window.location.href = `dashboard.html?action=contact&property=${propertyId}`;
+    selectQuickResult(propertyId) {
+        // Navigate to property detail page
+        this.viewProperty(propertyId);
     }
 
-    suggestLocations(query) {
-        // In a real app, this would call a geocoding API
-        const suggestions = [
+    saveCurrentSearch() {
+        const searchName = prompt('Enter a name for this search:');
+        if (!searchName) return;
+
+        const savedSearch = {
+            id: `search_${Date.now()}`,
+            name: searchName,
+            filters: { ...this.searchFilters },
+            timestamp: new Date(),
+            resultCount: this.totalResults
+        };
+
+        this.savedSearches.push(savedSearch);
+        localStorage.setItem('deniFinderSavedSearches', JSON.stringify(this.savedSearches));
+
+        this.showToast('Search saved successfully!', 'success');
+    }
+
+    loadSavedSearch(searchId) {
+        const savedSearch = this.savedSearches.find(s => s.id === searchId);
+        if (savedSearch) {
+            this.searchFilters = { ...savedSearch.filters };
+            this.applyFiltersToUI();
+            this.performSearch();
+        }
+    }
+
+    applyFiltersToUI() {
+        // Apply saved filters to UI elements
+        const locationInput = document.getElementById('locationInput');
+        if (locationInput) {
+            locationInput.value = this.searchFilters.location;
+        }
+
+        const priceSlider = document.getElementById('priceSlider');
+        if (priceSlider) {
+            priceSlider.value = this.searchFilters.priceRange.max;
+        }
+
+        // Update other filter UI elements...
+    }
+
+    clearFilters() {
+        this.searchFilters = {
+            propertyType: [],
+            priceRange: { min: 0, max: 1000000 },
+            location: '',
+            bedrooms: [],
+            bathrooms: [],
+            amenities: [],
+            university: '',
+            distance: 10,
+            availability: 'all',
+            verifiedLandlord: false,
+            studentFriendly: false
+        };
+
+        this.applyFiltersToUI();
+        this.performSearch();
+    }
+
+    saveToSearchHistory(searchQuery) {
+        const historyItem = {
+            id: `history_${Date.now()}`,
+            query: searchQuery,
+            timestamp: new Date(),
+            resultCount: this.totalResults
+        };
+
+        this.searchHistory.unshift(historyItem);
+        
+        // Keep only last 20 searches
+        if (this.searchHistory.length > 20) {
+            this.searchHistory = this.searchHistory.slice(0, 20);
+        }
+
+        localStorage.setItem('deniFinderSearchHistory', JSON.stringify(this.searchHistory));
+    }
+
+    async getLocationSuggestions(query) {
+        // Mock location suggestions - in real app, use geocoding API
+        const locations = [
             'Westlands, Nairobi',
             'Kilimani, Nairobi',
-            'Eastlands, Nairobi',
+            'Lavington, Nairobi',
             'Karen, Nairobi',
-            'Lavington, Nairobi'
-        ].filter(location => 
+            'Eastlands, Nairobi',
+            'South B, Nairobi',
+            'Buruburu, Nairobi',
+            'Donholm, Nairobi'
+        ];
+
+        return locations.filter(location => 
             location.toLowerCase().includes(query.toLowerCase())
         );
-
-        // Display suggestions
-        this.displayLocationSuggestions(suggestions);
     }
 
-    displayLocationSuggestions(suggestions) {
+    showLocationSuggestions(suggestions) {
         const suggestionsContainer = document.getElementById('locationSuggestions');
         if (!suggestionsContainer) return;
 
@@ -488,9 +784,13 @@ class PropertySearch {
             return;
         }
 
-        suggestionsContainer.innerHTML = suggestions.map(suggestion => 
-            `<div class="suggestion" onclick="propertySearch.selectLocation('${suggestion}')">${suggestion}</div>`
-        ).join('');
+        suggestionsContainer.innerHTML = suggestions.map(suggestion => `
+            <div class="location-suggestion" onclick="searchService.selectLocation('${suggestion}')">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${suggestion}</span>
+            </div>
+        `).join('');
+
         suggestionsContainer.style.display = 'block';
     }
 
@@ -498,17 +798,132 @@ class PropertySearch {
         const locationInput = document.getElementById('locationInput');
         if (locationInput) {
             locationInput.value = location;
+            this.searchFilters.location = location;
         }
-        
+
         const suggestionsContainer = document.getElementById('locationSuggestions');
         if (suggestionsContainer) {
             suggestionsContainer.style.display = 'none';
         }
     }
+
+    showLoadingState() {
+        const resultsContainer = document.getElementById('searchResults');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Searching properties...</p>
+                </div>
+            `;
+        }
+    }
+
+    showErrorState(message) {
+        const resultsContainer = document.getElementById('searchResults');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Search Error</h3>
+                    <p>${message}</p>
+                    <button class="btn-primary" onclick="searchService.performSearch()">
+                        Try Again
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.remove();
+            }
+        }, 3000);
+    }
+
+    toggleFilterPanel() {
+        const filterPanel = document.getElementById('filterPanel');
+        if (filterPanel) {
+            filterPanel.classList.toggle('active');
+        }
+    }
+
+    getSampleProperties() {
+        return [
+            {
+                id: 'prop1',
+                title: 'Modern 2-Bedroom Apartment',
+                location: 'Westlands, Nairobi',
+                price: 45000,
+                bedrooms: 2,
+                bathrooms: 2,
+                size: '85 sqm',
+                property_type: 'apartment',
+                status: 'available',
+                verified_landlord: true,
+                student_friendly: true,
+                images: ['images/project.jpg'],
+                created_at: new Date(Date.now() - 86400000),
+                description: 'Beautiful modern apartment with great amenities'
+            },
+            {
+                id: 'prop2',
+                title: 'Cozy Studio Near University',
+                location: 'Kilimani, Nairobi',
+                price: 25000,
+                bedrooms: 1,
+                bathrooms: 1,
+                size: '45 sqm',
+                property_type: 'studio',
+                status: 'available',
+                verified_landlord: false,
+                student_friendly: true,
+                images: ['images/hostels.jpeg'],
+                created_at: new Date(Date.now() - 172800000),
+                description: 'Perfect for students, close to campus'
+            },
+            {
+                id: 'prop3',
+                title: 'Family House with Garden',
+                location: 'Lavington, Nairobi',
+                price: 80000,
+                bedrooms: 3,
+                bathrooms: 2,
+                size: '120 sqm',
+                property_type: 'house',
+                status: 'available',
+                verified_landlord: true,
+                student_friendly: false,
+                images: ['images/tenant.jpeg'],
+                created_at: new Date(Date.now() - 259200000),
+                description: 'Spacious family home with beautiful garden'
+            }
+        ];
+    }
+
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 }
 
-// Initialize search system
-const propertySearch = new PropertySearch();
+// Initialize search service
+const searchService = new SearchService();
 document.addEventListener('DOMContentLoaded', () => {
-    propertySearch.init();
+    searchService.init();
 }); 

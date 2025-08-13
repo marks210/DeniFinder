@@ -26,15 +26,31 @@ class MapService {
         return this.map;
     }
 
-    // Load properties from Firebase
+    // Load properties from Supabase
     async loadProperties() {
         try {
-            if (window.DeniFinderFirebase && window.DeniFinderFirebase.db) {
-                const snapshot = await window.DeniFinderFirebase.db.collection('properties').get();
-                this.properties = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.getClient) {
+                const supabase = window.DeniFinderSupabase.getClient();
+                if (supabase) {
+                    const { data: properties, error } = await supabase
+                        .from('properties')
+                        .select('*');
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    if (properties) {
+                        this.properties = properties.map(property => ({
+                            id: property.id,
+                            ...property
+                        }));
+                    } else {
+                        this.properties = [];
+                    }
+                } else {
+                    this.properties = this.getSampleProperties();
+                }
             } else {
                 // Fallback to sample data
                 this.properties = this.getSampleProperties();
@@ -295,26 +311,47 @@ class MapService {
     // Add new property to map
     async addProperty(propertyData) {
         try {
-            if (window.DeniFinderFirebase && window.DeniFinderFirebase.db) {
-                const docRef = await window.DeniFinderFirebase.db.collection('properties').add({
-                    ...propertyData,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                });
-                
-                const newProperty = { id: docRef.id, ...propertyData };
-                this.properties.push(newProperty);
-                
-                // Add marker to map
-                this.addMarkersToMap();
-                
-                return { success: true, property: newProperty };
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.getClient) {
+                const supabase = window.DeniFinderSupabase.getClient();
+                if (supabase) {
+                    const { data: newProperty, error } = await supabase
+                        .from('properties')
+                        .insert({
+                            ...propertyData,
+                            created_at: new Date(),
+                            updated_at: new Date()
+                        })
+                        .select()
+                        .single();
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    if (newProperty) {
+                        this.properties.push({ id: newProperty.id, ...newProperty });
+                        this.addMarkersToMap();
+                        return { success: true, property: newProperty };
+                    }
+                } else {
+                    // Fallback for testing
+                    const newProperty = {
+                        id: Date.now().toString(),
+                        ...propertyData,
+                        created_at: new Date()
+                    };
+                    
+                    this.properties.push(newProperty);
+                    this.addMarkersToMap();
+                    
+                    return { success: true, property: newProperty };
+                }
             } else {
                 // Fallback for testing
                 const newProperty = {
                     id: Date.now().toString(),
                     ...propertyData,
-                    createdAt: new Date()
+                    created_at: new Date()
                 };
                 
                 this.properties.push(newProperty);
@@ -331,11 +368,21 @@ class MapService {
     // Update property
     async updateProperty(propertyId, updates) {
         try {
-            if (window.DeniFinderFirebase && window.DeniFinderFirebase.db) {
-                await window.DeniFinderFirebase.db.collection('properties').doc(propertyId).update({
-                    ...updates,
-                    updatedAt: new Date()
-                });
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.getClient) {
+                const supabase = window.DeniFinderSupabase.getClient();
+                if (supabase) {
+                    const { error } = await supabase
+                        .from('properties')
+                        .update({
+                            ...updates,
+                            updated_at: new Date()
+                        })
+                        .eq('id', propertyId);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                }
             }
             
             // Update local data
@@ -357,8 +404,18 @@ class MapService {
     // Delete property
     async deleteProperty(propertyId) {
         try {
-            if (window.DeniFinderFirebase && window.DeniFinderFirebase.db) {
-                await window.DeniFinderFirebase.db.collection('properties').doc(propertyId).delete();
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.getClient) {
+                const supabase = window.DeniFinderSupabase.getClient();
+                if (supabase) {
+                    const { error } = await supabase
+                        .from('properties')
+                        .delete()
+                        .eq('id', propertyId);
+                    
+                    if (error) {
+                        throw error;
+                    }
+                }
             }
             
             // Remove from local data

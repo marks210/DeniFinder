@@ -701,8 +701,8 @@
                     </div>
                 </div>
 
-                <!-- Contact Information -->
-                <div class="form-row">
+                <!-- Contact Information - Removed since contact info comes from user profile -->
+                <!-- <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Contact Phone *</label>
                         <input type="tel" class="form-input" id="contactPhone" required placeholder="e.g., +265 999 123 456">
@@ -711,7 +711,7 @@
                         <label class="form-label">Contact Email</label>
                         <input type="email" class="form-input" id="contactEmail" placeholder="e.g., landlord@email.com">
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Images -->
                 <div class="form-group">
@@ -801,27 +801,16 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
     
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDhHxCNlJl_Y93Hskm5ogiiYHIhfIVIS8A",
-            authDomain: "defi-finder.firebaseapp.com",
-            projectId: "defi-finder",
-            storageBucket: "defi-finder.firebasestorage.app",
-            messagingSenderId: "665116835708",
-            appId: "1:665116835708:web:11ade28588832aa3c9aef9"
-        };
-
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(app);
-        const storage = firebase.storage(app);
+        // Supabase is now loaded from external files
+        // No need for local configuration here
 
         // Map variables
         let propertyMap;
@@ -984,18 +973,21 @@
             return amenities;
         }
 
-        // Upload images to Firebase Storage
+        // Upload images to Supabase Storage
         async function uploadImages(propertyId) {
             const imageUrls = [];
             
             for (let i = 0; i < uploadedImages.length; i++) {
                 const image = uploadedImages[i];
-                const imageRef = storage.ref(`properties/${propertyId}/image_${i}.jpg`);
+                const path = `properties/${propertyId}/image_${i}.jpg`;
                 
                 try {
-                    const snapshot = await imageRef.put(image.file);
-                    const downloadURL = await snapshot.ref.getDownloadURL();
-                    imageUrls.push(downloadURL);
+                    const result = await window.DeniFinderSupabase.storageService.uploadFile(image.file, path);
+                    if (result.success) {
+                        imageUrls.push(result.url);
+                    } else {
+                        console.error('Error uploading image:', result.error);
+                    }
                 } catch (error) {
                     console.error('Error uploading image:', error);
                 }
@@ -1016,23 +1008,28 @@
                 const user = JSON.parse(currentUser);
                 
                 // Add user ID to property data
-                propertyData.ownerId = user.uid;
-                propertyData.ownerName = user.displayName || user.email;
-                propertyData.createdAt = new Date();
-                propertyData.updatedAt = new Date();
+                propertyData.owner_id = user.id || user.uid;
+                // owner_name is not in the schema, contact info comes from user profile
+                // propertyData.owner_name = user.displayName || user.email;
+                propertyData.created_at = new Date().toISOString();
+                propertyData.updated_at = new Date().toISOString();
 
-                // Save to Firestore
-                const docRef = await db.collection('properties').add(propertyData);
+                // Save to Supabase
+                const result = await window.DeniFinderSupabase.dbService.addDocument('properties', propertyData);
+                
+                if (!result.success) {
+                    throw new Error(result.error);
+                }
                 
                 // Upload images if any
                 if (uploadedImages.length > 0) {
-                    const imageUrls = await uploadImages(docRef.id);
-                    await db.collection('properties').doc(docRef.id).update({
+                    const imageUrls = await uploadImages(result.id);
+                    await window.DeniFinderSupabase.dbService.updateDocument('properties', result.id, {
                         images: imageUrls
                     });
                 }
 
-                return { success: true, propertyId: docRef.id };
+                return { success: true, propertyId: result.id };
             } catch (error) {
                 console.error('Error saving property:', error);
                 return { success: false, error: error.message };
@@ -1048,13 +1045,16 @@
                 title: document.getElementById('propertyTitle').value,
                 type: document.getElementById('propertyType').value,
                 status: document.getElementById('propertyStatus').value,
-                price: parseInt(document.getElementById('propertyPrice').value),
-                bedrooms: document.getElementById('propertyBedrooms').value || null,
+                price: parseFloat(document.getElementById('propertyPrice').value),
+                bedrooms: parseInt(document.getElementById('propertyBedrooms').value) || null,
+                // bathrooms: parseInt(document.getElementById('propertyBathrooms').value) || null, // Field doesn't exist
                 location: document.getElementById('propertyLocation').value,
+                // address: document.getElementById('propertyAddress').value, // Field doesn't exist
                 description: document.getElementById('propertyDescription').value,
                 amenities: getSelectedAmenities(),
-                contactPhone: document.getElementById('contactPhone').value,
-                contactEmail: document.getElementById('contactEmail').value
+                // Contact info comes from user profile, not stored with property
+                // contact_phone: document.getElementById('contactPhone').value,
+                // contact_email: document.getElementById('contactEmail').value
             };
 
             // Validate required fields
@@ -1064,7 +1064,10 @@
                 return;
             }
 
-            propertyData.coordinates = window.selectedCoordinates;
+            // Convert coordinates to PostgreSQL POINT format
+            if (window.selectedCoordinates) {
+                propertyData.coordinates = `(${window.selectedCoordinates.lat},${window.selectedCoordinates.lng})`;
+            }
 
             // Show loading state
             const saveButton = document.getElementById('saveButton');

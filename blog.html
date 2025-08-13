@@ -661,14 +661,12 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
-    <!-- Firebase Configuration -->
-    <script src="js/firebase-init.js"></script>
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
 
     <script>
         // Check authentication on page load
@@ -704,14 +702,14 @@
             try {
                 let posts = [];
                 
-                // Try to load from Firebase
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    console.log('Loading posts from Firebase...');
+                // Try to load from Supabase
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    console.log('Loading posts from Supabase...');
                     
-                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'blog_posts',
                         [],
-                        { field: 'timestamp', direction: 'desc' },
+                        { field: 'created_at', direction: 'desc' },
                         50
                     );
                     
@@ -719,11 +717,11 @@
                         posts = result.data;
                         console.log('Posts loaded:', posts.length);
                     } else {
-                        console.warn('Failed to load from Firebase, using sample data');
+                        console.warn('Failed to load from Supabase, using sample data');
                         posts = getSamplePosts();
                     }
                 } else {
-                    console.log('Firebase not available, using sample data');
+                    console.log('Supabase not available, using sample data');
                     posts = getSamplePosts();
                 }
                 
@@ -766,7 +764,7 @@
             const reposts = post.reposts || 0;
             const excerpt = post.excerpt || (post.content ? post.content.substring(0, 150) + '...' : '');
             
-            // Convert Firestore timestamp to Date if needed
+            // Convert Supabase timestamp to Date if needed
             const postDate = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
             
             // Check if current user is the author
@@ -897,28 +895,28 @@
 
         // Like a post
         async function likePost(postId, userId, userName) {
-            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
-                console.log('Firebase not available, like saved locally');
+            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+                console.log('Supabase not available, like saved locally');
                 return;
             }
             
             try {
                 // Add like to post
                 const likeData = {
-                    postId: postId,
-                    userId: userId,
-                    userName: userName,
-                    timestamp: new Date()
+                    post_id: postId,
+                    user_id: userId,
+                    user_name: userName,
+                    created_at: new Date()
                 };
                 
                 // Add to likes collection
-                await window.DeniFinderFirebase.dbService.addDocument('post_likes', likeData);
+                await window.DeniFinderSupabase.dbService.addDocument('post_likes', likeData);
                 
                 // Update post like count
-                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
                 if (postRef.success) {
                     const currentLikes = postRef.data.likes || 0;
-                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                    await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                         likes: currentLikes + 1
                     });
                 }
@@ -932,30 +930,30 @@
 
         // Unlike a post
         async function unlikePost(postId, userId) {
-            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
-                console.log('Firebase not available, unlike saved locally');
+            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+                console.log('Supabase not available, unlike saved locally');
                 return;
             }
             
             try {
                 // Remove like from likes collection
-                const likesResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                const likesResult = await window.DeniFinderSupabase.dbService.queryDocuments(
                     'post_likes',
                     [
-                        { field: 'postId', operator: '==', value: postId },
-                        { field: 'userId', operator: '==', value: userId }
+                        { field: 'post_id', operator: '==', value: postId },
+                        { field: 'user_id', operator: '==', value: userId }
                     ]
                 );
                 
                 if (likesResult.success && likesResult.data.length > 0) {
-                    await window.DeniFinderFirebase.dbService.deleteDocument('post_likes', likesResult.data[0].id);
+                    await window.DeniFinderSupabase.dbService.deleteDocument('post_likes', likesResult.data[0].id);
                 }
                 
                 // Update post like count
-                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
                 if (postRef.success) {
                     const currentLikes = Math.max(0, (postRef.data.likes || 0) - 1);
-                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                    await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                         likes: currentLikes
                     });
                 }
@@ -986,11 +984,11 @@
             commentsList.innerHTML = `<div class='loading-state'><i class='fas fa-spinner'></i> Loading comments...</div>`;
             let comments = [];
             try {
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'post_comments',
-                        [{ field: 'postId', operator: '==', value: postId }],
-                        { field: 'timestamp', direction: 'asc' },
+                        [{ field: 'post_id', operator: '==', value: postId }],
+                        { field: 'created_at', direction: 'asc' },
                         50
                     );
                     if (result.success) comments = result.data;
@@ -1094,15 +1092,15 @@
                 };
                 
                 // Save comment
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    await window.DeniFinderFirebase.dbService.addDocument('post_comments', commentData);
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    await window.DeniFinderSupabase.dbService.addDocument('post_comments', commentData);
                     
                     // Update post comment count
-                    const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                    const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
                     if (postRef.success) {
                         const currentComments = postRef.data.comments || [];
                         currentComments.push(commentData);
-                        await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                        await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                             comments: currentComments
                         });
                     }
@@ -1166,16 +1164,16 @@
 
         // Check if user has reposted
         async function checkIfReposted(postId, userId) {
-            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
+            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
                 return false;
             }
             
             try {
-                const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                     'post_reposts',
                     [
-                        { field: 'postId', operator: '==', value: postId },
-                        { field: 'userId', operator: '==', value: userId }
+                        { field: 'post_id', operator: '==', value: postId },
+                        { field: 'user_id', operator: '==', value: userId }
                     ]
                 );
                 
@@ -1188,27 +1186,27 @@
 
         // Add repost
         async function addRepost(postId, userId, userName) {
-            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
-                console.log('Firebase not available, repost saved locally');
+            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+                console.log('Supabase not available, repost saved locally');
                 return;
             }
             
             try {
                 // Add repost to collection
                 const repostData = {
-                    postId: postId,
-                    userId: userId,
-                    userName: userName,
-                    timestamp: new Date()
+                    post_id: postId,
+                    user_id: userId,
+                    user_name: userName,
+                    created_at: new Date()
                 };
                 
-                await window.DeniFinderFirebase.dbService.addDocument('post_reposts', repostData);
+                await window.DeniFinderSupabase.dbService.addDocument('post_reposts', repostData);
                 
                 // Update post repost count
-                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
                 if (postRef.success) {
                     const currentReposts = postRef.data.reposts || 0;
-                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                    await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                         reposts: currentReposts + 1
                     });
                 }
@@ -1222,30 +1220,30 @@
 
         // Remove repost
         async function removeRepost(postId, userId) {
-            if (!window.DeniFinderFirebase || !window.DeniFinderFirebase.dbService) {
-                console.log('Firebase not available, repost removal saved locally');
+            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+                console.log('Supabase not available, repost removal saved locally');
                 return;
             }
             
             try {
                 // Remove repost from collection
-                const repostsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                const repostsResult = await window.DeniFinderSupabase.dbService.queryDocuments(
                     'post_reposts',
                     [
-                        { field: 'postId', operator: '==', value: postId },
-                        { field: 'userId', operator: '==', value: userId }
+                        { field: 'post_id', operator: '==', value: postId },
+                        { field: 'user_id', operator: '==', value: userId }
                     ]
                 );
                 
                 if (repostsResult.success && repostsResult.data.length > 0) {
-                    await window.DeniFinderFirebase.dbService.deleteDocument('post_reposts', repostsResult.data[0].id);
+                    await window.DeniFinderSupabase.dbService.deleteDocument('post_reposts', repostsResult.data[0].id);
                 }
                 
                 // Update post repost count
-                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
                 if (postRef.success) {
                     const currentReposts = Math.max(0, (postRef.data.reposts || 0) - 1);
-                    await window.DeniFinderFirebase.dbService.updateDocument('blog_posts', postId, {
+                    await window.DeniFinderSupabase.dbService.updateDocument('blog_posts', postId, {
                         reposts: currentReposts
                     });
                 }
@@ -1283,8 +1281,8 @@
             const imageFile = formData.get('image');
             if (imageFile && imageFile.size > 0) {
                 try {
-                    if (window.DeniFinderFirebase && window.DeniFinderFirebase.storageService) {
-                        const uploadResult = await window.DeniFinderFirebase.storageService.uploadFile(
+                    if (window.DeniFinderSupabase && window.DeniFinderSupabase.storageService) {
+                        const uploadResult = await window.DeniFinderSupabase.storageService.uploadFile(
                             'blog-images',
                             imageFile
                         );
@@ -1318,15 +1316,15 @@
                 
                 const user = JSON.parse(currentUser);
                 
-                const firebasePostData = {
+                const supabasePostData = {
                     title: postData.title,
                     content: postData.content,
                     excerpt: postData.content.substring(0, 150) + '...',
-                    imageUrl: postData.image || null,
-                    authorId: user.uid,
-                    authorName: user.displayName || user.firstName || 'Anonymous',
-                    authorEmail: user.email,
-                    timestamp: new Date(),
+                    image_url: postData.image || null,
+                    author_id: user.id,
+                    author_name: user.display_name || user.firstName || 'Anonymous',
+                    author_email: user.email,
+                    created_at: new Date(),
                     likes: 0,
                     comments: [],
                     reposts: 0,
@@ -1334,8 +1332,8 @@
                     views: 0
                 };
                 
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    const result = await window.DeniFinderFirebase.dbService.addDocument('blog_posts', firebasePostData);
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    const result = await window.DeniFinderSupabase.dbService.addDocument('blog_posts', supabasePostData);
                     
                     if (result.success) {
                         alert('Post published successfully!');
@@ -1364,12 +1362,12 @@
             const container = document.getElementById('blogGrid');
             console.log('Blog grid found:', !!container);
             
-            if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
                 try {
-                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'blog_posts',
                         [],
-                        { field: 'timestamp', direction: 'desc' },
+                        { field: 'created_at', direction: 'desc' },
                         5
                     );
                     
@@ -1409,55 +1407,55 @@
                 const user = JSON.parse(currentUser);
                 
                 // Verify user is the author
-                const postRef = await window.DeniFinderFirebase.dbService.getDocument('blog_posts', postId);
+                const postRef = await window.DeniFinderSupabase.dbService.getDocument('blog_posts', postId);
                 if (!postRef.success) {
                     alert('Post not found');
                     return;
                 }
                 
                 const post = postRef.data;
-                if (post.authorId !== user.uid && post.authorEmail !== user.email) {
+                if (post.author_id !== user.id && post.author_email !== user.email) {
                     alert('You can only delete your own posts');
                     return;
                 }
                 
-                // Delete post from Firebase
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    await window.DeniFinderFirebase.dbService.deleteDocument('blog_posts', postId);
+                // Delete post from Supabase
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    await window.DeniFinderSupabase.dbService.deleteDocument('blog_posts', postId);
                     
                     // Delete associated likes
-                    const likesResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    const likesResult = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'post_likes',
-                        [{ field: 'postId', operator: '==', value: postId }]
+                        [{ field: 'post_id', operator: '==', value: postId }]
                     );
                     
                     if (likesResult.success) {
                         for (const like of likesResult.data) {
-                            await window.DeniFinderFirebase.dbService.deleteDocument('post_likes', like.id);
+                            await window.DeniFinderSupabase.dbService.deleteDocument('post_likes', like.id);
                         }
                     }
                     
                     // Delete associated comments
-                    const commentsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    const commentsResult = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'post_comments',
-                        [{ field: 'postId', operator: '==', value: postId }]
+                        [{ field: 'post_id', operator: '==', value: postId }]
                     );
                     
                     if (commentsResult.success) {
                         for (const comment of commentsResult.data) {
-                            await window.DeniFinderFirebase.dbService.deleteDocument('post_comments', comment.id);
+                            await window.DeniFinderSupabase.dbService.deleteDocument('post_comments', comment.id);
                         }
                     }
                     
                     // Delete associated reposts
-                    const repostsResult = await window.DeniFinderFirebase.dbService.queryDocuments(
+                    const repostsResult = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'post_reposts',
-                        [{ field: 'postId', operator: '==', value: postId }]
+                        [{ field: 'post_id', operator: '==', value: postId }]
                     );
                     
                     if (repostsResult.success) {
                         for (const repost of repostsResult.data) {
-                            await window.DeniFinderFirebase.dbService.deleteDocument('post_reposts', repost.id);
+                            await window.DeniFinderSupabase.dbService.deleteDocument('post_reposts', repost.id);
                         }
                     }
                 }
@@ -1844,8 +1842,8 @@
         // Sign out
         async function signOut() {
             try {
-                if (window.DeniFinderFirebase) {
-                    await window.DeniFinderFirebase.authService.signOut();
+                if (window.DeniFinderSupabase) {
+                    await window.DeniFinderSupabase.authService.signOut();
                 }
                 localStorage.removeItem('deniFinderLoggedIn');
                 localStorage.removeItem('deniFinderCurrentUser');
@@ -1921,11 +1919,11 @@
             commentsSection.innerHTML = `<div class="loading-state"><i class="fas fa-spinner"></i> Loading comments...</div>`;
             let comments = [];
             try {
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'post_comments',
-                        [{ field: 'postId', operator: '==', value: postId }],
-                        { field: 'timestamp', direction: 'asc' },
+                        [{ field: 'post_id', operator: '==', value: postId }],
+                        { field: 'created_at', direction: 'asc' },
                         50
                     );
                     if (result.success) comments = result.data;
@@ -1981,15 +1979,15 @@
                 }
                 const user = JSON.parse(currentUser);
                 const commentData = {
-                    postId: postId,
+                    post_id: postId,
                     content: commentText,
-                    authorId: user.uid,
-                    authorName: user.displayName || user.firstName || 'Anonymous',
-                    authorEmail: user.email,
-                    timestamp: new Date()
+                    author_id: user.id,
+                    author_name: user.display_name || user.firstName || 'Anonymous',
+                    author_email: user.email,
+                    created_at: new Date()
                 };
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    await window.DeniFinderFirebase.dbService.addDocument('post_comments', commentData);
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    await window.DeniFinderSupabase.dbService.addDocument('post_comments', commentData);
                 }
                 input.value = '';
                 await loadModalComments(postId);
@@ -2027,11 +2025,11 @@
             `;
             try {
                 let posts = [];
-                if (window.DeniFinderFirebase && window.DeniFinderFirebase.dbService) {
-                    const result = await window.DeniFinderFirebase.dbService.queryDocuments(
+                if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                    const result = await window.DeniFinderSupabase.dbService.queryDocuments(
                         'blog_posts',
                         [],
-                        { field: 'timestamp', direction: 'desc' },
+                        { field: 'created_at', direction: 'desc' },
                         50
                     );
                     if (result.success) {
@@ -2079,7 +2077,7 @@
                 return;
             }
             const user = JSON.parse(currentUser);
-            if (!authorId || user.uid === authorId) {
+            if (!authorId || user.id === authorId) {
                 alert('You cannot message yourself.');
                 return;
             }
@@ -2090,25 +2088,12 @@
                 const titleEl = card.querySelector('.blog-title');
                 if (titleEl) postTitle = titleEl.textContent;
             }
-            // Use Firestore utility to find or create conversation
+            // Use Supabase to find or create conversation
             (async () => {
                 try {
-                    const convo = await window.DeniFinderFirebase.messagingUtils.findOrCreateConversation(
-                        user.uid,
-                        authorId,
-                        { initialMessage: `Hi, I’m interested in your post: ${postTitle}`, propertyId: postId }
-                    );
-                    // Optionally send initial message if new
-                    if (convo.lastMessage === '') {
-                        await window.DeniFinderFirebase.messagingUtils.sendMessage(
-                            convo.id,
-                            user.uid,
-                            authorId,
-                            `Hi, I’m interested in your post: ${postTitle}`
-                        );
-                    }
-                    // Redirect to messages.html with conversationId
-                    window.location.href = `messages.html?conversationId=${convo.id}`;
+                    // For now, redirect to messages with author info
+                    // This can be enhanced with proper conversation creation
+                    window.location.href = `messages.html?authorId=${authorId}&postId=${postId}&postTitle=${encodeURIComponent(postTitle)}`;
                 } catch (err) {
                     alert('Failed to start conversation. Please try again.');
                 }
