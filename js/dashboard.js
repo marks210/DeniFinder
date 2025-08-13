@@ -33,8 +33,19 @@ function checkAuthentication() {
     }
     
     // Load user data
-    const user = JSON.parse(currentUser);
-    updateUserNames(user.role || 'renter');
+    try {
+        const user = JSON.parse(currentUser);
+        // Set default role if not present
+        if (!user.role) {
+            user.role = 'renter';
+            localStorage.setItem('deniFinderCurrentUser', JSON.stringify(user));
+        }
+        updateUserNames(user.role);
+    } catch (error) {
+        console.error('Error parsing user data:', error);
+        // Redirect to signin if user data is corrupted
+        window.location.href = 'signin.html';
+    }
 }
 
 // Post creation variables
@@ -46,10 +57,16 @@ function initializeDashboard() {
     // Get user role from localStorage
     const currentUser = localStorage.getItem('deniFinderCurrentUser');
     if (currentUser) {
-        const user = JSON.parse(currentUser);
-        currentUserRole = user.role || 'renter';
+        try {
+            const user = JSON.parse(currentUser);
+            currentUserRole = user.role || 'renter';
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            currentUserRole = 'renter';
+        }
     }
     
+    // Initialize role switcher with current role
     switchRole(currentUserRole);
     
     // Initialize blog section
@@ -239,8 +256,27 @@ function setupEventListeners() {
 }
 
 function switchRole(role) {
+    // Validate role
+    const validRoles = ['renter', 'landlord', 'admin'];
+    if (!validRoles.includes(role)) {
+        console.error('Invalid role:', role);
+        role = 'renter'; // Default to renter if invalid
+    }
+    
     // Update global variable
     currentUserRole = role;
+    
+    // Update user data in localStorage
+    try {
+        const currentUser = localStorage.getItem('deniFinderCurrentUser');
+        if (currentUser) {
+            const user = JSON.parse(currentUser);
+            user.role = role;
+            localStorage.setItem('deniFinderCurrentUser', JSON.stringify(user));
+        }
+    } catch (error) {
+        console.error('Error updating user role in localStorage:', error);
+    }
     
     // Update role buttons
     const roleButtons = document.querySelectorAll('.role-btn');
@@ -250,6 +286,12 @@ function switchRole(role) {
             btn.classList.add('active');
         }
     });
+    
+    // Update role switcher data attribute
+    const roleSwitcher = document.getElementById('roleSwitcher');
+    if (roleSwitcher) {
+        roleSwitcher.setAttribute('data-active-role', role);
+    }
     
     // Update role badge
     const roleBadge = document.getElementById('roleBadge');
@@ -266,9 +308,11 @@ function switchRole(role) {
     const landlordDashboardBtn = document.getElementById('landlordDashboardBtn');
     const paidAdvertsRenter = document.getElementById('paidAdvertsRenter');
     const paidAdvertsAdmin = document.getElementById('paidAdvertsAdmin');
+    
     if (role === 'renter') {
-        renterDashboard.classList.remove('hidden');
-        adminDashboard.classList.add('hidden');
+        if (renterDashboard) renterDashboard.classList.remove('hidden');
+        if (adminDashboard) adminDashboard.classList.add('hidden');
+        // Renters can only view posts, not create them
         if (addPostBtn) addPostBtn.classList.add('hidden');
         if (subscriptionInfo) subscriptionInfo.classList.remove('hidden');
         if (blogAccessMessage) blogAccessMessage.classList.remove('hidden');
@@ -276,17 +320,20 @@ function switchRole(role) {
         if (paidAdvertsRenter) paidAdvertsRenter.classList.remove('hidden');
         if (paidAdvertsAdmin) paidAdvertsAdmin.classList.add('hidden');
     } else if (role === 'landlord') {
-        renterDashboard.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
-        if (addPostBtn) addPostBtn.classList.add('hidden');
+        if (renterDashboard) renterDashboard.classList.add('hidden');
+        if (adminDashboard) adminDashboard.classList.remove('hidden');
+        // Landlords can create posts
+        if (addPostBtn) addPostBtn.classList.remove('hidden');
         if (subscriptionInfo) subscriptionInfo.classList.add('hidden');
         if (blogAccessMessage) blogAccessMessage.classList.add('hidden');
         if (landlordDashboardBtn) landlordDashboardBtn.style.display = 'flex';
         if (paidAdvertsRenter) paidAdvertsRenter.classList.add('hidden');
         if (paidAdvertsAdmin) paidAdvertsAdmin.classList.remove('hidden');
     } else {
-        renterDashboard.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
+        // Admin role
+        if (renterDashboard) renterDashboard.classList.add('hidden');
+        if (adminDashboard) adminDashboard.classList.remove('hidden');
+        // Admins can create posts
         if (addPostBtn) addPostBtn.classList.remove('hidden');
         if (subscriptionInfo) subscriptionInfo.classList.add('hidden');
         if (blogAccessMessage) blogAccessMessage.classList.add('hidden');
@@ -302,6 +349,9 @@ function switchRole(role) {
     loadRoleSpecificData(role);
 }
 
+// Make switchRole globally accessible
+window.switchRole = switchRole;
+
 function updateUserNames(role) {
     const renterName = document.getElementById('renterName');
     const adminName = document.getElementById('adminName');
@@ -312,10 +362,21 @@ function updateUserNames(role) {
     let displayName = 'User';
     
     if (currentUser) {
-        const user = JSON.parse(currentUser);
-        displayName = user.firstName || user.firstName + ' ' + user.lastName || 'User';
+        try {
+            const user = JSON.parse(currentUser);
+            // Use various name fields with fallbacks
+            displayName = user.firstName || 
+                         user.displayName || 
+                         user.name || 
+                         user.email?.split('@')[0] || 
+                         'User';
+        } catch (error) {
+            console.error('Error parsing user data in updateUserNames:', error);
+            displayName = 'User';
+        }
     }
     
+    // Update all name elements if they exist
     if (renterName) renterName.textContent = displayName;
     if (adminName) adminName.textContent = displayName;
     if (userName) userName.textContent = displayName;
@@ -394,121 +455,106 @@ function initializeBlog() {
     loadBlogPosts();
 }
 
-async function loadBlogPosts() {
+function loadBlogPosts() {
+    // This function loads real blog posts from Supabase without refreshing the page
+    console.log('Loading blog posts...');
+    
     const blogPostsContainer = document.getElementById('blogPosts');
     if (!blogPostsContainer) {
         console.error('Blog posts container not found!');
         return;
     }
     
-    console.log('Loading blog posts...');
+    // Show loading state
+    blogPostsContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading posts...</div>';
     
-    try {
-        // Show loading state
-        blogPostsContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading posts...</div>';
-        
-        let posts = [];
-        
-        // Try to load from Supabase first
-        if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
-            console.log('Supabase available, querying blog posts...');
+    // Load posts asynchronously
+    setTimeout(async () => {
+        try {
+            let posts = [];
             
-            const result = await window.DeniFinderSupabase.dbService.queryDocuments(
-                'blog_posts',
-                [{ field: 'status', operator: '==', value: 'published' }],
-                { field: 'created_at', direction: 'desc' },
-                20 // Limit to 20 most recent posts
-            );
-            
-            console.log('Supabase query result:', result);
-            
-            if (result.success) {
-                posts = result.data;
-                console.log('Posts loaded from Supabase:', posts.length);
+            // Try to load from Supabase first
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                console.log('Supabase available, querying blog posts...');
+                
+                const result = await window.DeniFinderSupabase.dbService.queryDocuments(
+                    'blog_posts',
+                    [{ field: 'status', operator: '==', value: 'published' }],
+                    { field: 'created_at', direction: 'desc' },
+                    20 // Limit to 20 most recent posts
+                );
+                
+                console.log('Supabase query result:', result);
+                
+                if (result.success) {
+                    posts = result.data;
+                    console.log('Posts loaded from Supabase:', posts.length);
+                } else {
+                    console.warn('Failed to load posts from Supabase, using sample data');
+                    posts = getSamplePosts();
+                }
             } else {
-                console.warn('Failed to load posts from Supabase, using sample data');
+                console.log('Supabase not available, using sample posts');
                 posts = getSamplePosts();
             }
-        } else {
-            console.log('Supabase not available, using sample posts');
-            // Fallback to sample posts if Supabase not available
-            posts = getSamplePosts();
-        }
-    
-    // Render blog posts
-        if (posts.length === 0) {
+            
+            // Render blog posts
+            if (posts.length === 0) {
+                blogPostsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <i class="fas fa-newspaper"></i>
+                        <h4>No posts yet</h4>
+                        <p>Be the first to create a blog post!</p>
+                    </div>
+                `;
+            } else {
+                blogPostsContainer.innerHTML = posts.map(post => `
+                    <div class="blog-post" data-post-id="${post.id || ''}">
+                        <div class="post-header">
+                            <h4>${post.title}</h4>
+                            <div class="post-meta">
+                                <span class="author">By ${post.authorName || 'Anonymous'}</span>
+                                <span class="date">${formatDate(post.timestamp)}</span>
+                                <span class="read-time">${estimateReadTime(post.content)} min read</span>
+                            </div>
+                        </div>
+                        ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ''}
+                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Featured Image" style="width: 100%; max-width: 300px; border-radius: 8px; margin: 1rem 0;">` : ''}
+                        
+                        <div class="post-actions">
+                            <button class="action-btn like-btn" onclick="handleLike(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-heart"></i> <span class="like-count">${post.likes || 0}</span>
+                            </button>
+                            <button class="action-btn comment-btn" onclick="toggleComments(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-comment"></i> <span class="comment-count">${post.comments ? post.comments.length : 0}</span>
+                            </button>
+                            <button class="action-btn repost-btn" onclick="handleRepost(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-retweet"></i> <span class="repost-count">${post.reposts || 0}</span>
+                            </button>
+                            <button class="action-btn save-btn" onclick="handleSave(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="action-btn message-btn" onclick="messageAuthor(this)" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; margin-left: auto;">
+                                <i class="fas fa-envelope"></i> Message Author
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch (error) {
+            console.error('Error loading blog posts:', error);
             blogPostsContainer.innerHTML = `
                 <div style="text-align: center; padding: 2rem; color: #666;">
-                    <i class="fas fa-newspaper"></i>
-                    <h4>No posts yet</h4>
-                    <p>Be the first to create a blog post!</p>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Error loading posts</h4>
+                    <p>Please try again later.</p>
+                    <button onclick="loadBlogPosts()" style="background: var(--gold); color: var(--charcoal); border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 1rem; cursor: pointer;">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
                 </div>
             `;
-        } else {
-            blogPostsContainer.innerHTML = posts.map(post => `
-                <div class="blog-post" data-post-id="${post.id || ''}">
-                    <div class="post-header">
-            <h4>${post.title}</h4>
-                        <div class="post-meta">
-                            <span class="author">By ${post.authorName || 'Anonymous'}</span>
-                            <span class="date">${formatDate(post.timestamp)}</span>
-                            <span class="read-time">${estimateReadTime(post.content)} min read</span>
-            </div>
-                    </div>
-                    ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ''}
-                    ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Featured Image" style="width: 100%; max-width: 300px; border-radius: 8px; margin: 1rem 0;">` : ''}
-                    
-                    <div class="post-actions">
-                        <button class="action-btn like-btn" onclick="handleLike(this)" data-post-id="${post.id || ''}">
-                            <i class="fas fa-heart"></i> <span class="like-count">${post.likes || 0}</span>
-                </button>
-                        <button class="action-btn comment-btn" onclick="toggleComments(this)" data-post-id="${post.id || ''}">
-                            <i class="fas fa-comment"></i> <span class="comment-count">${post.comments ? post.comments.length : 0}</span>
-                        </button>
-                        <button class="action-btn repost-btn" onclick="handleRepost(this)" data-post-id="${post.id || ''}">
-                            <i class="fas fa-retweet"></i> <span class="repost-count">${post.reposts || 0}</span>
-                        </button>
-                        <button class="action-btn save-btn" onclick="handleSave(this)" data-post-id="${post.id || ''}">
-                            <i class="fas fa-bookmark"></i>
-                </button>
-            </div>
-                    
-                    <!-- Comments Section -->
-                    <div class="comments-section hidden">
-                        <div class="comment-form">
-                            <textarea placeholder="Write a comment..." class="comment-input"></textarea>
-                            <button class="comment-submit" onclick="submitComment(this)" data-post-id="${post.id || ''}">Post Comment</button>
-                        </div>
-                        
-                        <div class="comments-list">
-                            ${post.comments ? post.comments.map(comment => `
-                                <div class="comment">
-                                    <div class="comment-avatar">${comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}</div>
-                                    <div class="comment-content">
-                                        <div class="comment-header">
-                                            <span class="comment-author">${comment.authorName || 'User'}</span>
-                                            <span class="comment-date">${formatDate(comment.timestamp)}</span>
-                                        </div>
-                                        <p class="comment-text">${comment.content}</p>
-                                    </div>
-                                </div>
-                            `).join('') : ''}
-                        </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-    } catch (error) {
-        console.error('Error loading blog posts:', error);
-        blogPostsContainer.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #666;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h4>Error loading posts</h4>
-                <p>Please try refreshing the page.</p>
-            </div>
-        `;
-    }
+        }
+    }, 100); // Small delay to show loading state
 }
 
 // Get sample posts for fallback
@@ -1215,12 +1261,12 @@ function handleSave(button) {
     
     if (button.classList.contains('saved')) {
         button.classList.remove('saved');
+        icon.style.color = '';
         icon.className = 'fas fa-bookmark';
-        showNotification('Post removed from saved', 'info');
     } else {
         button.classList.add('saved');
-        icon.className = 'fas fa-bookmark saved';
-        showNotification('Post saved to your collection', 'success');
+        icon.style.color = '#FFB800';
+        icon.className = 'fas fa-bookmark';
     }
 }
 
@@ -1558,20 +1604,174 @@ function addPostToBlog(postData) {
     console.log('Post added to blog successfully');
 }
 
+// Helper functions for blog functionality
 function handleLike(button) {
-    const icon = button.querySelector('i');
     const likeCount = button.querySelector('.like-count');
     const currentCount = parseInt(likeCount.textContent);
+    const icon = button.querySelector('i');
     
     if (button.classList.contains('liked')) {
-        button.classList.remove('liked');
-        icon.classList.remove('liked');
         likeCount.textContent = currentCount - 1;
+        button.classList.remove('liked');
+        icon.style.color = '';
     } else {
-        button.classList.add('liked');
-        icon.classList.add('liked');
         likeCount.textContent = currentCount + 1;
+        button.classList.add('liked');
+        icon.style.color = '#e74c3c';
     }
+}
+
+function toggleComments(button) {
+    const postCard = button.closest('.blog-post');
+    const commentsSection = postCard.querySelector('.comments-section');
+    
+    if (commentsSection) {
+        commentsSection.classList.toggle('hidden');
+    }
+}
+
+function handleRepost(button) {
+    const repostCount = button.querySelector('.repost-count');
+    const currentCount = parseInt(repostCount.textContent);
+    const icon = button.querySelector('i');
+    
+    if (button.classList.contains('reposted')) {
+        repostCount.textContent = currentCount - 1;
+        button.classList.remove('reposted');
+        icon.style.color = '';
+    } else {
+        repostCount.textContent = currentCount + 1;
+        button.classList.add('reposted');
+        icon.style.color = '#4CAF50';
+    }
+}
+
+function handleSave(button) {
+    const icon = button.querySelector('i');
+    
+    if (button.classList.contains('saved')) {
+        button.classList.remove('saved');
+        icon.style.color = '';
+        icon.className = 'fas fa-bookmark';
+    } else {
+        button.classList.add('saved');
+        icon.style.color = '#FFB800';
+        icon.className = 'fas fa-bookmark';
+    }
+}
+
+function messageAuthor(button) {
+    const postCard = button.closest('.blog-post');
+    const authorName = postCard.querySelector('.author').textContent.replace('By ', '');
+    const postTitle = postCard.querySelector('h4').textContent;
+    
+    // Redirect to messages with author info
+    const messageText = `Hi ${authorName}, I'm interested in your blog post "${postTitle}". Can we discuss this further?`;
+    const encodedMessage = encodeURIComponent(messageText);
+    
+    window.location.href = `messages.html?to=${encodeURIComponent(authorName)}&message=${encodedMessage}`;
+}
+
+function loadBlogPosts() {
+    // This function loads real blog posts from Supabase without refreshing the page
+    console.log('Loading blog posts...');
+    
+    const blogPostsContainer = document.getElementById('blogPosts');
+    if (!blogPostsContainer) {
+        console.error('Blog posts container not found!');
+        return;
+    }
+    
+    // Show loading state
+    blogPostsContainer.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading posts...</div>';
+    
+    // Load posts asynchronously
+    setTimeout(async () => {
+        try {
+            let posts = [];
+            
+            // Try to load from Supabase first
+            if (window.DeniFinderSupabase && window.DeniFinderSupabase.dbService) {
+                console.log('Supabase available, querying blog posts...');
+                
+                const result = await window.DeniFinderSupabase.dbService.queryDocuments(
+                    'blog_posts',
+                    [{ field: 'status', operator: '==', value: 'published' }],
+                    { field: 'created_at', direction: 'desc' },
+                    20 // Limit to 20 most recent posts
+                );
+                
+                console.log('Supabase query result:', result);
+                
+                if (result.success) {
+                    posts = result.data;
+                    console.log('Posts loaded from Supabase:', posts.length);
+                } else {
+                    console.warn('Failed to load posts from Supabase, using sample data');
+                    posts = getSamplePosts();
+                }
+            } else {
+                console.log('Supabase not available, using sample posts');
+                posts = getSamplePosts();
+            }
+            
+            // Render blog posts
+            if (posts.length === 0) {
+                blogPostsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <i class="fas fa-newspaper"></i>
+                        <h4>No posts yet</h4>
+                        <p>Be the first to create a blog post!</p>
+                    </div>
+                `;
+            } else {
+                blogPostsContainer.innerHTML = posts.map(post => `
+                    <div class="blog-post" data-post-id="${post.id || ''}">
+                        <div class="post-header">
+                            <h4>${post.title}</h4>
+                            <div class="post-meta">
+                                <span class="author">By ${post.authorName || 'Anonymous'}</span>
+                                <span class="date">${formatDate(post.timestamp)}</span>
+                                <span class="read-time">${estimateReadTime(post.content)} min read</span>
+                            </div>
+                        </div>
+                        ${post.excerpt ? `<p class="post-excerpt">${post.excerpt}</p>` : ''}
+                        ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Featured Image" style="width: 100%; max-width: 300px; border-radius: 8px; margin: 1rem 0;">` : ''}
+                        
+                        <div class="post-actions">
+                            <button class="action-btn like-btn" onclick="handleLike(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-heart"></i> <span class="like-count">${post.likes || 0}</span>
+                            </button>
+                            <button class="action-btn comment-btn" onclick="toggleComments(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-comment"></i> <span class="comment-count">${post.comments ? post.comments.length : 0}</span>
+                            </button>
+                            <button class="action-btn repost-btn" onclick="handleRepost(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-retweet"></i> <span class="repost-count">${post.reposts || 0}</span>
+                            </button>
+                            <button class="action-btn save-btn" onclick="handleSave(this)" data-post-id="${post.id || ''}">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                            <button class="action-btn message-btn" onclick="messageAuthor(this)" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; margin-left: auto;">
+                                <i class="fas fa-envelope"></i> Message Author
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch (error) {
+            console.error('Error loading blog posts:', error);
+            blogPostsContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>Error loading posts</h4>
+                    <p>Please try again later.</p>
+                    <button onclick="loadBlogPosts()" style="background: var(--gold); color: var(--charcoal); border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 1rem; cursor: pointer;">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            `;
+        }
+    }, 100); // Small delay to show loading state
 }
 
 function handleUpgrade() {

@@ -63,38 +63,108 @@
     <script>
         let allUsers = [];
         let filteredUsers = [];
+        
         async function loadUsers() {
-            if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.supabase) return;
-            const { data, error } = await window.DeniFinderSupabase.supabase
-                .from('users')
-                .select('*')
-                .order('displayName', { ascending: true });
+            console.log('Loading users from database...');
+            
+            // Show loading state
+            const list = document.getElementById('userList');
+            list.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--gold);"></i>
+                    <h4>Loading Users...</h4>
+                    <p>Please wait while we fetch users from the database.</p>
+                </div>
+            `;
+            
+            try {
+                if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+                    console.log('Supabase not available');
+                    showNoUsersMessage('Database service not available');
+                    return;
+                }
+                
+                const result = await window.DeniFinderSupabase.dbService.queryDocuments(
+                    'users',
+                    [],
+                    { field: 'created_at', direction: 'desc' },
+                    100
+                );
 
-            if (error) {
-                document.getElementById('userList').innerHTML = '<p>Error loading users.</p>';
-                console.error('Error fetching users:', error);
-                return;
+                if (result.success && result.data && result.data.length > 0) {
+                    allUsers = result.data;
+                    filteredUsers = allUsers;
+                    console.log(`Loaded ${allUsers.length} users from database`);
+                    renderUsers(filteredUsers);
+                } else {
+                    console.log('No users found in database');
+                    showNoUsersMessage('No users found in the database');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showNoUsersMessage('Error loading users. Please try again.');
             }
-            allUsers = data;
-            filteredUsers = allUsers;
-            renderUsers(filteredUsers);
+        }
+        
+        function showNoUsersMessage(message) {
+            const list = document.getElementById('userList');
+            list.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem; color: #ccc;"></i>
+                    <h4>No Users Found</h4>
+                    <p>${message}</p>
+                    <button onclick="loadUsers()" style="
+                        background: var(--gold); 
+                        color: var(--charcoal); 
+                        border: none; 
+                        padding: 0.8rem 1.5rem; 
+                        border-radius: 8px; 
+                        margin-top: 1rem; 
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            `;
         }
         function renderUsers(users) {
             const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
             const list = document.getElementById('userList');
-            const visibleUsers = users.filter(u => u.uid !== currentUser.uid);
-            if (!visibleUsers || visibleUsers.length === 0) {
-                list.innerHTML = '<p>No users found.</p>';
+            
+            if (!users || users.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem; color: #ccc;"></i>
+                        <h4>No Users Found</h4>
+                        <p>Try adjusting your search terms or check back later.</p>
+                    </div>
+                `;
                 return;
             }
+            
+            const visibleUsers = users.filter(u => u.uid !== currentUser.uid);
+            
+            if (visibleUsers.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <i class="fas fa-user-friends" style="font-size: 2rem; margin-bottom: 1rem; color: #ccc;"></i>
+                        <h4>No Other Users Found</h4>
+                        <p>You are the only user in the system.</p>
+                    </div>
+                `;
+                return;
+            }
+            
             list.innerHTML = visibleUsers.map(user => `
                 <div class="user-card" onclick="showUserProfile('${user.uid}')" style="cursor:pointer;">
                     <div class="user-avatar">${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}</div>
                     <div class="user-info">
-                        <div class="user-name">${user.displayName || 'User'}</div>
+                        <div class="user-name">${user.displayName || user.firstName || user.email?.split('@')[0] || 'User'}</div>
                         <div class="user-email">${user.email || ''}</div>
+                        ${user.userType ? `<div style="font-size: 0.8rem; color: #666; margin-top: 0.2rem;">${user.userType.charAt(0).toUpperCase() + user.userType.slice(1)}</div>` : ''}
                     </div>
-                    <button class="message-btn" onclick="event.stopPropagation(); startConversation('${user.uid}', '${user.displayName || 'User'}')">
+                    <button class="message-btn" onclick="event.stopPropagation(); startConversation('${user.uid}', '${user.displayName || user.firstName || 'User'}')">
                         <i class="fas fa-comment"></i> Message
                     </button>
                 </div>
@@ -149,45 +219,71 @@
         }
         function filterUsers() {
             const search = document.getElementById('userSearch').value.trim().toLowerCase();
+            
             if (!search) {
                 filteredUsers = allUsers;
             } else {
-                filteredUsers = allUsers.filter(user =>
-                    (user.displayName && user.displayName.toLowerCase().includes(search)) ||
-                    (user.email && user.email.toLowerCase().includes(search))
-                );
+                filteredUsers = allUsers.filter(user => {
+                    const displayName = (user.displayName || '').toLowerCase();
+                    const firstName = (user.firstName || '').toLowerCase();
+                    const lastName = (user.lastName || '').toLowerCase();
+                    const email = (user.email || '').toLowerCase();
+                    const userType = (user.userType || '').toLowerCase();
+                    
+                    return displayName.includes(search) ||
+                           firstName.includes(search) ||
+                           lastName.includes(search) ||
+                           email.includes(search) ||
+                           userType.includes(search) ||
+                           `${firstName} ${lastName}`.includes(search);
+                });
             }
+            
             renderUsers(filteredUsers);
         }
         async function startConversation(userId, userName) {
             try {
                 const currentUser = JSON.parse(localStorage.getItem('deniFinderCurrentUser'));
-                if (!currentUser || !currentUser.uid) throw new Error('Not signed in');
-                // Find or create the conversation
-                const convo = await window.DeniFinderSupabase.supabase
-                    .from('conversations')
-                    .select('*')
-                    .eq('user1_id', currentUser.uid)
-                    .eq('user2_id', userId)
-                    .single();
-
+                if (!currentUser || !currentUser.uid) {
+                    alert('Please sign in to start a conversation');
+                    window.location.href = 'signin.html';
+                    return;
+                }
+                
+                if (!window.DeniFinderSupabase || !window.DeniFinderSupabase.dbService) {
+                    alert('Database service not available. Please try again.');
+                    return;
+                }
+                
+                // Find existing conversation
+                const existingConvo = await window.DeniFinderSupabase.dbService.queryDocuments(
+                    'conversations',
+                    [
+                        { field: 'user1_id', operator: '==', value: currentUser.uid },
+                        { field: 'user2_id', operator: '==', value: userId }
+                    ]
+                );
+                
                 let conversationId = null;
-                if (convo.data) {
-                    conversationId = convo.data.id;
+                
+                if (existingConvo.success && existingConvo.data.length > 0) {
+                    conversationId = existingConvo.data[0].id;
                 } else {
-                    // Create new conversation if it doesn't exist
-                    const { data, error } = await window.DeniFinderSupabase.supabase
-                        .from('conversations')
-                        .insert([
-                            { user1_id: currentUser.uid, user2_id: userId, created_at: new Date() }
-                        ])
-                        .select()
-                        .single();
-
-                    if (error) {
-                        throw new Error('Failed to create conversation: ' + error.message);
+                    // Create new conversation
+                    const newConvoData = {
+                        user1_id: currentUser.uid,
+                        user2_id: userId,
+                        created_at: new Date(),
+                        updated_at: new Date()
+                    };
+                    
+                    const createResult = await window.DeniFinderSupabase.dbService.addDocument('conversations', newConvoData);
+                    
+                    if (createResult.success) {
+                        conversationId = createResult.data.id;
+                    } else {
+                        throw new Error('Failed to create conversation: ' + createResult.error);
                     }
-                    conversationId = data.id;
                 }
 
                 if (conversationId) {
@@ -195,7 +291,8 @@
                 } else {
                     alert('Failed to start conversation. Please try again.');
                 }
-            } catch (err) {
+            } catch (error) {
+                console.error('Error starting conversation:', error);
                 alert('Failed to start conversation. Please try again.');
             }
         }

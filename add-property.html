@@ -856,6 +856,8 @@
             // Add drag event
             propertyMarker.on('dragend', function(e) {
                 const position = e.target.getLatLng();
+                // Update the stored coordinates when marker is dragged
+                window.selectedCoordinates = [position.lat, position.lng];
                 updateLocationStatus('success', 'Location updated by dragging marker');
             });
 
@@ -1014,6 +1016,10 @@
                 propertyData.created_at = new Date().toISOString();
                 propertyData.updated_at = new Date().toISOString();
 
+                // Debug logging
+                console.log('Property data being sent to Supabase:', propertyData);
+                console.log('Coordinates format:', propertyData.coordinates);
+
                 // Save to Supabase
                 const result = await window.DeniFinderSupabase.dbService.addDocument('properties', propertyData);
                 
@@ -1058,6 +1064,18 @@
             };
 
             // Validate required fields
+            if (!propertyData.title || !propertyData.type || !propertyData.status || !propertyData.price || !propertyData.location) {
+                alert('Please fill in all required fields: Title, Type, Status, Price, and Location.');
+                return;
+            }
+
+            // Validate price is a positive number
+            if (isNaN(propertyData.price) || propertyData.price <= 0) {
+                alert('Please enter a valid price (positive number).');
+                return;
+            }
+
+            // Validate required fields
             if (!window.selectedCoordinates) {
                 alert('Please set the property location on the map before saving.');
                 updateLocationStatus('error', 'Please set a location on the map');
@@ -1065,8 +1083,22 @@
             }
 
             // Convert coordinates to PostgreSQL POINT format
-            if (window.selectedCoordinates) {
-                propertyData.coordinates = `(${window.selectedCoordinates.lat},${window.selectedCoordinates.lng})`;
+            if (window.selectedCoordinates && Array.isArray(window.selectedCoordinates) && window.selectedCoordinates.length === 2) {
+                const lat = window.selectedCoordinates[0];
+                const lng = window.selectedCoordinates[1];
+                
+                // Validate that coordinates are valid numbers
+                if (typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)) {
+                    propertyData.coordinates = `(${lat},${lng})`;
+                } else {
+                    alert('Invalid coordinates. Please set a valid location on the map.');
+                    updateLocationStatus('error', 'Invalid coordinates. Please set a valid location.');
+                    return;
+                }
+            } else {
+                alert('Please set the property location on the map before saving.');
+                updateLocationStatus('error', 'Please set a location on the map');
+                return;
             }
 
             // Show loading state

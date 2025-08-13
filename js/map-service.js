@@ -34,32 +34,36 @@ class MapService {
                 if (supabase) {
                     const { data: properties, error } = await supabase
                         .from('properties')
-                        .select('*');
+                        .select('*')
+                        .eq('status', 'available'); // Only show available properties
                     
                     if (error) {
                         throw error;
                     }
                     
-                    if (properties) {
+                    if (properties && properties.length > 0) {
                         this.properties = properties.map(property => ({
                             id: property.id,
                             ...property
                         }));
+                        console.log(`Loaded ${this.properties.length} real properties from database`);
                     } else {
                         this.properties = [];
+                        console.log('No real properties found in database');
                     }
                 } else {
-                    this.properties = this.getSampleProperties();
+                    console.log('Supabase client not available');
+                    this.properties = [];
                 }
             } else {
-                // Fallback to sample data
-                this.properties = this.getSampleProperties();
+                console.log('Supabase not available');
+                this.properties = [];
             }
             
             return this.properties;
         } catch (error) {
             console.error('Error loading properties:', error);
-            this.properties = this.getSampleProperties();
+            this.properties = [];
             return this.properties;
         }
     }

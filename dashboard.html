@@ -16,6 +16,11 @@
             --gold: #ffc107;
             --charcoal: #7a5c0a;
             --white: #fff;
+            --gold-dark: #7A5C00;
+            --primary-green: #4CAF50;
+            --sky-blue: #00B4D8;
+            --light-gray: #F8F9FA;
+            --gray: #6C757D;
         }
 
         header.dashboard-header {
@@ -32,6 +37,7 @@
             margin-bottom: 0;
             border-bottom: none;
         }
+
         .header-container {
             display: flex;
             flex-direction: column;
@@ -42,6 +48,7 @@
             width: 100%;
             box-sizing: border-box;
         }
+
         .header-top {
             display: flex;
             justify-content: space-between;
@@ -49,11 +56,13 @@
             width: 100%;
             gap: 2rem;
         }
+
         .logo-section {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
         .logo {
             display: flex;
             align-items: center;
@@ -62,6 +71,7 @@
             color: var(--white);
             letter-spacing: 1px;
         }
+
         .logo img {
             height: 38px;
             width: 38px;
@@ -69,12 +79,14 @@
             border-radius: 8px;
             background: var(--white);
         }
+
         .logo-text {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--white);
             letter-spacing: 1px;
         }
+
         .role-badge {
             background: var(--gold);
             color: var(--charcoal);
@@ -86,6 +98,7 @@
             letter-spacing: 0.5px;
             box-shadow: 0 2px 8px rgba(255, 184, 0, 0.10);
         }
+
         .nav-links-top {
             display: flex;
             align-items: center;
@@ -93,6 +106,7 @@
             flex-wrap: wrap;
             justify-content: flex-end;
         }
+
         .nav-links-top a, .nav-dropdown-btn {
             color: var(--white);
             font-weight: 600;
@@ -106,13 +120,16 @@
             cursor: pointer;
             position: relative;
         }
+
         .nav-links-top a:hover, .nav-dropdown-btn:hover {
             background: rgba(255,255,255,0.10);
             color: var(--gold);
         }
+
         .nav-dropdown {
             position: relative;
         }
+
         .nav-dropdown-menu {
             display: none;
             position: absolute;
@@ -125,9 +142,11 @@
             z-index: 10;
             padding: 0.5rem 0;
         }
+
         .nav-dropdown:hover .nav-dropdown-menu {
             display: block;
         }
+
         .nav-dropdown-menu a {
             display: block;
             color: var(--white);
@@ -137,10 +156,12 @@
             font-size: 1rem;
             transition: background 0.2s, color 0.2s;
         }
+
         .nav-dropdown-menu a:hover {
             background: var(--gold);
             color: var(--charcoal);
         }
+
         .header-bottom {
             display: flex;
             justify-content: flex-end;
@@ -151,14 +172,15 @@
             margin-top: 0.5rem;
             width: 100%;
         }
+
         .header-actions {
             display: flex;
             align-items: center;
             gap: 1rem;
             flex-wrap: wrap;
-            /* flex-grow: 1; */
             justify-content: flex-start;
         }
+
         .back-home-btn, .messages-btn, .landlord-dashboard-btn {
             color: var(--white);
             text-decoration: none;
@@ -173,16 +195,19 @@
             font-weight: 600;
             font-size: 1rem;
         }
+
         .back-home-btn:hover, .messages-btn:hover, .landlord-dashboard-btn:hover {
             background: var(--gold);
             color: var(--charcoal);
         }
+
         .messages-btn {
             background: var(--gold);
             color: var(--charcoal);
             font-weight: 700;
             position: relative;
         }
+
         #messageBadge {
             background: var(--charcoal);
             color: var(--white);
@@ -196,6 +221,7 @@
             font-weight: 600;
             margin-left: 0.3rem;
         }
+
         .role-switcher {
             background: rgba(255,255,255,0.10);
             border-radius: 8px;
@@ -207,6 +233,7 @@
             gap: 0.1rem;
             min-width: 220px;
         }
+
         .role-switcher::before {
             content: '';
             position: absolute;
@@ -218,18 +245,22 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 0;
         }
+
         .role-switcher[data-active-role="renter"]::before {
             width: calc(33.33% - 0.1rem);
             transform: translateX(0);
         }
+
         .role-switcher[data-active-role="landlord"]::before {
             width: calc(50% - 0.1rem);
             transform: translateX(calc(33.33% + 0.1rem));
         }
+
         .role-switcher[data-active-role="admin"]::before {
             width: calc(33.33% - 0.1rem);
             transform: translateX(calc(83.33% + 0.2rem));
         }
+
         .role-btn {
             position: relative;
             z-index: 1;
@@ -246,20 +277,24 @@
             flex: 1;
             min-width: 0;
         }
+
         .role-btn.active {
             color: var(--charcoal) !important;
             background: transparent !important;
             transform: scale(1.05);
         }
+
         .role-btn:hover {
             transform: scale(1.05);
             color: var(--gold) !important;
         }
+
         .user-menu {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
+
         .logout-btn {
             background: var(--charcoal);
             color: var(--white);
@@ -274,636 +309,390 @@
             gap: 0.3rem;
             font-weight: 600;
         }
+
         .logout-btn:hover {
             background: var(--gold);
             color: var(--charcoal);
         }
-        @media (max-width: 900px) {
-            .header-container {
-                padding: 1rem 1rem 0.5rem 1rem;
-            }
-            .header-top, .header-bottom {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.7rem;
-            }
-            .header-bottom {
-                align-items: flex-end;
-            }
-            .header-actions {
-                flex-wrap: wrap;
-                gap: 0.7rem;
-            }
-        }
-        @media (max-width: 600px) {
-            .header-container {
-                padding: 0.7rem 0.3rem 0.3rem 0.3rem;
-            }
-            .logo-text {
-                font-size: 1.1rem;
-            }
-            .role-badge {
-                font-size: 0.8rem;
-                padding: 0.1rem 0.7rem;
-            }
-            .nav-links-top a, .nav-dropdown-btn {
-                font-size: 0.95rem;
-                padding: 0.4rem 0.7rem;
-            }
-            .header-bottom {
-                gap: 0.5rem;
-                padding-top: 0.5rem;
-            }
-            .header-actions {
-                gap: 0.5rem;
-            }
-            .role-switcher {
-                min-width: 140px;
-            }
-        }
         
-        /* Header styles */
-        header {
-            background: linear-gradient(135deg, var(--charcoal) 0%, #2c3e50 100%);
-            color: var(--white);
-            padding: 0 0 1.5rem 0;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            width: 100%;
-            min-width: 100%;
-            left: 0;
-            right: 0;
-            margin-bottom: 0;
-            border-bottom: none;
-        }
-        
-        .header-container {
-            display: flex;
+        /* Hamburger Menu Button */
+        .hamburger-menu {
+            display: none;
             flex-direction: column;
-            gap: 0.5rem;
-            padding: 1.2rem 2rem 0.8rem 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
-            background: none;
-        }
-        
-        .header-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .header-top,
-        .header-bottom {
-            display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .header-bottom {
-            padding-top: 1rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .nav-links-top {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-        }
-        
-        /* Services dropdown fixes */
-        .nav-dropdown {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
             position: relative;
         }
-        
-        .nav-dropdown-menu {
+
+        .hamburger-menu:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .hamburger-menu span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--white);
+            margin: 2px 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .hamburger-menu.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger-menu.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav {
+            display: none;
             position: absolute;
             top: 100%;
             left: 0;
-            background: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            min-width: 250px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 0.5rem 0;
+            right: 0;
+            background: var(--charcoal);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 999;
         }
-        
-        .nav-dropdown:hover .nav-dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .nav-dropdown-menu a {
+
+        .mobile-nav.active {
             display: block;
-            padding: 0.7rem 1rem;
-            color: var(--charcoal);
-            text-decoration: none;
-            transition: all 0.2s;
-            border-bottom: 1px solid #f0f0f0;
+            animation: slideDown 0.3s ease-out;
         }
-        
-        .nav-dropdown-menu a:hover {
-            background: var(--gold);
-            color: var(--charcoal);
-            transform: translateX(5px);
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        .nav-dropdown-menu a:last-child {
+
+        .mobile-nav-section {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mobile-nav-section:last-child {
             border-bottom: none;
         }
-        
-        /* Role switcher animations */
-        .role-btn {
-            position: relative;
-            transform: scale(1);
+
+        .mobile-nav-section h4 {
+            color: var(--gold);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
         }
-        
-        .role-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-        
-        .role-btn.active {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(255, 184, 0, 0.4);
+
+        .mobile-nav-links a, .mobile-nav-links button {
+            color: var(--white);
+            text-decoration: none;
+            padding: 0.7rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
-        .role-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
+
+        .mobile-nav-links a:hover, .mobile-nav-links button:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--gold);
         }
-        
-        .role-btn:active::before {
-            left: 100%;
+
+        .mobile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-        
-        .role-btn.switching {
-            animation: roleSwitchSlide 0.8s ease-in-out;
-        }
-        
-        @keyframes roleSwitchSlide {
-            0% { 
-                transform: scale(1) translateX(0);
-                background: var(--charcoal);
-                color: var(--white);
-            }
-            25% { 
-                transform: scale(1.1) translateX(-5px);
-                background: var(--gold);
-                color: var(--charcoal);
-            }
-            50% { 
-                transform: scale(1.15) translateX(0);
-                background: var(--gold);
-                color: var(--charcoal);
-            }
-            75% { 
-                transform: scale(1.1) translateX(5px);
-                background: var(--gold);
-                color: var(--charcoal);
-            }
-            100% { 
-                transform: scale(1.1) translateX(0);
-                background: var(--gold);
-                color: var(--charcoal);
-            }
-        }
-        
-        /* Role switcher container with switch-like appearance */
-        .role-switcher {
-            background: rgba(255, 255, 255, 0.1);
+
+        .mobile-role-switcher {
+            display: flex;
+            background: rgba(255,255,255,0.1);
             border-radius: 8px;
             padding: 0.2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-            display: flex;
             gap: 0.1rem;
         }
-        
-        .role-switcher::before {
-            content: '';
-            position: absolute;
-            top: 0.2rem;
-            left: 0.2rem;
-            height: calc(100% - 0.4rem);
-            background: var(--gold);
-            border-radius: 6px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 0;
-        }
-        
-        .role-switcher[data-active-role="renter"]::before {
-            width: calc(33.33% - 0.1rem);
-            transform: translateX(0);
-        }
-        
-        .role-switcher[data-active-role="landlord"]::before {
-            width: calc(50% - 0.1rem);
-            transform: translateX(calc(33.33% + 0.1rem));
-        }
-        
-        .role-switcher[data-active-role="admin"]::before {
-            width: calc(33.33% - 0.1rem);
-            transform: translateX(calc(83.33% + 0.2rem));
-        }
-        
-        .role-btn {
-            position: relative;
-            z-index: 1;
-            background: transparent !important;
-            color: var(--white) !important;
+
+        .mobile-role-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--white);
             border: none;
-            padding: 0.4rem 0.8rem;
+            padding: 0.5rem;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            white-space: nowrap;
-            flex: 1;
-            min-width: 0;
         }
-        
-        .role-btn.active {
-            color: var(--charcoal) !important;
-            background: transparent !important;
-            transform: scale(1.05);
+
+        .mobile-role-btn.active {
+            background: var(--gold);
+            color: var(--charcoal);
         }
-        
-        .role-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        /* Dashboard transition animations */
-        .dashboard-content {
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-        }
-        
-        .dashboard-content.hidden {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        
-        .dashboard-content:not(.hidden) {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Loading animation for role switch */
-        .role-switch-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-        
-        .role-switch-loading.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 184, 0, 0.3);
-            border-top: 4px solid var(--gold);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            .header-container {
-                padding: 1rem;
-            }
-            
-            .nav-links {
-                gap: 1rem;
-            }
-            
-            .header-actions {
-                gap: 0.3rem;
-            }
-        }
-        
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            /* Compact mobile header */
-            header.dashboard-header {
-                margin-top: 0.3rem;
-                transition: all 0.3s ease;
-            }
-            
             .header-container {
                 padding: 0.8rem 1rem;
-                transition: all 0.3s ease;
-            }
-            
-            .header-top {
-                flex-direction: row !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-                gap: 0.5rem;
-            }
-            
-            /* Hide navigation by default on mobile */
-            .nav-links-top {
-                display: none !important;
-            }
-            
-            /* Hide header actions by default on mobile */
-            .header-actions {
-                display: none !important;
-            }
-            
-            /* Show only 3 key elements: Logo, Role Badge, Expand Button */
-            .logo-section {
-                display: flex !important;
-                align-items: center !important;
-                gap: 0.5rem;
-            }
-            
-            .logo {
-                font-size: 1.3rem !important;
+                gap: 0;
             }
 
-            .logo img {
-                height: 28px !important;
-                width: 28px !important;
+            .header-top {
+                gap: 1rem;
             }
 
             .logo-text {
-                font-size: 1.1rem !important;
+                font-size: 1.3rem;
             }
 
             .role-badge {
-                font-size: 0.8rem !important;
-                padding: 0.2rem 0.6rem !important;
+                font-size: 0.8rem;
+                padding: 0.2rem 0.8rem;
                 margin-left: 0.5rem;
             }
 
-            /* Mobile expand button */
-            .mobile-expand-btn {
-                display: flex !important;
-                align-items: center;
-                justify-content: center;
-                background: rgba(255,255,255,0.15);
-                border: 1px solid rgba(255,255,255,0.2);
-                border-radius: 8px;
-                padding: 0.5rem;
-                color: var(--white);
-                cursor: pointer;
-                transition: all 0.3s ease;
-                min-width: 40px;
-                min-height: 40px;
+            .nav-links-top, .header-bottom {
+                display: none;
             }
 
-            .mobile-expand-btn:hover {
-                background: rgba(255,255,255,0.25);
-            }
-
-            .mobile-expand-btn i {
-                font-size: 1.2rem;
-                transition: transform 0.3s ease;
-            }
-
-            .mobile-expand-btn.expanded i {
-                transform: rotate(180deg);
-            }
-
-            /* Expanded header styles */
-            header.dashboard-header.expanded {
-                margin-top: 0.5rem;
-            }
-
-            header.dashboard-header.expanded .header-container {
-                padding: 1rem 1rem 0.8rem 1rem;
-            }
-
-            header.dashboard-header.expanded .header-top {
-                flex-direction: column !important;
-                gap: 1rem;
-            }
-
-            header.dashboard-header.expanded .nav-links-top {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 0.8rem !important;
-                width: 100% !important;
-            }
-
-            header.dashboard-header.expanded .nav-links-top a {
-                width: 100% !important;
-                text-align: center !important;
-                padding: 0.8rem 1rem !important;
-                border-radius: 8px !important;
-                background: rgba(255,255,255,0.1) !important;
-                min-height: 48px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-
-            header.dashboard-header.expanded .nav-dropdown {
-                width: 100% !important;
-            }
-
-            header.dashboard-header.expanded .nav-dropdown-btn {
-                width: 100% !important;
-                text-align: center !important;
-                padding: 0.8rem 1rem !important;
-                border-radius: 8px !important;
-                background: rgba(255,255,255,0.1) !important;
-                min-height: 48px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-            }
-
-            header.dashboard-header.expanded .header-actions {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 0.8rem !important;
-                width: 100% !important;
-                align-items: stretch !important;
-            }
-
-            header.dashboard-header.expanded .user-menu {
-                width: 100% !important;
-                justify-content: center !important;
-            }
-
-            header.dashboard-header.expanded .logout-btn {
-                width: 100% !important;
-                justify-content: center !important;
-                padding: 0.8rem 1rem !important;
-                font-size: 1rem !important;
-                min-height: 48px !important;
-                border-radius: 8px !important;
-            }
-
-            /* Mobile role switcher improvements */
-            header.dashboard-header.expanded .role-switcher {
-                display: flex !important;
-                min-width: 100% !important;
-                margin: 0.5rem 0;
-                background: rgba(255,255,255,0.15) !important;
-                border: 2px solid rgba(255,255,255,0.2) !important;
-                border-radius: 12px !important;
-                padding: 0.3rem !important;
-                order: 1 !important;
-            }
-
-            header.dashboard-header.expanded .role-btn {
-                padding: 0.8rem 1rem !important;
-                font-size: 1rem !important;
-                font-weight: 700 !important;
-                border-radius: 8px !important;
-                min-height: 48px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                flex: 1 !important;
-            }
-
-            header.dashboard-header.expanded .role-btn.active {
-                transform: scale(1.02) !important;
-            }
-
-            header.dashboard-header.expanded .role-btn:hover {
-                transform: scale(1.02) !important;
-            }
-
-            /* Ensure role switcher is visible in expanded state */
-            header.dashboard-header.expanded .header-actions .role-switcher {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                position: relative !important;
-                z-index: 10 !important;
-            }
-
-            /* Force role switcher visibility */
-            header.dashboard-header.expanded #roleSwitcher {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                width: 100% !important;
-                margin: 0.5rem 0 !important;
-            }
-        }
-
-        /* Additional mobile optimizations for smaller screens */
-        @media (max-width: 480px) {
-            /* Further reduce header spacing for very small screens */
-            header.dashboard-header {
-                margin-top: 0.3rem;
-            }
-            
-            .header-container {
-                padding: 0.8rem 0.8rem 0.6rem 0.8rem;
-            }
-
-            /* Smaller logo for very small screens */
-            .logo {
-                font-size: 1.3rem !important;
+            .hamburger-menu {
+                display: flex;
             }
 
             .logo img {
-                height: 28px !important;
-                width: 28px !important;
+                height: 32px;
+                width: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0.6rem 0.8rem;
             }
 
             .logo-text {
-                font-size: 1.1rem !important;
+                font-size: 1.1rem;
             }
 
             .role-badge {
-                font-size: 0.8rem !important;
-                padding: 0.2rem 0.6rem !important;
+                font-size: 0.7rem;
+                padding: 0.1rem 0.6rem;
+                margin-left: 0.3rem;
             }
 
-            /* Compact role switcher for small screens */
-            .role-switcher {
-                padding: 0.2rem !important;
+            .logo img {
+                height: 28px;
+                width: 28px;
+                margin-right: 0.3rem;
             }
 
-            .role-btn {
-                padding: 0.6rem 0.8rem !important;
-                font-size: 0.9rem !important;
-                min-height: 44px !important;
+            .hamburger-menu {
+                width: 36px;
+                height: 36px;
+                padding: 0.5rem;
             }
 
-            /* Compact navigation for small screens */
-            .nav-links-top a,
-            .nav-dropdown-btn {
-                padding: 0.6rem 0.8rem !important;
-                font-size: 0.9rem !important;
-                min-height: 44px !important;
-            }
-
-            .logout-btn {
-                padding: 0.6rem 0.8rem !important;
-                font-size: 0.9rem !important;
-                min-height: 44px !important;
+            .hamburger-menu span {
+                width: 18px;
             }
         }
+
+        /* Desktop styles remain unchanged for larger screens */
+        @media (min-width: 769px) {
+            .hamburger-menu, .mobile-nav {
+                display: none !important;
+            }
+        }
+
+        /* Blog Section Styles */
+        .blog-section {
+            margin-top: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .blog-posts {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .blog-post {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 184, 0, 0.1);
+        }
+
+        .post-header h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--charcoal);
+            margin-bottom: 0.5rem;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .post-excerpt {
+            color: var(--charcoal);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background: var(--light-gray);
+            color: var(--charcoal);
+        }
+
+        .subscription-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .subscription-badge {
+            background: var(--gold);
+            color: var(--charcoal);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .blog-access-message {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--light-gray);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        .access-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .access-info i {
+            color: var(--primary-green);
+            font-size: 1.2rem;
+        }
+
+        .access-info h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--charcoal);
+        }
+
+        .access-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .upgrade-btn {
+            background: var(--primary-green);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .upgrade-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
-    <!-- Supabase SDK -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    
-    <!-- Supabase Configuration -->
-    <script src="js/supabase-config.js"></script>
-    <script src="js/supabase-services.js"></script>
 </head>
 <body>
     <!-- Role Switch Loading Overlay -->
@@ -923,14 +712,11 @@
                         </a>
                         <span class="role-badge" id="roleBadge">Renter</span>
                     </div>
-                    <!-- Mobile expand button -->
-                    <button class="mobile-expand-btn" id="mobileExpandBtn" style="display: none;">
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
+                    
+                    <!-- Desktop Navigation -->
                     <nav class="nav-links-top">
                         <a href="map.html">Maps</a>
                         <a href="#how-it-works">How It Works</a>
-                        <!-- Replace Cities with Where to Stay -->
                         <a href="where-to-stay.html" class="where-to-stay-link" style="font-weight:700; color:#FFB800;">Where to Stay</a>
                         <div class="nav-dropdown">
                             <button class="nav-dropdown-btn">Services <i class="fas fa-chevron-down"></i></button>
@@ -938,46 +724,93 @@
                                 <a href="services-dashboard.html">House Design</a>
                                 <a href="advance-house-finder.html">Advance House Finding</a>
                                 <a href="services/advertise-property.html">Advertise Your House</a>
-                                <a href="services/find-buyer.html">Sell Your Land / Find a Buyer</a>
-                                <a href="services/roommate-matching.html">Roommate Matching</a>
-                                <a href="services/virtual-tours.html">Virtual Tours (3D/Video)</a>
-                                <a href="services/area-review.html">Area Reviews & Cost of Living</a>
-                                <a href="services/property-verification.html">Property Verification</a>
-                                <a href="services/legal-assistance.html">Legal & Title Services</a>
-                                <a href="services/secure-payment.html">Secure Payment Holding</a>
-                                <a href="services/tenant-background-check.html">Tenant Background Checks</a>
-                                <a href="services/rent-now-pay-later.html">Rent Now, Pay Later</a>
-                                <a href="services/moving-services.html">Moving & Transport</a>
-                                <a href="services/furniture-rentals.html">Furniture Rentals</a>
-                                <a href="services/maintenance-repairs.html">Maintenance & Repairs</a>
-                                <a href="services/internet-utilities-setup.html">Internet & Utility Setup</a>
                             </div>
                         </div>
                         <a href="services/advanced-assist.html">Advance Assist</a>
                         <a href="contact.html">Contact</a>
                     </nav>
+                    
+                    <!-- Mobile Hamburger Menu -->
+                    <button class="hamburger-menu" id="hamburgerMenu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
+                
+                <!-- Desktop Header Bottom -->
                 <div class="header-bottom">
                     <div class="header-actions">
-                        <a href="index.html" class="back-home-btn" style="color: var(--white); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 8px; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <a href="index.html" class="back-home-btn">
                             <i class="fas fa-home"></i> Home
                         </a>
-                        <a href="landlord-dashboard.html" class="landlord-dashboard-btn" id="landlordDashboardBtn" style="display: none; color: var(--charcoal); background: var(--gold); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; align-items: center; gap: 0.5rem;">
+                        <a href="landlord-dashboard.html" class="landlord-dashboard-btn" id="landlordDashboardBtn" style="display: none;">
                             <i class="fas fa-building"></i> Landlord Dashboard
                         </a>
-                        <a href="messages.html" class="messages-btn" style="color: var(--white); text-decoration: none; padding: 0.6rem 1.2rem; border-radius: 8px; transition: all 0.3s; display: flex; align-items: center; gap: 0.5rem; background: var(--gold); color: var(--charcoal); font-weight: 600;">
+                        <a href="messages.html" class="messages-btn">
                             <i class="fas fa-comments"></i> Messages
-                            <span id="messageBadge" style="background: var(--charcoal); color: var(--white); border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600;">3</span>
+                            <span id="messageBadge">3</span>
                         </a>
                     </div>
                     <div class="header-actions">
-                        <div class="role-switcher" id="roleSwitcher">
-                            <button class="role-btn" data-role="renter">Renter</button>
+                        <div class="role-switcher" id="roleSwitcher" data-active-role="renter">
+                            <button class="role-btn active" data-role="renter">Renter</button>
                             <button class="role-btn" data-role="landlord">Landlord</button>
                             <button class="role-btn" data-role="admin">Admin</button>
                         </div>
                         <div class="user-menu">
-                            <button class="logout-btn" style="background: var(--charcoal); color: var(--white); border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 0.3rem; font-weight: 600;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                            <button class="logout-btn">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Navigation Menu -->
+                <div class="mobile-nav" id="mobileNav">
+                    <div class="mobile-nav-section">
+                        <h4>Navigation</h4>
+                        <div class="mobile-nav-links">
+                            <a href="map.html"><i class="fas fa-map"></i> Maps</a>
+                            <a href="#how-it-works"><i class="fas fa-info-circle"></i> How It Works</a>
+                            <a href="where-to-stay.html"><i class="fas fa-bed"></i> Where to Stay</a>
+                            <a href="services-dashboard.html"><i class="fas fa-drafting-compass"></i> House Design</a>
+                            <a href="advance-house-finder.html"><i class="fas fa-search-plus"></i> Advanced House Finding</a>
+                            <a href="services/advertise-property.html"><i class="fas fa-bullhorn"></i> Advertise Property</a>
+                            <a href="services/advanced-assist.html"><i class="fas fa-hands-helping"></i> Advanced Assist</a>
+                            <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-nav-section">
+                        <h4>Quick Actions</h4>
+                        <div class="mobile-actions">
+                            <a href="index.html" class="mobile-nav-links">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                            <a href="messages.html" class="mobile-nav-links">
+                                <i class="fas fa-comments"></i> Messages <span style="background: var(--gold); color: var(--charcoal); padding: 0.1rem 0.4rem; border-radius: 10px; font-size: 0.7rem; margin-left: auto;">3</span>
+                            </a>
+                            <a href="landlord-dashboard.html" class="mobile-nav-links" id="mobileLandlordDashboard" style="display: none;">
+                                <i class="fas fa-building"></i> Landlord Dashboard
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-nav-section">
+                        <h4>Role</h4>
+                        <div class="mobile-role-switcher" id="mobileRoleSwitcher">
+                            <button class="mobile-role-btn active" data-role="renter">Renter</button>
+                            <button class="mobile-role-btn" data-role="landlord">Landlord</button>
+                            <button class="mobile-role-btn" data-role="admin">Admin</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-nav-section">
+                        <div class="mobile-actions">
+                            <button class="mobile-nav-links logout-btn" style="width: 100%; justify-content: center;">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -985,223 +818,25 @@
         </div>
     </header>
 
-<!-- Main Dashboard Content -->
-<main class="dashboard-main">
-    <div class="dashboard-container">
-        <!-- ... existing content ... -->
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-container">
             <!-- Renter Dashboard -->
             <div class="dashboard-content" id="renterDashboard">
                 <div class="welcome-banner">
                     <h2>Welcome to DeniFinder, <span id="renterName">User</span>!</h2>
                     <p>Let's find your next place to stay.</p>
                 </div>
-
-                <!-- Paid Adverts Section -->
-                <div class="paid-adverts-section" id="paidAdvertsRenter">
-                    <div class="section-header">
-                        <h3><i class="fas fa-star"></i> Featured & Paid Listings</h3>
-                        <span class="section-subtitle">Premium properties from verified landlords</span>
-                    </div>
-                    <div class="adverts-carousel" id="advertsCarousel">
-                        <div class="advert-card featured">
-                            <div class="advert-badge">PAID</div>
-                            <div class="advert-image">
-                                <img src="images/project.jpg" alt="Featured Property">
-                            </div>
-                            <div class="advert-content">
-                                <h4>Luxury Student Apartments - Near University</h4>
-                                <p class="advert-location"><i class="fas fa-map-marker-alt"></i> Westlands, Nairobi</p>
-                                <p class="advert-price">KSh 25,000/month</p>
-                                <div class="advert-features">
-                                    <span><i class="fas fa-bed"></i> 2 Bedrooms</span>
-                                    <span><i class="fas fa-wifi"></i> WiFi</span>
-                                    <span><i class="fas fa-shield-alt"></i> Security</span>
-                                </div>
-                                <button class="view-advert-btn">View Details</button>
-                            </div>
-                        </div>
-                        
-                        <div class="advert-card featured">
-                            <div class="advert-badge">PAID</div>
-                            <div class="advert-image">
-                                <img src="images/hostels.jpeg" alt="Featured Property">
-                            </div>
-                            <div class="advert-content">
-                                <h4>Modern Hostel - Student-Friendly</h4>
-                                <p class="advert-location"><i class="fas fa-map-marker-alt"></i> Kilimani, Nairobi</p>
-                                <p class="advert-price">KSh 15,000/month</p>
-                                <div class="advert-features">
-                                    <span><i class="fas fa-bed"></i> Single Room</span>
-                                    <span><i class="fas fa-utensils"></i> Meals</span>
-                                    <span><i class="fas fa-bus"></i> Transport</span>
-                                </div>
-                                <button class="view-advert-btn">View Details</button>
-                            </div>
-                        </div>
-                        
-                        <div class="advert-card featured">
-                            <div class="advert-badge">PAID</div>
-                            <div class="advert-image">
-                                <img src="images/tenant.jpeg" alt="Featured Property">
-                            </div>
-                            <div class="advert-content">
-                                <h4>Affordable Quarters - Family Friendly</h4>
-                                <p class="advert-location"><i class="fas fa-map-marker-alt"></i> Eastlands, Nairobi</p>
-                                <p class="advert-price">KSh 12,000/month</p>
-                                <div class="advert-features">
-                                    <span><i class="fas fa-bed"></i> 1 Bedroom</span>
-                                    <span><i class="fas fa-parking"></i> Parking</span>
-                                    <span><i class="fas fa-leaf"></i> Garden</span>
-                                </div>
-                                <button class="view-advert-btn">View Details</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="carousel-controls">
-                        <button class="carousel-btn prev" onclick="moveCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
-                        <button class="carousel-btn next" onclick="moveCarousel(1)"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
-
-                <!-- Paid Adverts Section for Admin/Landlord (hidden by default) -->
-                <div class="paid-adverts-section hidden" id="paidAdvertsAdmin">
-                    <div class="section-header">
-                        <h3><i class="fas fa-star"></i> Featured & Paid Listings</h3>
-                        <span class="section-subtitle">Boost your property advert for only <b>2,000 Kwacha</b>, or get featured for 4 weeks for just <b>10,000 Kwacha</b>!</span>
-                    </div>
-                    <div class="adverts-cta" style="text-align:center; margin:2rem 0;">
-                        <button class="btn-primary" onclick="window.location.href='services/advertise-property.html'">
-                            <i class="fas fa-bullhorn"></i> Boost My Property Now
-                        </button>
-                    </div>
-                    <div class="adverts-carousel" id="advertsCarouselAdmin">
-                        <!-- Optionally, show sample featured listings as examples -->
-                    </div>
-                </div>
-
                 <div class="dashboard-grid">
-                    <!-- Quick Actions Section -->
-                    <div class="dashboard-card quick-actions">
-                        <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-                        <div class="quick-actions-grid">
-                            <a href="messages.html" class="quick-action-btn">
-                                <i class="fas fa-comments"></i>
-                                <span>Messages</span>
-                                <span class="action-badge" id="quickMessageBadge">0</span>
-                            </a>
-                            <button class="quick-action-btn" onclick="showPropertySearch()">
-                                <i class="fas fa-search"></i>
-                                <span>Search Properties</span>
-                            </button>
-                            <button class="quick-action-btn" onclick="showSavedProperties()">
-                                <i class="fas fa-heart"></i>
-                                <span>Saved Properties</span>
-                            </button>
-                            <button class="quick-action-btn" onclick="showApplications()">
-                                <i class="fas fa-file-alt"></i>
-                                <span>My Applications</span>
-                            </button>
-                        </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-search"></i> Search Properties</h3>
+                        <p>Find your perfect home with our advanced search.</p>
+                        <button class="btn-primary" onclick="window.location.href='map.html'">Start Searching</button>
                     </div>
-
-                    <!-- Enhanced Search Section -->
-                    <div class="dashboard-card search-section">
-                        <h3><i class="fas fa-search"></i> Smart Property Search</h3>
-                        <div class="search-form">
-                            <div class="search-row">
-                                <input type="text" placeholder="Enter location, area, or landmark..." class="search-input">
-                                <select class="filter-select" id="propertyType">
-                                    <option value="">All Types</option>
-                                    <option value="hostel">Hostel</option>
-                                    <option value="apartment">Apartment</option>
-                                    <option value="house">House</option>
-                                    <option value="quarter">Quarter</option>
-                                    <option value="studio">Studio</option>
-                                </select>
-                            </div>
-                            
-                            <div class="search-row">
-                                <select class="university-select" id="universitySelect">
-                                    <option value="">All Universities</option>
-                                    <option value="uon">University of Nairobi</option>
-                                    <option value="jkuat">JKUAT</option>
-                                    <option value="ku">Kenyatta University</option>
-                                    <option value="strathmore">Strathmore University</option>
-                                    <option value="usiu">USIU</option>
-                                    <option value="daystar">Daystar University</option>
-                                    <option value="other">Other Universities</option>
-                                </select>
-                                <div class="budget-range">
-                                    <label>Budget: <span id="budgetValue">KSh 20,000</span></label>
-                                    <input type="range" id="budgetSlider" min="5000" max="100000" step="5000" value="20000" class="budget-slider">
-                                </div>
-                            </div>
-                            
-                            <div class="search-row">
-                                <div class="checkbox-group">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="studentFilter">
-                                        <span class="checkmark"></span>
-                                        Student Accommodation
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="verifiedLandlord">
-                                        <span class="checkmark"></span>
-                                        Verified Landlords Only
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="availableNow">
-                                        <span class="checkmark"></span>
-                                        Available Now
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <button class="search-btn" onclick="performAdvancedSearch()">
-                                <i class="fas fa-search"></i> Find Properties
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Map Widget -->
-                    <div class="dashboard-card map-widget">
-                        <h3><i class="fas fa-map-marker-alt"></i> Explore Map</h3>
-                        <div id="dashboardMap" style="height: 250px; border-radius: 8px; overflow: hidden; margin-bottom: 10px;"></div>
-                        <button class="map-btn" onclick="window.location.href='map.html'">Open Full Map</button>
-                    </div>
-
-                    <!-- Advance Assist -->
-                    <div class="dashboard-card advance-assist">
-                        <h3><i class="fas fa-star"></i> Advance Assist</h3>
-                        <p>Relocating soon? Let us search for you.</p>
-                        <div class="assist-status">
-                            <span class="status-badge available">Available</span>
-                            <button class="assist-btn">Book Advance Assist</button>
-                        </div>
-                    </div>
-
-                    <!-- Messages -->
-                    <div class="dashboard-card messages-section">
-                        <h3><i class="fas fa-comments"></i> Recent Messages</h3>
-                        <div class="message-list">
-                            <div class="message-item">
-                                <div class="message-avatar">JD</div>
-                                <div class="message-content">
-                                    <h4>John Doe</h4>
-                                    <p>Hi! I'm interested in your property...</p>
-                                    <span class="message-time">2 hours ago</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="view-all-btn">View All Conversations</button>
-                    </div>
-
-                    <!-- Saved Listings -->
-                    <div class="dashboard-card saved-listings">
-                        <h3><i class="fas fa-heart"></i> Saved Listings</h3>
-                        <div class="saved-content">
-                            <p class="empty-state">Start browsing to save listings you love.</p>
-                        </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-comments"></i> Messages</h3>
+                        <p>Connect with landlords and property managers.</p>
+                        <button class="btn-primary" onclick="window.location.href='messages.html'">View Messages</button>
                     </div>
                 </div>
             </div>
@@ -1212,75 +847,21 @@
                     <h2>Welcome back, <span id="adminName">Admin</span>!</h2>
                     <p>Ready to manage your listings?</p>
                 </div>
-
                 <div class="dashboard-grid">
-                    <!-- My Listings -->
-                    <div class="dashboard-card listings-management">
-                        <div class="card-header">
-                            <h3><i class="fas fa-home"></i> My Listings</h3>
-                            <a href="landlord-dashboard.html" class="add-listing-btn" id="addListingBtn" style="display: none; margin-left: 1rem;">
-                                <i class="fas fa-plus"></i> Add New Listing
-                            </a>
-                        </div>
-                        <div class="listings-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Listing Name</th>
-                                        <th>Status</th>
-                                        <th>Views</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Sunset Apartments</td>
-                                        <td><span class="status available">Available</span></td>
-                                        <td>24</td>
-                                        <td>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Downtown Studio</td>
-                                        <td><span class="status taken">Taken</span></td>
-                                        <td>156</td>
-                                        <td>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-home"></i> My Listings</h3>
+                        <p>Manage your property listings.</p>
+                        <button class="btn-primary" onclick="window.location.href='add-property.html'">Add New Listing</button>
                     </div>
-
-                    <!-- Map View -->
-                    <div class="dashboard-card map-view">
-                        <h3><i class="fas fa-map"></i> Map View of Listings</h3>
-                        <div id="adminMap" style="height: 250px; border-radius: 8px; overflow: hidden; margin-bottom: 10px;"></div>
-                        <button class="map-btn" onclick="window.location.href='map.html'">Open Full Map</button>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-inbox"></i> Messages</h3>
+                        <p>View messages from potential tenants.</p>
+                        <button class="btn-primary" onclick="window.location.href='messages.html'">View Messages</button>
                     </div>
-
-                    <!-- Messages from Renters -->
-                    <div class="dashboard-card renter-messages">
-                        <h3><i class="fas fa-inbox"></i> Messages from Renters</h3>
-                        <div class="message-preview">
-                            <div class="unread-badge">3</div>
-                            <p>You have 3 unread messages</p>
-                            <button class="inbox-btn">Go to Inbox</button>
-                        </div>
-                    </div>
-
-                    <!-- Verification Status -->
-                    <div class="dashboard-card verification-status">
-                        <h3><i class="fas fa-check-circle"></i> Verification Status</h3>
-                        <div class="verification-info">
-                            <span class="status-badge verified">Verified</span>
-                            <p>Your account is verified and active</p>
-                            <button class="support-btn">Contact Support</button>
-                        </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-blog"></i> Blog Posts</h3>
+                        <p>Create and manage blog posts to share insights.</p>
+                        <button class="btn-primary" onclick="window.location.href='blog.html'">Create Post</button>
                     </div>
                 </div>
             </div>
@@ -1290,17 +871,14 @@
                 <div class="card-header">
                     <h3><i class="fas fa-blog"></i> Latest Blog Posts</h3>
                     <div class="admin-controls">
-                        <button class="add-post-btn hidden" id="addPostBtn" onclick="handleAddPost()">
-                            <i class="fas fa-plus"></i> Add Post
+                        <button class="add-post-btn hidden" id="addPostBtn" onclick="window.location.href='blog.html'">
+                            <i class="fas fa-plus"></i> Create Post
                         </button>
                         <button class="refresh-btn" onclick="loadBlogPosts()" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-right: 0.5rem;">
                             <i class="fas fa-sync-alt"></i> Refresh Posts
                         </button>
-                        <button class="test-btn" onclick="testBlogLoading()" style="background: var(--primary-green); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-right: 0.5rem;">
-                            <i class="fas fa-bug"></i> Test Loading
-                        </button>
                         <a href="blog.html" class="btn-secondary blog-section-btn" style="background: linear-gradient(135deg, var(--gold), var(--gold-dark)); color: var(--charcoal); text-decoration: none; padding: 0.8rem 1.5rem; border-radius: 12px; margin-right: 0.5rem; font-weight: 600; box-shadow: 0 4px 15px rgba(255, 184, 0, 0.3); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: none;">
-                            <i class="fas fa-newspaper"></i> Blog Section
+                            <i class="fas fa-newspaper"></i> View All Posts
                         </a>
                         <div class="subscription-info" id="subscriptionInfo">
                             <span class="subscription-badge">KSh 2,000/month</span>
@@ -1308,29 +886,20 @@
                         </div>
                         <div class="blog-access-message" id="blogAccessMessage">
                             <div class="access-info">
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-eye"></i>
                                 <div>
-                                    <h4>Posting Temporarily Free</h4>
-                                    <p>All users can now create blog posts for free! Payment feature will be re-enabled later.</p>
+                                    <h4>View Posts Only</h4>
+                                    <p>As a renter, you can view blog posts and message the authors. Landlords and admins can create posts.</p>
                                 </div>
                             </div>
-                            <button class="upgrade-btn" onclick="handleAddPost()" style="background: var(--primary-green);">
-                                <i class="fas fa-plus"></i> Create Post
+                            <button class="upgrade-btn" onclick="window.location.href='blog.html'" style="background: var(--primary-green);">
+                                <i class="fas fa-newspaper"></i> View Posts
                             </button>
-                        </div>
-                        <div class="admin-posting-notice" id="adminPostingNotice" style="display: none;">
-                            <div class="notice-content">
-                                <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
-                                <div>
-                                    <h4>Admin Posting Restrictions</h4>
-                                    <p>As an admin, you can only post about your own properties. Posting about other properties will result in account suspension.</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="blog-posts" id="blogPosts">
-                    <!-- Sample blog post with comments -->
+                    <!-- Sample blog post -->
                     <div class="blog-post">
                         <div class="post-header">
                             <h4>Top 5 Tips for Finding Student Housing</h4>
@@ -1355,78 +924,9 @@
                             <button class="action-btn save-btn" onclick="handleSave(this)">
                                 <i class="fas fa-bookmark"></i>
                             </button>
-                        </div>
-                        
-                        <!-- Comments Section -->
-                        <div class="comments-section hidden">
-                            <div class="comment-form">
-                                <textarea placeholder="Write a comment..." class="comment-input"></textarea>
-                                <button class="comment-submit" onclick="submitComment(this)">Post Comment</button>
-                            </div>
-                            
-                            <div class="comments-list">
-                                <div class="comment">
-                                    <div class="comment-avatar">JD</div>
-                                    <div class="comment-content">
-                                        <div class="comment-header">
-                                            <span class="comment-author">John Doe</span>
-                                            <span class="comment-date">2 hours ago</span>
-                                        </div>
-                                        <p class="comment-text">Great tips! I especially liked the budgeting advice. Would love to see more content about specific areas in Nairobi.</p>
-                                        <div class="comment-actions">
-                                            <button class="comment-like" onclick="handleCommentLike(this)">
-                                                <i class="fas fa-heart"></i> 5
-                                            </button>
-                                            <button class="comment-reply" onclick="showReplyForm(this)">Reply</button>
-                                        </div>
-                                        
-                                        <!-- Reply Form -->
-                                        <div class="reply-form hidden">
-                                            <textarea placeholder="Write a reply..." class="reply-input"></textarea>
-                                            <div class="reply-actions">
-                                                <button class="reply-submit" onclick="submitReply(this)">Post Reply</button>
-                                                <button class="reply-cancel" onclick="hideReplyForm(this)">Cancel</button>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Replies -->
-                                        <div class="replies">
-                                            <div class="reply">
-                                                <div class="comment-avatar">DT</div>
-                                                <div class="reply-content">
-                                                    <div class="comment-header">
-                                                        <span class="comment-author">DeniFinder Team</span>
-                                                        <span class="comment-date">1 hour ago</span>
-                                                    </div>
-                                                    <p class="comment-text">Thanks John! We're working on area-specific guides. Stay tuned!</p>
-                                                    <div class="comment-actions">
-                                                        <button class="comment-like" onclick="handleCommentLike(this)">
-                                                            <i class="fas fa-heart"></i> 2
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="comment">
-                                    <div class="comment-avatar">SM</div>
-                                    <div class="comment-content">
-                                        <div class="comment-header">
-                                            <span class="comment-author">Sarah Mwangi</span>
-                                            <span class="comment-date">3 hours ago</span>
-                                        </div>
-                                        <p class="comment-text">This is exactly what I needed! Starting university next month and feeling overwhelmed about housing.</p>
-                                        <div class="comment-actions">
-                                            <button class="comment-like" onclick="handleCommentLike(this)">
-                                                <i class="fas fa-heart"></i> 3
-                                            </button>
-                                            <button class="comment-reply" onclick="showReplyForm(this)">Reply</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <button class="action-btn message-btn" onclick="messageAuthor(this)" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; margin-left: auto;">
+                                <i class="fas fa-envelope"></i> Message Author
+                            </button>
                         </div>
                     </div>
                     
@@ -1454,98 +954,157 @@
                             <button class="action-btn save-btn" onclick="handleSave(this)">
                                 <i class="fas fa-bookmark"></i>
                             </button>
-                        </div>
-                        
-                        <!-- Comments Section -->
-                        <div class="comments-section hidden">
-                            <div class="comment-form">
-                                <textarea placeholder="Write a comment..." class="comment-input"></textarea>
-                                <button class="comment-submit" onclick="submitComment(this)">Post Comment</button>
-                            </div>
-                            
-                            <div class="comments-list">
-                                <!-- Comments will be loaded here -->
-                            </div>
+                            <button class="action-btn message-btn" onclick="messageAuthor(this)" style="background: var(--sky-blue); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; margin-left: auto;">
+                                <i class="fas fa-envelope"></i> Message Author
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <!-- Where to Stay Preview Section (Teaser) -->
-    <section class="where-to-stay-preview" style="background:linear-gradient(120deg,#fffbe6 60%,#f8f9fa 100%);padding:3rem 0 2rem 0;margin:2rem 0 2rem 0;border-radius:18px;box-shadow:0 4px 24px rgba(255,184,0,0.10);">
-      <div class="container">
-        <h2 style="text-align:center;color:#B38600;font-size:2rem;font-weight:800;margin-bottom:1.5rem;letter-spacing:0.5px;">🌐 DeniFinder Web Section: <span style='color:#4CAF50;'>Where to Stay</span></h2>
-        <p style="text-align:center;max-width:600px;margin:0 auto 2rem auto;color:#222;font-size:1.1rem;">A central hub for all partner hotels, lodges, resorts, and cottages. Perfect for renters, students, families, and travelers seeking comfort and convenience.</p>
-        <div class="where-to-stay-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;justify-items:center;align-items:stretch;margin-bottom:2.5rem;">
-          <!-- Example Property Cards -->
-          <div class="property-card" style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(255,184,0,0.10);padding:1.2rem;display:flex;flex-direction:column;align-items:center;min-height:260px;position:relative;">
-            <img src="images/hotel-placeholder.png" alt="Hotel" style="width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:1rem;">
-            <h3 style="font-size:1.1rem;font-weight:700;color:#B38600;margin-bottom:0.5rem;">Sunrise Grand Hotel</h3>
-            <span style="background:#FFEB99;color:#7A5C00;font-weight:600;border-radius:12px;padding:0.3rem 0.9rem;font-size:0.95rem;margin-bottom:0.5rem;">Hotel</span>
-            <span style="color:#4CAF50;font-weight:600;font-size:1rem;">From $60/night</span>
-            <span style="background:#FFD764;color:#B38600;font-weight:700;border-radius:10px;padding:0.2rem 0.7rem;font-size:0.9rem;margin:0.5rem 0;">🌟 DeniFinder Pick</span>
-            <a href="#" class="btn-primary" style="margin-top:auto;background:#FFB800;color:#222;font-weight:700;border-radius:30px;padding:0.6rem 1.5rem;font-size:1rem;text-decoration:none;box-shadow:0 2px 8px rgba(255,184,0,0.10);">View Details</a>
-          </div>
-          <div class="property-card" style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(255,184,0,0.10);padding:1.2rem;display:flex;flex-direction:column;align-items:center;min-height:260px;position:relative;">
-            <img src="images/lodge-placeholder.png" alt="Lodge" style="width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:1rem;">
-            <h3 style="font-size:1.1rem;font-weight:700;color:#B38600;margin-bottom:0.5rem;">Safari Lodge</h3>
-            <span style="background:#E0E0E0;color:#7A5C00;font-weight:600;border-radius:12px;padding:0.3rem 0.9rem;font-size:0.95rem;margin-bottom:0.5rem;">Lodge</span>
-            <span style="color:#4CAF50;font-weight:600;font-size:1rem;">From $45/night</span>
-            <span style="background:#FFD764;color:#B38600;font-weight:700;border-radius:10px;padding:0.2rem 0.7rem;font-size:0.9rem;margin:0.5rem 0;">💎 Advance Assist Partner</span>
-            <a href="#" class="btn-primary" style="margin-top:auto;background:#FFB800;color:#222;font-weight:700;border-radius:30px;padding:0.6rem 1.5rem;font-size:1rem;text-decoration:none;box-shadow:0 2px 8px rgba(255,184,0,0.10);">View Details</a>
-          </div>
-          <div class="property-card" style="background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(255,184,0,0.10);padding:1.2rem;display:flex;flex-direction:column;align-items:center;min-height:260px;position:relative;">
-            <img src="images/cottage-placeholder.png" alt="Cottage" style="width:100%;height:120px;object-fit:cover;border-radius:12px;margin-bottom:1rem;">
-            <h3 style="font-size:1.1rem;font-weight:700;color:#B38600;margin-bottom:0.5rem;">Lakeview Cottages</h3>
-            <span style="background:#FFD764;color:#7A5C00;font-weight:600;border-radius:12px;padding:0.3rem 0.9rem;font-size:0.95rem;margin-bottom:0.5rem;">Cottage</span>
-            <span style="color:#4CAF50;font-weight:600;font-size:1rem;">From $35/night</span>
-            <span style="background:#FFB800;color:#fff;font-weight:700;border-radius:10px;padding:0.2rem 0.7rem;font-size:0.9rem;margin:0.5rem 0;">👑 Platinum Sponsor</span>
-            <a href="#" class="btn-primary" style="margin-top:auto;background:#FFB800;color:#222;font-weight:700;border-radius:30px;padding:0.6rem 1.5rem;font-size:1rem;text-decoration:none;box-shadow:0 2px 8px rgba(255,184,0,0.10);">View Details</a>
-          </div>
-        </div>
-        <div style="text-align:center;margin-top:2rem;">
-          <a href="where-to-stay.html" class="btn-primary" style="background:#4CAF50;color:#fff;font-weight:700;border-radius:30px;padding:1rem 2.2rem;font-size:1.1rem;text-decoration:none;box-shadow:0 4px 15px rgba(76,175,80,0.13);">Explore All Stays</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Mobile Header JavaScript -->
+    <!-- Supabase SDK -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Configuration -->
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-services.js"></script>
+    
+    <!-- Dashboard JavaScript -->
+    <script src="js/dashboard.js"></script>
+    
+    <!-- Enhanced Mobile Menu JavaScript -->
     <script>
-        // Mobile header expand/collapse functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileExpandBtn = document.getElementById('mobileExpandBtn');
-            const dashboardHeader = document.querySelector('header.dashboard-header');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const mobileNav = document.getElementById('mobileNav');
+            const roleSwitcher = document.getElementById('roleSwitcher');
+            const mobileRoleSwitcher = document.getElementById('mobileRoleSwitcher');
+            const roleBadge = document.getElementById('roleBadge');
             
-            // Show mobile expand button only on mobile
-            function showMobileExpandBtn() {
-                if (window.innerWidth <= 768) {
-                    mobileExpandBtn.style.display = 'flex';
+            // Toggle mobile menu
+            hamburgerMenu.addEventListener('click', function() {
+                hamburgerMenu.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+                
+                // Close menu when clicking outside
+                if (mobileNav.classList.contains('active')) {
+                    document.addEventListener('click', closeMenuOnClickOutside);
                 } else {
-                    mobileExpandBtn.style.display = 'none';
-                    // Reset header state on desktop
-                    dashboardHeader.classList.remove('expanded');
-                    mobileExpandBtn.classList.remove('expanded');
+                    document.removeEventListener('click', closeMenuOnClickOutside);
+                }
+            });
+            
+            // Close menu when clicking outside
+            function closeMenuOnClickOutside(e) {
+                if (!mobileNav.contains(e.target) && !hamburgerMenu.contains(e.target)) {
+                    hamburgerMenu.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    document.removeEventListener('click', closeMenuOnClickOutside);
                 }
             }
             
-            // Toggle header expansion
-            function toggleHeaderExpansion() {
-                dashboardHeader.classList.toggle('expanded');
-                mobileExpandBtn.classList.toggle('expanded');
+            // Close mobile menu when clicking on links
+            const mobileNavLinks = mobileNav.querySelectorAll('a');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    document.removeEventListener('click', closeMenuOnClickOutside);
+                });
+            });
+            
+            // Sync role switching between desktop and mobile
+            function switchRole(role) {
+                // Validate role
+                const validRoles = ['renter', 'landlord', 'admin'];
+                if (!validRoles.includes(role)) {
+                    console.error('Invalid role:', role);
+                    role = 'renter';
+                }
+                
+                // Update desktop role switcher
+                const desktopRoleBtns = roleSwitcher.querySelectorAll('.role-btn');
+                desktopRoleBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.role === role) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Update mobile role switcher
+                const mobileRoleBtns = mobileRoleSwitcher.querySelectorAll('.mobile-role-btn');
+                mobileRoleBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.role === role) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Update role badge
+                if (roleBadge) {
+                    roleBadge.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+                }
+                
+                // Update role switcher data attribute
+                if (roleSwitcher) {
+                    roleSwitcher.setAttribute('data-active-role', role);
+                }
+                
+                // Show/hide landlord dashboard button
+                const landlordDashboardBtn = document.getElementById('landlordDashboardBtn');
+                const mobileLandlordDashboard = document.getElementById('mobileLandlordDashboard');
+                
+                if (role === 'landlord' || role === 'admin') {
+                    if (landlordDashboardBtn) landlordDashboardBtn.style.display = 'flex';
+                    if (mobileLandlordDashboard) mobileLandlordDashboard.style.display = 'flex';
+                } else {
+                    if (landlordDashboardBtn) landlordDashboardBtn.style.display = 'none';
+                    if (mobileLandlordDashboard) mobileLandlordDashboard.style.display = 'none';
+                }
+                
+                // Close mobile menu after role switch
+                hamburgerMenu.classList.remove('active');
+                mobileNav.classList.remove('active');
+                document.removeEventListener('click', closeMenuOnClickOutside);
+                
+                // Call the main switchRole function from dashboard.js
+                if (typeof window.switchRole === 'function') {
+                    window.switchRole(role);
+                }
             }
             
-            // Event listeners
-            mobileExpandBtn.addEventListener('click', toggleHeaderExpansion);
+            // Desktop role switcher event listeners
+            if (roleSwitcher) {
+                roleSwitcher.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('role-btn')) {
+                        const role = e.target.dataset.role;
+                        switchRole(role);
+                    }
+                });
+            }
+            
+            // Mobile role switcher event listeners
+            if (mobileRoleSwitcher) {
+                mobileRoleSwitcher.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('mobile-role-btn')) {
+                        const role = e.target.dataset.role;
+                        switchRole(role);
+                    }
+                });
+            }
             
             // Handle window resize
-            window.addEventListener('resize', showMobileExpandBtn);
-            
-            // Initial setup
-            showMobileExpandBtn();
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    // Close mobile menu on desktop
+                    hamburgerMenu.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                    document.removeEventListener('click', closeMenuOnClickOutside);
+                }
+            });
         });
     </script>
 </body>
-</html> 
+</html>
